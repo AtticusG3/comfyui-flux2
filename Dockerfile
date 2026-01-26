@@ -1,7 +1,7 @@
 FROM python:3.12-slim-trixie
 
 # Build arguments
-ARG CUDA_VERSION=cu131
+ARG CUDA_VERSION=cu130
 
 # Environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
