@@ -1,9 +1,23 @@
-# FLUX.1[schnell] FP8
-https://huggingface.co/Comfy-Org/flux1-schnell/resolve/main/flux1-schnell-fp8.safetensors
-  dir=ComfyUI/models/checkpoints
-  out=flux1-schnell-fp8.safetensors
+# Flux.2 Klein 4B Dependencies
+# Text Encoders
+https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=qwen_3_4b.safetensors
 
-# FLUX.1[dev] FP8
-https://huggingface.co/Comfy-Org/flux1-dev/resolve/main/flux1-dev-fp8.safetensors
-  dir=ComfyUI/models/checkpoints
-  out=flux1-dev-fp8.safetensors
+# VAE
+https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors
+  dir=ComfyUI/models/vae
+  out=flux2-vae.safetensors
+# End Dependencies
+
+# Flux.2 Klein 4B Base (FP8)
+# Requires HF_TOKEN
+https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4b-fp8/resolve/main/flux-2-klein-base-4b-fp8.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=flux-2-klein-base-4b-fp8.safetensors
+
+# Flux.2 Klein 4B Distilled (FP8)
+# Requires HF_TOKEN
+https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/resolve/main/flux-2-klein-4b-fp8.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=flux-2-klein-4b-fp8.safetensors

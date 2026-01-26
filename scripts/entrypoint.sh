@@ -30,10 +30,10 @@ fi
 
 # Determine model list file based on LOW_VRAM
 if [ "$LOW_VRAM" == "true" ]; then
-    echo "[INFO] LOW_VRAM is set to true. Downloading FP8 models..."
+    echo "[INFO] LOW_VRAM is set to true. Downloading Flux.2 Klein 4B models..."
     MODEL_LIST_FILE="/scripts/models_fp8.txt"
 else
-    echo "[INFO] LOW_VRAM is not set or false. Downloading non-FP8 models..."
+    echo "[INFO] LOW_VRAM is not set or false. Downloading Flux.2 Klein 9B models..."
     MODEL_LIST_FILE="/scripts/models.txt"
 fi
 
@@ -48,26 +48,26 @@ if [ -n "${MODELS_DOWNLOAD}" ]; then
     MODELS_DOWNLOAD_LC=$(echo "$MODELS_DOWNLOAD" | tr '[:upper:]' '[:lower:]')
 
     if [ "$LOW_VRAM" == "true" ]; then
-        # For FP8 models, only copy the specified model sections
-        if [[ "$MODELS_DOWNLOAD_LC" == *"schnell"* ]]; then
-            sed -n '/# FLUX.1\[schnell\] FP8/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
+        # For 4B models, copy dependencies first
+        sed -n '/# Flux.2 Klein 4B Dependencies/,/# End Dependencies/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
+
+        # Then add requested models
+        if [[ "$MODELS_DOWNLOAD_LC" == *"klein-base"* ]]; then
+            sed -n '/# Flux.2 Klein 4B Base (FP8)/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
         fi
-        if [[ "$MODELS_DOWNLOAD_LC" == *"dev"* ]]; then
-            sed -n '/# FLUX.1\[dev\] FP8/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
+        if [[ "$MODELS_DOWNLOAD_LC" == *"klein-distilled"* ]]; then
+            sed -n '/# Flux.2 Klein 4B Distilled (FP8)/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
         fi
     else
-        # For full models, copy dependencies first
-        sed -n '/# Flux Text Encoders/,/# VAE/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
-        sed -n '/# Loras/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
+        # For 9B models, copy dependencies first
+        sed -n '/# Flux.2 Klein 9B Dependencies/,/# End Dependencies/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
 
-        # Then add requested models and their VAE
-        if [[ "$MODELS_DOWNLOAD_LC" == *"schnell"* ]]; then
-            sed -n '/# FLUX.1\[schnell\] UNet/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
-            sed -n '/# VAE/,/# Loras/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
+        # Then add requested models
+        if [[ "$MODELS_DOWNLOAD_LC" == *"klein-base"* ]]; then
+            sed -n '/# Flux.2 Klein 9B Base (FP8)/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
         fi
-        if [[ "$MODELS_DOWNLOAD_LC" == *"dev"* ]]; then
-            sed -n '/# FLUX.1\[dev\] UNet/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
-            sed -n '/# VAE/,/# Loras/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
+        if [[ "$MODELS_DOWNLOAD_LC" == *"klein-distilled"* ]]; then
+            sed -n '/# Flux.2 Klein 9B Distilled (FP8)/,/^$/p' "$MODEL_LIST_FILE" >> "$TEMP_MODEL_LIST"
         fi
     fi
 

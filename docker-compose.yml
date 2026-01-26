@@ -1,7 +1,7 @@
 services:
   comfyui:
     container_name: comfyui
-    image: frefrik/comfyui-flux:latest
+    image: atticusg3/comfyui-flux2:latest
     restart: unless-stopped
     ports:
       - "8188:8188"
@@ -11,6 +11,7 @@ services:
       - CLI_ARGS=
       - HF_TOKEN=${HF_TOKEN}
       - LOW_VRAM=${LOW_VRAM:-false}
+      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD}
     deploy:
       resources:
         reservations:
