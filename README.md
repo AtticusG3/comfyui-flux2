@@ -30,7 +30,7 @@ ComfyUI Flux is a Docker-based setup for running [ComfyUI](https://github.com/co
 2. Download the `docker-compose.yml` file:
 
    ```bash
-   wget https://raw.githubusercontent.com/frefrik/comfyui-flux/main/docker-compose.yml
+   wget https://raw.githubusercontent.com/AtticusG3/comfyui-flux2/main/docker-compose.yml
    ```
 
    Alternatively, you can create a `docker-compose.yml` file and copy/paste the following contents:
@@ -39,7 +39,7 @@ ComfyUI Flux is a Docker-based setup for running [ComfyUI](https://github.com/co
    services:
      comfyui:
        container_name: comfyui
-       image: frefrik/comfyui-flux:latest
+       image: atticusg3/comfyui-flux2:latest
        restart: unless-stopped
        ports:
          - "8188:8188"
@@ -49,6 +49,7 @@ ComfyUI Flux is a Docker-based setup for running [ComfyUI](https://github.com/co
          - CLI_ARGS=
          - HF_TOKEN=${HF_TOKEN}
          - LOW_VRAM=${LOW_VRAM:-false}
+         - MODELS_DOWNLOAD=${MODELS_DOWNLOAD}
        deploy:
          resources:
            reservations:
@@ -61,7 +62,7 @@ ComfyUI Flux is a Docker-based setup for running [ComfyUI](https://github.com/co
    **Note:** The default Docker image uses CUDA 12.8 (`cu128`). If you require a specific CUDA version, you can specify the tag in the image name. For example:
 
    ```yaml
-   image: frefrik/comfyui-flux:cu130
+   image: atticusg3/comfyui-flux2:cu130
    ```
 
 3. Run the container using Docker Compose:
