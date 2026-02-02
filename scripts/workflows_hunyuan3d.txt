@@ -1,0 +1,18 @@
+# Hunyuan3D-2 workflows from ComfyUI docs
+# https://docs.comfy.org/tutorials/3d/hunyuan3D-2
+# Drag these into ComfyUI to load (workflow JSON embedded in images)
+
+# Multi-view workflow
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/3d/hunyuan3d-2/hunyuan3d_2mv_elf/hunyuan-3d-multiview-elf.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan-3d-multiview-elf.webp
+
+# Multi-view turbo workflow
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/3d/hunyuan3d-2/hunyuan3d_2mv_turbo/hunyuan-3d-turbo.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan-3d-turbo.webp
+
+# Single-view workflow
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/3d/hunyuan3d-2/hunyuan3d-non-multiview-train.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan3d-non-multiview-train.webp

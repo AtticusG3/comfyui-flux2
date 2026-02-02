@@ -48,6 +48,7 @@ ComfyUI Flux is a Docker-based setup for running [ComfyUI](https://github.com/co
        environment:
          - CLI_ARGS=
          - HF_TOKEN=${HF_TOKEN}
+         - HUNYUAN3D=${HUNYUAN3D:-false}
          - LOW_VRAM=${LOW_VRAM:-false}
          - MODELS_DOWNLOAD=${MODELS_DOWNLOAD}
        deploy:
@@ -77,14 +78,34 @@ ComfyUI Flux is a Docker-based setup for running [ComfyUI](https://github.com/co
 
 ## Environment Variables
 
-- `HF_TOKEN` - Your Hugging Face access token. **Required** to download the Flux.2 Klein diffusion models.
+- `HF_TOKEN` - Your Hugging Face access token. **Required** to download the Flux.2 Klein diffusion models. Not required for Hunyuan3D-2 models.
+- `HUNYUAN3D` - Set to `true` for Hunyuan3D-2 (3D asset generation). See [Hunyuan3D-2 Mode](#hunyuan3d-2-mode) section.
 - `LOW_VRAM` - Set to `true` for Flux.2 Klein 4B models (lower VRAM), or `false` for 9B models. See [Low VRAM Mode](#low-vram-mode) section.
-- `MODELS_DOWNLOAD` - Comma-separated list specifying which Flux.2 Klein variants to download (`klein-base`, `klein-distilled`). If not set, both variants will be downloaded.
+- `MODELS_DOWNLOAD` - Comma-separated list specifying which Flux.2 Klein variants to download (`klein-base`, `klein-distilled`). If not set, both variants will be downloaded. Only applies when using Flux.2 Klein.
 - `CLI_ARGS` - Additional command-line arguments to pass directly to the ComfyUI.
+
+## Hunyuan3D-2 Mode
+
+By setting the `HUNYUAN3D` environment variable to `true`, the container will download Hunyuan3D-2 models and workflows for 3D asset generation. This option is mutually exclusive with Flux.2 Klein (when `HUNYUAN3D=true`, Flux models are not downloaded).
+
+**Included models:**
+- Multi-view: `hunyuan3d-dit-v2-mv.safetensors`, `hunyuan3d-dit-v2-mv-turbo.safetensors`
+- Single-view: `hunyuan3d-dit-v2.safetensors`
+- Texture generation: `hunyuan3d-paint-v2-0.safetensors` (for use with ComfyUI-Hunyuan3DWrapper)
+
+**Workflows:** Multi-view, multi-view turbo, and single-view workflow images (drag into ComfyUI to load).
+
+Enable Hunyuan3D-2 Mode:
+
+```bash
+HUNYUAN3D=true
+```
+
+See the [ComfyUI Hunyuan3D-2 docs](https://docs.comfy.org/tutorials/3d/hunyuan3D-2) and [ComfyUI Wiki guide](https://comfyui-wiki.com/en/tutorial/advanced/3d/huanyuan3d-2) for usage.
 
 ## Low VRAM Mode
 
-By setting the `LOW_VRAM` environment variable to `true`, the container will download and use the Flux.2 Klein 4B models. When `LOW_VRAM=false`, the container downloads Flux.2 Klein 9B models.
+By setting the `LOW_VRAM` environment variable to `true`, the container will download and use the Flux.2 Klein 4B models. When `LOW_VRAM=false`, the container downloads Flux.2 Klein 9B models. (Ignored when `HUNYUAN3D=true`.)
 
 Enable Low VRAM Mode:
 
@@ -117,6 +138,15 @@ The following model files will be downloaded by default, unless specified otherw
 | Text Encoder | qwen_3_4b.safetensors |  | |
 | VAE | flux2-vae.safetensors |  | |
 
+### When `HUNYUAN3D=true`
+
+| Type | Model File Name | Location | Notes |
+|-------------|----------------------------------|---------------------------|-------------------------------------------------|
+| Multi-view (base) | hunyuan3d-dit-v2-mv.safetensors | checkpoints/ | ~5 GB |
+| Multi-view (turbo) | hunyuan3d-dit-v2-mv-turbo.safetensors | checkpoints/ | ~5 GB |
+| Single-view | hunyuan3d-dit-v2.safetensors | checkpoints/ | ~5 GB |
+| Texture (Paint) | hunyuan3d-paint-v2-0.safetensors | diffusion_models/ | ~2 GB, requires ComfyUI-Hunyuan3DWrapper |
+
 ## Workflows
 
 Download the workflow JSON files below and drag them into ComfyUI to load the corresponding workflows.
@@ -133,6 +163,10 @@ Download the workflow JSON files below and drag them into ComfyUI to load the co
 |-------------------------------|---------------------------------|--------------------------------------|
 | [Download](./workflows/workflow-flux2-klein-9b-text-to-image.json) | [Download](./workflows/workflow-flux2-klein-9b-image-edit-base.json) | [Download](./workflows/workflow-flux2-klein-9b-image-edit-distilled.json) |
 
+### Hunyuan3D-2 (HUNYUAN3D=true)
+
+Workflow images (with embedded JSON) are auto-downloaded to ComfyUI. Drag them into ComfyUI to load: `hunyuan-3d-multiview-elf.webp`, `hunyuan-3d-turbo.webp`, `hunyuan3d-non-multiview-train.webp`.
+
 ## Updating
 
 The ComfyUI and ComfyUI-Manager are automatically updated when the container starts. To update the base image and other dependencies, pull the latest version of the Docker image using:
@@ -143,7 +177,7 @@ docker-compose pull
 
 ## Additional Notes
 
-- **Switching Between Modes**: If you change the `LOW_VRAM` setting after the initial run, the container will automatically download the required models for the new setting upon restart.
+- **Switching Between Modes**: If you change the `LOW_VRAM` or `HUNYUAN3D` setting after the initial run, the container will automatically download the required models for the new setting upon restart.
 - **Model Selection**: Use the optional `MODELS_DOWNLOAD` environment variable to specify which Flux.2 Klein variants to download:
   - `MODELS_DOWNLOAD="klein-base"`: Download only the base model
   - `MODELS_DOWNLOAD="klein-distilled"`: Download only the distilled model

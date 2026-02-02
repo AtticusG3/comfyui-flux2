@@ -28,32 +28,49 @@ else
     cd /app
 fi
 
-# Download Flux.2 Klein workflows from ComfyUI docs
-# https://docs.comfy.org/tutorials/flux/flux-2-klein
-echo "########################################"
-echo "[INFO] Downloading Flux.2 Klein workflows..."
-echo "########################################"
+# Download workflows based on model option
 WORKFLOWS_DIR="/app/ComfyUI/user/default/workflows"
 mkdir -p "$WORKFLOWS_DIR"
 cd /app
-aria2c --input-file=/scripts/workflows.txt \
-    --allow-overwrite=true --auto-file-renaming=false --continue=true \
-    --max-connection-per-server=5 --conditional-get=true
 
-# Determine model list file based on LOW_VRAM
-if [ "$LOW_VRAM" == "true" ]; then
-    echo "[INFO] LOW_VRAM is set to true. Downloading Flux.2 Klein 4B models..."
-    MODEL_LIST_FILE="/scripts/models_fp8.txt"
+if [ "$HUNYUAN3D" == "true" ]; then
+    echo "########################################"
+    echo "[INFO] Downloading Hunyuan3D-2 workflows..."
+    echo "########################################"
+    aria2c --input-file=/scripts/workflows_hunyuan3d.txt \
+        --allow-overwrite=true --auto-file-renaming=false --continue=true \
+        --max-connection-per-server=5 --conditional-get=true
 else
-    echo "[INFO] LOW_VRAM is not set or false. Downloading Flux.2 Klein 9B models..."
-    MODEL_LIST_FILE="/scripts/models.txt"
+    echo "########################################"
+    echo "[INFO] Downloading Flux.2 Klein workflows..."
+    echo "########################################"
+    aria2c --input-file=/scripts/workflows.txt \
+        --allow-overwrite=true --auto-file-renaming=false --continue=true \
+        --max-connection-per-server=5 --conditional-get=true
 fi
 
-# Create temporary file for model list
-TEMP_MODEL_LIST=$(mktemp)
+# Determine model list file based on HUNYUAN3D or LOW_VRAM
+if [ "$HUNYUAN3D" == "true" ]; then
+    echo "[INFO] HUNYUAN3D is set to true. Downloading Hunyuan3D-2 models..."
+    MODEL_LIST_FILE="/scripts/models_hunyuan3d.txt"
+    TEMP_MODEL_LIST=$(mktemp)
+    cp "$MODEL_LIST_FILE" "$TEMP_MODEL_LIST"
+else
+    if [ "$LOW_VRAM" == "true" ]; then
+        echo "[INFO] LOW_VRAM is set to true. Downloading Flux.2 Klein 4B models..."
+        MODEL_LIST_FILE="/scripts/models_fp8.txt"
+    else
+        echo "[INFO] LOW_VRAM is not set or false. Downloading Flux.2 Klein 9B models..."
+        MODEL_LIST_FILE="/scripts/models.txt"
+    fi
 
-# Filter models based on MODELS_DOWNLOAD if set
-if [ -n "${MODELS_DOWNLOAD}" ]; then
+# Create temporary file for model list (only for Flux path)
+if [ "$HUNYUAN3D" != "true" ]; then
+    TEMP_MODEL_LIST=$(mktemp)
+fi
+
+# Filter models based on MODELS_DOWNLOAD if set (Flux only)
+if [ "$HUNYUAN3D" != "true" ] && [ -n "${MODELS_DOWNLOAD}" ]; then
     echo "[INFO] Filtering models based on MODELS_DOWNLOAD=${MODELS_DOWNLOAD}"
 
     # Convert to lowercase for case-insensitive matching
@@ -88,8 +105,8 @@ if [ -n "${MODELS_DOWNLOAD}" ]; then
         echo "[WARN] No models matched MODELS_DOWNLOAD value. Using complete model list."
         cp "$MODEL_LIST_FILE" "$TEMP_MODEL_LIST"
     fi
-else
-    # If MODELS_DOWNLOAD not set, use the complete list
+elif [ "$HUNYUAN3D" != "true" ]; then
+    # If MODELS_DOWNLOAD not set (Flux path), use the complete list
     cp "$MODEL_LIST_FILE" "$TEMP_MODEL_LIST"
 fi
 

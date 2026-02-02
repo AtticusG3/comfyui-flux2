@@ -10,6 +10,7 @@ services:
     environment:
       - CLI_ARGS=
       - HF_TOKEN=${HF_TOKEN}
+      - HUNYUAN3D=${HUNYUAN3D:-false}
       - LOW_VRAM=${LOW_VRAM:-false}
       - MODELS_DOWNLOAD=${MODELS_DOWNLOAD}
     deploy:

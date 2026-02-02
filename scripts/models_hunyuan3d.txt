@@ -1,0 +1,23 @@
+# Hunyuan3D-2 models from ComfyUI docs
+# https://docs.comfy.org/tutorials/3d/hunyuan3D-2
+# https://comfyui-wiki.com/en/tutorial/advanced/3d/huanyuan3d-2
+
+# Multi-view (Hunyuan3D-2mv)
+https://huggingface.co/tencent/Hunyuan3D-2mv/resolve/main/hunyuan3d-dit-v2-mv/model.fp16.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan3d-dit-v2-mv.safetensors
+
+https://huggingface.co/tencent/Hunyuan3D-2mv/resolve/main/hunyuan3d-dit-v2-mv-turbo/model.fp16.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan3d-dit-v2-mv-turbo.safetensors
+
+# Single-view (Hunyuan3D-2)
+https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/hunyuan3d-dit-v2-0/model.fp16.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan3d-dit-v2.safetensors
+
+# Texture generation (Hunyuan3D-Paint)
+# For use with ComfyUI-Hunyuan3DWrapper
+https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/hunyuan3d-paint-v2-0/unet/diffusion_pytorch_model.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=hunyuan3d-paint-v2-0.safetensors
