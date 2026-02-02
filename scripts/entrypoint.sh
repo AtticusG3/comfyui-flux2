@@ -28,6 +28,18 @@ else
     cd /app
 fi
 
+# Download Flux.2 Klein workflows from ComfyUI docs
+# https://docs.comfy.org/tutorials/flux/flux-2-klein
+echo "########################################"
+echo "[INFO] Downloading Flux.2 Klein workflows..."
+echo "########################################"
+WORKFLOWS_DIR="/app/ComfyUI/user/default/workflows"
+mkdir -p "$WORKFLOWS_DIR"
+cd /app
+aria2c --input-file=/scripts/workflows.txt \
+    --allow-overwrite=true --auto-file-renaming=false --continue=true \
+    --max-connection-per-server=5 --conditional-get=true
+
 # Determine model list file based on LOW_VRAM
 if [ "$LOW_VRAM" == "true" ]; then
     echo "[INFO] LOW_VRAM is set to true. Downloading Flux.2 Klein 4B models..."
