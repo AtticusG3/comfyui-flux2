@@ -1,0 +1,12 @@
+# ACE-Step v1 workflows (20GB / LOW_VRAM=false)
+# Tutorial: https://docs.comfy.org/tutorials/audio/ace-step/ace-step-v1
+
+# Text-to-Audio workflow (music generation)
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/audio/ace-step/ace_step_1_t2m.json
+  dir=ComfyUI/user/default/workflows
+  out=ace-step-20gb-text-to-audio.json
+
+# Audio-to-Audio workflow (editing/resampling)
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/audio/ace-step/ace_step_1_m2m_editing.json
+  dir=ComfyUI/user/default/workflows
+  out=ace-step-20gb-audio-to-audio.json

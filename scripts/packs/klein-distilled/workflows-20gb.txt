@@ -1,0 +1,12 @@
+# Flux.2 Klein 9B distilled workflows (20GB / LOW_VRAM=false)
+# Tutorial: https://docs.comfy.org/tutorials/flux/flux-2-klein
+
+# Text-to-Image workflow
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/refs/heads/main/templates/image_flux2_text_to_image_9b.json
+  dir=ComfyUI/user/default/workflows
+  out=klein-distilled-20gb-text-to-image.json
+
+# Image Edit (distilled) workflow
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/refs/heads/main/templates/image_flux2_klein_image_edit_9b_distilled.json
+  dir=ComfyUI/user/default/workflows
+  out=klein-distilled-20gb-image-edit.json

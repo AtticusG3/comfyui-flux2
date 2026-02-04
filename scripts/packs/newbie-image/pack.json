@@ -1,0 +1,16 @@
+{
+  "name": "newbie-image",
+  "selectors": ["newbie-image", "newbie", "newbieimage"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/image/newbie-image/newbie-image-exp-0-1"
+  ],
+  "upstream_urls": [
+    "https://github.com/NewBieAI-Lab/NewBie-image-Exp0.1",
+    "https://huggingface.co/NewBie-AI/NewBie-image-Exp0.1",
+    "https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged"
+  ],
+  "requires_hf_token": false,
+  "notes_16gb": "3.5B DiT model. Fits easily on 16GB. Anime-style with XML structured prompts.",
+  "notes_20gb": "Same model, full speed. Multi-character generation with attribute binding.",
+  "description": "NewBie-image-Exp0.1 - 3.5B anime-style text-to-image with Next-DiT architecture."
+}

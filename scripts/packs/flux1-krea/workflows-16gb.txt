@@ -1,0 +1,7 @@
+# Flux.1 Krea Dev workflows (16GB / LOW_VRAM=true)
+# Tutorial: https://docs.comfy.org/tutorials/flux/flux1-krea-dev
+
+# Text-to-Image workflow
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/refs/heads/main/templates/flux1_krea_dev.json
+  dir=ComfyUI/user/default/workflows
+  out=flux1-krea-16gb-text-to-image.json

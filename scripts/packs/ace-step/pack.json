@@ -1,0 +1,16 @@
+{
+  "name": "ace-step",
+  "selectors": ["ace-step", "acestep", "ace"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/audio/ace-step/ace-step-v1"
+  ],
+  "upstream_urls": [
+    "https://github.com/ace-step/ACE-Step",
+    "https://huggingface.co/ACE-Step/ACE-Step-v1-3.5B",
+    "https://huggingface.co/Comfy-Org/ACE-Step_ComfyUI_repackaged"
+  ],
+  "requires_hf_token": false,
+  "notes_16gb": "Lightweight 3.5B model. Text-to-audio and audio-to-audio. Fits easily on 16GB.",
+  "notes_20gb": "Same model, faster inference. Supports longer audio generation with more headroom.",
+  "description": "ACE-Step - foundational music generation model for text-to-audio and audio editing."
+}

@@ -1,23 +1,18 @@
-# Hunyuan3D-2 models from ComfyUI docs
-# https://docs.comfy.org/tutorials/3d/hunyuan3D-2
-# https://comfyui-wiki.com/en/tutorial/advanced/3d/huanyuan3d-2
+# Hunyuan3D-2 models (20GB / LOW_VRAM=false)
+# Tutorial: https://docs.comfy.org/tutorials/3d/hunyuan3D-2
+# Full model set: multiview, turbo, single-view
 
-# Multi-view (Hunyuan3D-2mv)
+# Multi-view model (best quality, uses multiple input angles)
 https://huggingface.co/tencent/Hunyuan3D-2mv/resolve/main/hunyuan3d-dit-v2-mv/model.fp16.safetensors
   dir=ComfyUI/models/checkpoints
   out=hunyuan3d-dit-v2-mv.safetensors
 
+# Multi-view Turbo (faster inference, step distillation)
 https://huggingface.co/tencent/Hunyuan3D-2mv/resolve/main/hunyuan3d-dit-v2-mv-turbo/model.fp16.safetensors
   dir=ComfyUI/models/checkpoints
   out=hunyuan3d-dit-v2-mv-turbo.safetensors
 
-# Single-view (Hunyuan3D-2)
+# Single-view model (for single input image)
 https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/hunyuan3d-dit-v2-0/model.fp16.safetensors
   dir=ComfyUI/models/checkpoints
   out=hunyuan3d-dit-v2.safetensors
-
-# Texture generation (Hunyuan3D-Paint)
-# For use with ComfyUI-Hunyuan3DWrapper
-https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/hunyuan3d-paint-v2-0/unet/diffusion_pytorch_model.safetensors
-  dir=ComfyUI/models/diffusion_models
-  out=hunyuan3d-paint-v2-0.safetensors

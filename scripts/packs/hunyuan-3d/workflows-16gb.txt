@@ -1,0 +1,8 @@
+# Hunyuan3D-2 workflows (16GB / LOW_VRAM=true)
+# Tutorial: https://docs.comfy.org/tutorials/3d/hunyuan3D-2
+# Drag .webp files into ComfyUI to load workflow (embedded metadata)
+
+# Single-view workflow (lower memory, single input image)
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/3d/hunyuan3d-2/hunyuan3d-non-multiview-train.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan3d-16gb-single-view.webp

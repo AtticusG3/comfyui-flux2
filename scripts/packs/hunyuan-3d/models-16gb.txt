@@ -1,0 +1,8 @@
+# Hunyuan3D-2 models (16GB / LOW_VRAM=true)
+# Tutorial: https://docs.comfy.org/tutorials/3d/hunyuan3D-2
+# Uses single-view model only for lower VRAM usage (~6GB for shape)
+
+# Single-view model (lighter, works with single input image)
+https://huggingface.co/tencent/Hunyuan3D-2/resolve/main/hunyuan3d-dit-v2-0/model.fp16.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan3d-dit-v2.safetensors

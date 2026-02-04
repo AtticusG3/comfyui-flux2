@@ -1,0 +1,7 @@
+# Ovis-Image workflows (20GB / LOW_VRAM=false)
+# Tutorial: https://docs.comfy.org/tutorials/image/ovis/ovis-image
+
+# Text-to-Image workflow (excellent text rendering)
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/refs/heads/main/templates/image_ovis_text_to_image.json
+  dir=ComfyUI/user/default/workflows
+  out=ovis-image-20gb-text-to-image.json

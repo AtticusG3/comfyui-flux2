@@ -1,20 +1,15 @@
-# Flux.2 Klein 4B Dependencies
-# Text Encoders
+# Flux.2 Klein 4B (16GB / LOW_VRAM=true) - distilled only
+# Tutorial: https://docs.comfy.org/tutorials/flux/flux-2-klein
+
+# Text encoder (Qwen 3 4B)
 https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors
   dir=ComfyUI/models/text_encoders
   out=qwen_3_4b.safetensors
 
-# VAE
+# VAE (shared with Flux.2)
 https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors
   dir=ComfyUI/models/vae
   out=flux2-vae.safetensors
-# End Dependencies
-
-# Flux.2 Klein 4B Base (FP8)
-# Requires HF_TOKEN
-https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4b-fp8/resolve/main/flux-2-klein-base-4b-fp8.safetensors
-  dir=ComfyUI/models/diffusion_models
-  out=flux-2-klein-base-4b-fp8.safetensors
 
 # Flux.2 Klein 4B Distilled (FP8)
 # Requires HF_TOKEN

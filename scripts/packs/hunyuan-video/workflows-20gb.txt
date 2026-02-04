@@ -1,0 +1,18 @@
+# Hunyuan Video workflows (20GB / LOW_VRAM=false)
+# Tutorial: https://docs.comfy.org/tutorials/video/hunyuan/hunyuan-video
+# Drag .webp files into ComfyUI to load workflow (embedded metadata)
+
+# Text-to-Video workflow
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/t2v/kitchen.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan-video-20gb-t2v.webp
+
+# Image-to-Video v1 "concat" workflow (better motion)
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/i2v/v1_robot.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan-video-20gb-i2v-v1.webp
+
+# Image-to-Video v2 "replace" workflow (better image guidance)
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/i2v/v2_fennec_gril.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan-video-20gb-i2v-v2.webp

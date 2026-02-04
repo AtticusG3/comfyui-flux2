@@ -1,0 +1,16 @@
+{
+  "name": "ovis-image",
+  "selectors": ["ovis-image", "ovis", "ovisimage"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/image/ovis/ovis-image"
+  ],
+  "upstream_urls": [
+    "https://github.com/AIDC-AI/Ovis-Image",
+    "https://huggingface.co/AIDC-AI/Ovis-Image-7B",
+    "https://huggingface.co/Comfy-Org/Ovis-Image"
+  ],
+  "requires_hf_token": false,
+  "notes_16gb": "7B model. Use --lowvram for 16GB GPUs. Excellent for text-heavy prompts and text rendering.",
+  "notes_20gb": "Full performance with --highvram. Strong bilingual (Chinese/English) text rendering.",
+  "description": "Ovis-Image - 7B text-to-image model optimized for high-quality text rendering."
+}

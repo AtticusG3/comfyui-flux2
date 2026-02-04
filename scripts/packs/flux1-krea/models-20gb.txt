@@ -1,0 +1,23 @@
+# Flux.1 Krea Dev (20GB / LOW_VRAM=false)
+# Tutorial: https://docs.comfy.org/tutorials/flux/flux1-krea-dev
+# Uses FP8 scaled model (same as 16GB) - bf16 full precision requires HF auth
+
+# Diffusion model (FP8 scaled - no HF_TOKEN required)
+https://huggingface.co/Comfy-Org/FLUX.1-Krea-dev_ComfyUI/resolve/main/split_files/diffusion_models/flux1-krea-dev_fp8_scaled.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=flux1-krea-dev_fp8_scaled.safetensors
+
+# Text encoder: CLIP-L
+https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=clip_l.safetensors
+
+# Text encoder: T5-XXL (FP16 for better quality on 20GB+)
+https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=t5xxl_fp16.safetensors
+
+# VAE (FLUX ae)
+https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors
+  dir=ComfyUI/models/vae
+  out=ae.safetensors

@@ -1,0 +1,15 @@
+{
+  "name": "hunyuan-video",
+  "selectors": ["hunyuan-video", "hunyuanvideo", "hyvideo"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/video/hunyuan/hunyuan-video"
+  ],
+  "upstream_urls": [
+    "https://github.com/Tencent/HunyuanVideo",
+    "https://huggingface.co/Comfy-Org/HunyuanVideo_repackaged"
+  ],
+  "requires_hf_token": false,
+  "notes_16gb": "Heavy model. Use --lowvram and conservative settings (batch=1, 480p, fewer frames). Text-to-video only.",
+  "notes_20gb": "Full T2V and I2V workflows. 720p generation supported. Use --highvram for best performance.",
+  "description": "Hunyuan Video - 13B DiT for text-to-video and image-to-video generation."
+}

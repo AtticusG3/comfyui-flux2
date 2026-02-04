@@ -1,0 +1,9 @@
+# Hunyuan Video workflows (16GB / LOW_VRAM=true)
+# Tutorial: https://docs.comfy.org/tutorials/video/hunyuan/hunyuan-video
+# Drag .webp files into ComfyUI to load workflow (embedded metadata)
+# Use conservative settings: batch=1, 480p resolution, fewer frames
+
+# Text-to-Video workflow (recommended for 16GB)
+https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/t2v/kitchen.webp
+  dir=ComfyUI/user/default/workflows
+  out=hunyuan-video-16gb-t2v.webp

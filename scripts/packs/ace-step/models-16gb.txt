@@ -1,0 +1,8 @@
+# ACE-Step v1 (16GB / LOW_VRAM=true)
+# Tutorial: https://docs.comfy.org/tutorials/audio/ace-step/ace-step-v1
+# Lightweight 3.5B model - fits easily on 16GB GPUs
+
+# ACE-Step v1 3.5B (all-in-one checkpoint)
+https://huggingface.co/Comfy-Org/ACE-Step_ComfyUI_repackaged/resolve/main/all_in_one/ace_step_v1_3.5b.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=ace_step_v1_3.5b.safetensors

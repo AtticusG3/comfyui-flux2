@@ -6,13 +6,15 @@ services:
     ports:
       - "8188:8188"
     volumes:
-      - "./data:/app"
+      - "./data/models:/app/ComfyUI/models"
+      - "./data/input:/app/ComfyUI/input"
+      - "./data/output:/app/ComfyUI/output"
+      - "./data/workflows:/app/ComfyUI/user/default/workflows"
     environment:
       - CLI_ARGS=
       - HF_TOKEN=${HF_TOKEN}
-      - HUNYUAN3D=${HUNYUAN3D:-false}
       - LOW_VRAM=${LOW_VRAM:-false}
-      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD}
+      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled}
     deploy:
       resources:
         reservations:

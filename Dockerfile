@@ -1,7 +1,9 @@
 FROM python:3.12-slim-trixie
 
 # Build arguments
-ARG CUDA_VERSION=cu130
+# Default CUDA wheel for image build (cu124 for broad compatibility)
+# Runtime auto-detection in entrypoint.sh will reinstall if host CUDA differs
+ARG CUDA_VERSION=cu124
 
 # Environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -64,6 +66,5 @@ RUN uv pip install --no-cache \
 COPY --chown=runner:runner scripts/. /scripts/
 COPY --chown=runner:runner workflows/. /workflows/
 
-VOLUME ["/app"]
 EXPOSE 8188
 CMD ["bash","/scripts/entrypoint.sh"]

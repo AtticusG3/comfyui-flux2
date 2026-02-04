@@ -1,0 +1,16 @@
+{
+  "name": "hunyuan-3d",
+  "selectors": ["hunyuan-3d", "hunyuan3d", "hunyuan3d-2"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/3d/hunyuan3D-2"
+  ],
+  "upstream_urls": [
+    "https://github.com/Tencent/Hunyuan3D-2",
+    "https://huggingface.co/tencent/Hunyuan3D-2mv",
+    "https://huggingface.co/tencent/Hunyuan3D-2"
+  ],
+  "requires_hf_token": false,
+  "notes_16gb": "Lightweight 3D generation. Shape only needs 6GB VRAM. Use single-view workflow for lower memory.",
+  "notes_20gb": "Full multiview workflow with turbo variant. Shape + texture requires ~12GB VRAM.",
+  "description": "Hunyuan3D-2 - high-fidelity 3D model generation from text or images."
+}
