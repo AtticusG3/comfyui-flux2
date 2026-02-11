@@ -189,6 +189,10 @@ fi
 
 # Install or update ComfyUI
 cd /app
+# #region agent log
+LOG_FILE="/app/.cursor/debug.log"
+[ -w "/app/.cursor" ] 2>/dev/null && printf '%s\n' "{\"id\":\"entrypoint_comfyui_check\",\"timestamp\":$(date +%s)000,\"location\":\"entrypoint.sh:comfyui_block\",\"message\":\"ComfyUI dir and git check\",\"data\":{\"comfyui_dir_exists\":$([ -d /app/ComfyUI ] && echo true || echo false),\"git_dir_exists\":$([ -d /app/ComfyUI/.git ] 2>/dev/null && echo true || echo false),\"pwd\":\"$(pwd)\"},\"hypothesisId\":\"H1\"}" >> "$LOG_FILE"
+# #endregion
 if [ ! -d "/app/ComfyUI" ]; then
     echo "ComfyUI not found. Installing..."
     chmod +x /scripts/install_comfyui.sh

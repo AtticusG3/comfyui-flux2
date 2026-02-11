@@ -6,6 +6,7 @@ services:
     ports:
       - "8188:8188"
     volumes:
+      - "./.cursor:/app/.cursor:rw"
       - "./data/models:/app/ComfyUI/models"
       - "./data/input:/app/ComfyUI/input"
       - "./data/output:/app/ComfyUI/output"
