@@ -1,6 +1,6 @@
 # ComfyUI Flux
 
-Docker-based setup for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) with selectable model packs for image, video, 3D, and audio generation.
+Docker-based setup for [ComfyUI](https://github.com/Comfy-Org/ComfyUI) with selectable model packs for image, video, 3D, and audio generation.
 
 ## Features
 
@@ -10,7 +10,7 @@ Docker-based setup for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) with
 - **LOW_VRAM=true**: Optimized for ~16GB VRAM (smaller/fp8 variants, conservative workflows)
 - **LOW_VRAM=false**: Optimized for ~20GB VRAM (larger variants, higher throughput)
 - Tutorial URLs printed at runtime for each selected pack
-- Idempotent model/workflow downloads; actionable logs on failure
+- Idempotent model/workflow downloads with version/hash checks; actionable logs on failure
 - **Automatic CUDA wheel selection** (supports CUDA 12.1, 12.4, 12.6, 13.0+)
 
 ## Prerequisites
@@ -71,10 +71,10 @@ environment:
      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled}
    ```
 
-3. Run:
+3. Run (builds the image if needed, then starts the container):
 
    ```bash
-   docker-compose up -d
+   docker-compose up -d --build
    ```
 
 4. Open ComfyUI at `http://localhost:8188`
@@ -136,15 +136,19 @@ flowchart TB
 
 ### docker-compose.yml with Bind Mounts
 
+The default compose uses a named volume `comfyui_data` for the ComfyUI source (clone persists across container restarts) and bind mounts for models, input, output, and workflows. You can override the models path with a different host path or a named volume if desired.
+
 ```yaml
 services:
   comfyui:
     container_name: comfyui
+    build: .
     image: atticusg3/comfyui-flux2:latest
     restart: unless-stopped
     ports:
       - "8188:8188"
     volumes:
+      - comfyui_data:/app/ComfyUI
       - "./data/models:/app/ComfyUI/models"
       - "./data/input:/app/ComfyUI/input"
       - "./data/output:/app/ComfyUI/output"
@@ -161,13 +165,18 @@ services:
             - driver: nvidia
               device_ids: ['0']
               capabilities: [gpu]
+
+volumes:
+  comfyui_data:
 ```
 
 ### Important Notes
 
+- **Persistent ComfyUI source**: The `comfyui_data` volume stores the ComfyUI and ComfyUI-Manager clones. On first run the repos are cloned; on subsequent runs they are pulled (latest from master/main). Use `docker-compose down` (without `-v`) to keep this data when removing the container.
 - **Pack downloads**: When using `MODELS_DOWNLOAD`, models and workflows are written directly to the mounted directories and persist on the host.
 - **Generated outputs**: ComfyUI saves all generated content (images, videos, audio) to `/app/ComfyUI/output`. With the bind mount, these appear at `./data/output/` on the host.
 - **Input files**: Place any images or files you want to use in ComfyUI at `./data/input/` on the host. They will be visible in ComfyUI's file browser.
+- **Model bind mount override**: The models directory (`./data/models`) can be replaced with any host path or named volume in your compose file (e.g. `/mnt/models:/app/ComfyUI/models`).
 - **No mount fallback**: If you don't mount any volumes, the container uses internal paths and works normally. Data will be lost when the container is removed.
 - **User/permissions**: The container runs as the `runner` user (UID 1000). If you encounter permission issues on Linux, ensure host directories are accessible: `chmod -R 777 ./data` or `chown -R 1000:1000 ./data`.
 - **Startup logging**: The entrypoint prints mount status at startup:
@@ -381,15 +390,27 @@ If a required HF_TOKEN is missing, the script fails with a clear error and the t
 
 ## Updating
 
-ComfyUI and ComfyUI-Manager are updated on container start. To update the image:
+On each container start:
+
+1. **ComfyUI and ComfyUI-Manager** are fetched and reset to the latest on their default branches (master/main).
+2. **Models and workflows** are checked for version/hash updates via HTTP conditional GET. New files are downloaded; existing files are re-downloaded only when the remote has changed.
+
+To rebuild the image locally:
+
+```bash
+docker-compose up -d --build
+```
+
+To pull a pre-built image from a registry (if published):
 
 ```bash
 docker-compose pull
+docker-compose up -d
 ```
 
 ## Notes
 
-- Downloads are idempotent (skip existing files where supported; workflows overwrite to refresh).
+- Downloads are idempotent: new files are downloaded; existing files use HTTP conditional GET and are refreshed only when the remote has changed.
 - On download failure the entrypoint logs an error and exits with a non-zero code.
 - Changing `LOW_VRAM` or `MODELS_DOWNLOAD` and restarting will fetch the new selection.
 - All workflows land in: `/app/ComfyUI/user/default/workflows/` (mount `./data/workflows` to persist on host).

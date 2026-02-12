@@ -1,12 +1,13 @@
 services:
   comfyui:
     container_name: comfyui
+    build: .
     image: atticusg3/comfyui-flux2:latest
     restart: unless-stopped
     ports:
       - "8188:8188"
     volumes:
-      - "./.cursor:/app/.cursor:rw"
+      - comfyui_data:/app/ComfyUI
       - "./data/models:/app/ComfyUI/models"
       - "./data/input:/app/ComfyUI/input"
       - "./data/output:/app/ComfyUI/output"
@@ -23,3 +24,6 @@ services:
             - driver: nvidia
               device_ids: ['0']
               capabilities: [gpu]
+
+volumes:
+  comfyui_data:

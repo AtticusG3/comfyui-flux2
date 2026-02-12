@@ -477,7 +477,7 @@ if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
         echo "[INFO] Downloading models..."
         echo "########################################"
         if ! aria2c --input-file="$DOWNLOAD_LIST" \
-            --allow-overwrite=false --auto-file-renaming=false --continue=true \
+            --allow-overwrite=true --auto-file-renaming=false --continue=true \
             --max-connection-per-server=5 --conditional-get=true \
             ${HF_TOKEN:+--header="Authorization: Bearer ${HF_TOKEN}"} 2>&1; then
             echo "[ERROR] Model download failed. Check HF_TOKEN and URLs above."
