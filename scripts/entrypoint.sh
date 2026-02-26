@@ -2,168 +2,11 @@
 
 set -e
 
-# =============================================================================
-# CUDA Detection and PyTorch Wheel Selection
-# =============================================================================
-
-# Detect CUDA version from nvidia-smi
-# Returns version string like "12.6" or "cpu" if no GPU
-detect_cuda_version() {
-    if ! command -v nvidia-smi &> /dev/null; then
-        echo "cpu"
-        return
-    fi
-
-    # Try to get CUDA version from nvidia-smi
-    local cuda_version
-    cuda_version=$(nvidia-smi 2>/dev/null | grep -oP "CUDA Version: \K[0-9]+\.[0-9]+" || echo "")
-
-    if [ -z "$cuda_version" ]; then
-        echo "cpu"
-        return
-    fi
-
-    echo "$cuda_version"
-}
-
-# Map CUDA version to PyTorch wheel tag
-# Arguments: CUDA version string (e.g., "12.6")
-# Returns: wheel tag (cu130, cu126, cu124, cu121, or cpu)
-map_cuda_to_wheel() {
-    local cuda_version="$1"
-
-    if [ "$cuda_version" == "cpu" ]; then
-        echo "cpu"
-        return
-    fi
-
-    # Extract major and minor version
-    local major minor
-    major=$(echo "$cuda_version" | cut -d. -f1)
-    minor=$(echo "$cuda_version" | cut -d. -f2)
-
-    # Convert to comparable integer (major * 100 + minor)
-    local version_num=$((major * 100 + minor))
-
-    # Map to wheel tag based on thresholds
-    if [ $version_num -ge 1300 ]; then
-        echo "cu130"
-    elif [ $version_num -ge 1206 ]; then
-        echo "cu126"
-    elif [ $version_num -ge 1204 ]; then
-        echo "cu124"
-    elif [ $version_num -ge 1201 ]; then
-        echo "cu121"
-    else
-        echo "cpu"
-    fi
-}
-
-# Get the CUDA version that current PyTorch was built for
-# Returns: version string like "12.6" or "cpu" or "not_installed"
-get_pytorch_cuda_version() {
-    local torch_cuda
-    torch_cuda=$(python3 -c "
-try:
-    import torch
-    cuda = torch.version.cuda
-    if cuda:
-        print(cuda)
-    else:
-        print('cpu')
-except ImportError:
-    print('not_installed')
-" 2>/dev/null)
-    echo "$torch_cuda"
-}
-
-# Check if installed PyTorch matches the target wheel tag
-# Arguments: target wheel tag (e.g., "cu126")
-# Returns: 0 if match, 1 if mismatch or not installed
-check_pytorch_matches() {
-    local target_tag="$1"
-    local current_cuda
-    current_cuda=$(get_pytorch_cuda_version)
-
-    if [ "$current_cuda" == "not_installed" ]; then
-        return 1
-    fi
-
-    # Map current PyTorch CUDA to wheel tag
-    local current_tag
-    current_tag=$(map_cuda_to_wheel "$current_cuda")
-
-    if [ "$current_tag" == "$target_tag" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
-
-# Ensure PyTorch is installed with the correct CUDA wheels
-# Checks current installation and reinstalls if needed
-ensure_pytorch_wheels() {
-    echo ""
-    echo "########################################"
-    echo "[INFO] CUDA/PyTorch Configuration"
-    echo "########################################"
-
-    # Check for manual override
-    local wheel_tag
-    if [ -n "${CUDA_WHEEL_TAG:-}" ]; then
-        wheel_tag="${CUDA_WHEEL_TAG}"
-        echo "[INFO] Using manual override: CUDA_WHEEL_TAG=${wheel_tag}"
-    else
-        # Auto-detect CUDA version
-        local cuda_version
-        cuda_version=$(detect_cuda_version)
-        echo "[INFO] Detected CUDA version: ${cuda_version}"
-
-        # Map to wheel tag
-        wheel_tag=$(map_cuda_to_wheel "$cuda_version")
-        echo "[INFO] Selected wheel tag: ${wheel_tag}"
-    fi
-
-    # Warn if falling back to CPU
-    if [ "$wheel_tag" == "cpu" ]; then
-        echo "[WARN] No compatible CUDA found. Using CPU-only PyTorch."
-        echo "[WARN] GPU acceleration will NOT be available."
-        echo "[WARN] For GPU support, ensure CUDA >= 12.1 is available."
-    fi
-
-    # Check if current PyTorch matches target
-    if check_pytorch_matches "$wheel_tag"; then
-        local current_cuda
-        current_cuda=$(get_pytorch_cuda_version)
-        echo "[INFO] PyTorch already installed with matching CUDA (${current_cuda})"
-        echo "[INFO] Skipping reinstallation"
-    else
-        echo "[INFO] Installing PyTorch for ${wheel_tag}..."
-
-        # Determine index URL
-        local index_url="https://download.pytorch.org/whl/${wheel_tag}"
-
-        echo "[INFO] Index URL: ${index_url}"
-        echo "[INFO] Packages: torch, torchvision, torchaudio, xformers"
-
-        # Install with uv pip
-        if uv pip install --reinstall \
-            torch torchvision torchaudio xformers \
-            --index-url "$index_url"; then
-            echo "[INFO] PyTorch installation complete"
-        else
-            echo "[ERROR] PyTorch installation failed!"
-            echo "[ERROR] Check network connectivity and CUDA compatibility."
-            exit 1
-        fi
-    fi
-
-    echo "----------------------------------------"
-    echo ""
-}
-
-# Run PyTorch wheel check/install
-ensure_pytorch_wheels
+# Ensure correct permissions for /app directory
+if [ ! -w "/app" ]; then
+    echo "Warning: Cannot write to /app. Attempting to fix permissions..."
+    sudo chown -R $(id -u):$(id -g) /app
+fi
 
 # =============================================================================
 # Main Entrypoint Logic
@@ -179,12 +22,6 @@ if [ "$LOW_VRAM_LC" == "true" ]; then
 else
     VRAM_SUFFIX="20gb"
     VRAM_TARGET="20GB"
-fi
-
-# Ensure correct permissions for /app directory
-if [ ! -w "/app" ]; then
-    echo "Warning: Cannot write to /app. Attempting to fix permissions..."
-    sudo chown -R $(id -u):$(id -g) /app
 fi
 
 # Install or update ComfyUI

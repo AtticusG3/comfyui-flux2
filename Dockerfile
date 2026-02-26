@@ -1,9 +1,7 @@
 FROM python:3.12-slim-trixie
 
-# Build arguments
-# Default CUDA wheel for image build (cu124 for broad compatibility)
-# Runtime auto-detection in entrypoint.sh will reinstall if host CUDA differs
-ARG CUDA_VERSION=cu124
+# Build arguments (use image tag for CUDA version, e.g. :cu130)
+ARG CUDA_VERSION=cu130
 
 # Environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
