@@ -197,6 +197,11 @@ if [ ! -d "/app/ComfyUI" ]; then
     echo "ComfyUI not found. Installing..."
     chmod +x /scripts/install_comfyui.sh
     bash /scripts/install_comfyui.sh
+elif [ ! -d "/app/ComfyUI/.git" ]; then
+    echo "ComfyUI found but not a git clone (missing .git). Reinstalling..."
+    rm -rf /app/ComfyUI
+    chmod +x /scripts/install_comfyui.sh
+    bash /scripts/install_comfyui.sh
 else
     echo "Updating ComfyUI..."
     cd /app/ComfyUI
@@ -204,10 +209,15 @@ else
     git reset --hard origin/master
     uv pip install -r requirements.txt
     echo "Updating ComfyUI-Manager..."
-    cd /app/ComfyUI/custom_nodes/ComfyUI-Manager
-    git fetch origin main
-    git reset --hard origin/main
-    uv pip install -r requirements.txt
+    if [ -d "/app/ComfyUI/custom_nodes/ComfyUI-Manager/.git" ]; then
+        cd /app/ComfyUI/custom_nodes/ComfyUI-Manager
+        git fetch origin main
+        git reset --hard origin/main
+        uv pip install -r requirements.txt
+    elif [ -f "/app/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt" ]; then
+        echo "[WARN] ComfyUI-Manager not a git clone. Skipping update, installing requirements..."
+        uv pip install -r /app/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt
+    fi
     cd /app
 fi
 
