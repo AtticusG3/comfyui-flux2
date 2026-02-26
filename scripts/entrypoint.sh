@@ -199,7 +199,20 @@ if [ ! -d "/app/ComfyUI" ]; then
     bash /scripts/install_comfyui.sh
 elif [ ! -d "/app/ComfyUI/.git" ]; then
     echo "ComfyUI found but not a git clone (missing .git). Reinstalling..."
-    rm -rf /app/ComfyUI
+    # Remove non-mounted content only; bind mounts (models, input, output) cannot be deleted
+    for item in /app/ComfyUI/* /app/ComfyUI/.[!.]* /app/ComfyUI/..?*; do
+        [ -e "$item" ] || [ -L "$item" ] || continue
+        case "$(basename "$item")" in models|input|output) continue ;; esac
+        rm -rf "$item"
+    done
+    # Clone to temp dir, merge into /app/ComfyUI (preserving bind mounts), then run install
+    git clone --recurse-submodules https://github.com/Comfy-Org/ComfyUI.git /app/ComfyUI_clone
+    for item in /app/ComfyUI_clone/* /app/ComfyUI_clone/.[!.]* /app/ComfyUI_clone/..?*; do
+        [ -e "$item" ] || [ -L "$item" ] || continue
+        case "$(basename "$item")" in models|input|output) continue ;; esac
+        cp -r "$item" /app/ComfyUI/
+    done
+    rm -rf /app/ComfyUI_clone
     chmod +x /scripts/install_comfyui.sh
     bash /scripts/install_comfyui.sh
 else
