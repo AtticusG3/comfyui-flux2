@@ -64,5 +64,6 @@ RUN uv pip install --no-cache \
 COPY --chown=runner:runner scripts/. /scripts/
 COPY --chown=runner:runner workflows/. /workflows/
 
+VOLUME ["/app"]
 EXPOSE 8188
 CMD ["bash","/scripts/entrypoint.sh"]

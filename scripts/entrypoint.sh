@@ -12,44 +12,10 @@ fi
 # Main Entrypoint Logic
 # =============================================================================
 
-# Normalize LOW_VRAM for case-insensitive comparison (16GB vs 20GB target)
-LOW_VRAM_LC=$(echo "${LOW_VRAM:-false}" | tr '[:upper:]' '[:lower:]')
-
-# Determine VRAM suffix based on LOW_VRAM
-if [ "$LOW_VRAM_LC" == "true" ]; then
-    VRAM_SUFFIX="16gb"
-    VRAM_TARGET="16GB"
-else
-    VRAM_SUFFIX="20gb"
-    VRAM_TARGET="20GB"
-fi
-
 # Install or update ComfyUI
 cd /app
-# #region agent log
-LOG_FILE="/app/.cursor/debug.log"
-[ -w "/app/.cursor" ] 2>/dev/null && printf '%s\n' "{\"id\":\"entrypoint_comfyui_check\",\"timestamp\":$(date +%s)000,\"location\":\"entrypoint.sh:comfyui_block\",\"message\":\"ComfyUI dir and git check\",\"data\":{\"comfyui_dir_exists\":$([ -d /app/ComfyUI ] && echo true || echo false),\"git_dir_exists\":$([ -d /app/ComfyUI/.git ] 2>/dev/null && echo true || echo false),\"pwd\":\"$(pwd)\"},\"hypothesisId\":\"H1\"}" >> "$LOG_FILE"
-# #endregion
 if [ ! -d "/app/ComfyUI" ]; then
     echo "ComfyUI not found. Installing..."
-    chmod +x /scripts/install_comfyui.sh
-    bash /scripts/install_comfyui.sh
-elif [ ! -d "/app/ComfyUI/.git" ]; then
-    echo "ComfyUI found but not a git clone (missing .git). Reinstalling..."
-    # Remove non-mounted content only; bind mounts (models, input, output) cannot be deleted
-    for item in /app/ComfyUI/* /app/ComfyUI/.[!.]* /app/ComfyUI/..?*; do
-        [ -e "$item" ] || [ -L "$item" ] || continue
-        case "$(basename "$item")" in models|input|output) continue ;; esac
-        rm -rf "$item"
-    done
-    # Clone to temp dir, merge into /app/ComfyUI (preserving bind mounts), then run install
-    git clone --recurse-submodules https://github.com/Comfy-Org/ComfyUI.git /app/ComfyUI_clone
-    for item in /app/ComfyUI_clone/* /app/ComfyUI_clone/.[!.]* /app/ComfyUI_clone/..?*; do
-        [ -e "$item" ] || [ -L "$item" ] || continue
-        case "$(basename "$item")" in models|input|output) continue ;; esac
-        cp -r "$item" /app/ComfyUI/
-    done
-    rm -rf /app/ComfyUI_clone
     chmod +x /scripts/install_comfyui.sh
     bash /scripts/install_comfyui.sh
 else
@@ -59,15 +25,10 @@ else
     git reset --hard origin/master
     uv pip install -r requirements.txt
     echo "Updating ComfyUI-Manager..."
-    if [ -d "/app/ComfyUI/custom_nodes/ComfyUI-Manager/.git" ]; then
-        cd /app/ComfyUI/custom_nodes/ComfyUI-Manager
-        git fetch origin main
-        git reset --hard origin/main
-        uv pip install -r requirements.txt
-    elif [ -f "/app/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt" ]; then
-        echo "[WARN] ComfyUI-Manager not a git clone. Skipping update, installing requirements..."
-        uv pip install -r /app/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt
-    fi
+    cd /app/ComfyUI/custom_nodes/ComfyUI-Manager
+    git fetch origin main
+    git reset --hard origin/main
+    uv pip install -r requirements.txt
     cd /app
 fi
 
@@ -102,6 +63,20 @@ echo "----------------------------------------"
 echo ""
 
 cd /app
+
+# Normalize LOW_VRAM for case-insensitive comparison (16GB vs 20GB target)
+LOW_VRAM_LC=$(echo "${LOW_VRAM:-false}" | tr '[:upper:]' '[:lower:]')
+
+# Determine VRAM suffix based on LOW_VRAM
+if [ "$LOW_VRAM_LC" == "true" ]; then
+    echo "[INFO] LOW_VRAM is set to true."
+    VRAM_SUFFIX="16gb"
+    VRAM_TARGET="16GB"
+else
+    echo "[INFO] LOW_VRAM is not set or false."
+    VRAM_SUFFIX="20gb"
+    VRAM_TARGET="20GB"
+fi
 
 # Parse MODELS_DOWNLOAD: comma-separated selectors, default klein-distilled
 SELECTORS_RAW="${MODELS_DOWNLOAD:-klein-distilled}"
