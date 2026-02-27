@@ -1,5 +1,10 @@
 # Local Testing Setup (Windows PC)
 
+> **WARNING: This project is in a non-working state.**
+> The Docker container has known critical bugs that prevent it from building
+> and running correctly. Do not use in production. See the bug fix tracking
+> in open issues/PRs.
+
 Step-by-step guide to run ComfyUI Flux2 locally on your Windows machine.
 
 ## Prerequisites
@@ -63,6 +68,7 @@ From the project root:
    - Change `MODELS_DOWNLOAD` to select packs (see README for options)
 
 3. Data directories already created: `data/models`, `data/input`, `data/output`, `data/workflows`
+4. **Civicomfy** (Civitai model downloader) is bundled and provides an in-UI Civitai model browser -- no extra setup needed.
 
 ## 5. Build and run
 

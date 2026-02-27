@@ -1,0 +1,8 @@
+.git
+data/
+docs/
+*.md
+.env*
+.github/
+LOCAL_SETUP.md
+AGENTS.md

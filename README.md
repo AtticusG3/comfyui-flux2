@@ -1,55 +1,27 @@
 # ComfyUI Flux
 
+> **WARNING: This project is in a non-working state.**
+> The Docker container has known critical bugs that prevent it from building
+> and running correctly. Do not use in production. See the bug fix tracking
+> in open issues/PRs.
+
 Docker-based setup for [ComfyUI](https://github.com/Comfy-Org/ComfyUI) with selectable model packs for image, video, 3D, and audio generation.
 
 ## Features
 
-- Dockerized ComfyUI and ComfyUI-Manager
+- Dockerized ComfyUI, ComfyUI-Manager, and [Civicomfy](https://github.com/MoonGoblinDev/Civicomfy) (Civitai model downloader)
 - **7 fully functional model packs** with automatic downloads
 - **Two controlling env vars**: `MODELS_DOWNLOAD` (comma-separated selectors) and `LOW_VRAM` (boolean)
 - **LOW_VRAM=true**: Optimized for ~16GB VRAM (smaller/fp8 variants, conservative workflows)
 - **LOW_VRAM=false**: Optimized for ~20GB VRAM (larger variants, higher throughput)
 - Tutorial URLs printed at runtime for each selected pack
 - Idempotent model/workflow downloads with version/hash checks; actionable logs on failure
-- **Automatic CUDA wheel selection** (supports CUDA 12.1, 12.4, 12.6, 13.0+)
 
 ## Prerequisites
 
 - Docker and Docker Compose
 - NVIDIA GPU with CUDA support (CUDA 12.1 or newer recommended)
 - (Optional) `HF_TOKEN` for packs that require Hugging Face (e.g. klein-distilled)
-
-## CUDA Auto-Detection
-
-At container startup, the entrypoint automatically detects the host CUDA version and installs the appropriate PyTorch wheels:
-
-| Host CUDA Version  | Wheel Tag | Notes                            |
-| ------------------ | --------- | -------------------------------- |
-| >= 13.0            | `cu130`   | Latest CUDA support              |
-| >= 12.6            | `cu126`   | Recommended for most modern GPUs |
-| >= 12.4            | `cu124`   | Broad compatibility              |
-| >= 12.1            | `cu121`   | Minimum for GPU acceleration     |
-| < 12.1 or no GPU   | `cpu`     | CPU-only (warning displayed)     |
-
-The startup log shows the detected version and selected wheel:
-
-```text
-########################################
-[INFO] CUDA/PyTorch Configuration
-########################################
-[INFO] Detected CUDA version: 12.6
-[INFO] Selected wheel tag: cu126
-[INFO] PyTorch already installed with matching CUDA (12.6)
-[INFO] Skipping reinstallation
-----------------------------------------
-```
-
-To override auto-detection, set `CUDA_WHEEL_TAG` in your environment:
-
-```yaml
-environment:
-  - CUDA_WHEEL_TAG=cu124   # Force specific wheel version
-```
 
 ## Quick Start
 
@@ -172,7 +144,7 @@ volumes:
 
 ### Important Notes
 
-- **Persistent ComfyUI source**: The `comfyui_data` volume stores the ComfyUI and ComfyUI-Manager clones. On first run the repos are cloned; on subsequent runs they are pulled (latest from master/main). Use `docker-compose down` (without `-v`) to keep this data when removing the container.
+- **Persistent ComfyUI source**: The `comfyui_data` volume stores the ComfyUI, ComfyUI-Manager, and Civicomfy clones. On first run the repos are cloned; on subsequent runs they are updated (latest from main). Use `docker-compose down` (without `-v`) to keep this data when removing the container.
 - **Pack downloads**: When using `MODELS_DOWNLOAD`, models and workflows are written directly to the mounted directories and persist on the host.
 - **Generated outputs**: ComfyUI saves all generated content (images, videos, audio) to `/app/ComfyUI/output`. With the bind mount, these appear at `./data/output/` on the host.
 - **Input files**: Place any images or files you want to use in ComfyUI at `./data/input/` on the host. They will be visible in ComfyUI's file browser.
@@ -200,7 +172,6 @@ workflows dir: /app/ComfyUI/user/default/workflows (mounted: yes)
 | `LOW_VRAM`        | `true` = 16GB VRAM target (fp8/smaller models). `false` = 20GB target.                           |
 | `HF_TOKEN`        | Hugging Face token; required for klein-distilled diffusion models.                               |
 | `CLI_ARGS`        | Extra arguments passed to ComfyUI (e.g. VRAM presets below).                                     |
-| `CUDA_WHEEL_TAG`  | (Optional) Override auto-detected CUDA wheel. Values: `cu130`, `cu126`, `cu124`, `cu121`, `cpu`. |
 
 ## Available Packs
 
@@ -357,20 +328,7 @@ environment:
 
 ## Runtime Output
 
-When starting, the entrypoint first detects CUDA and configures PyTorch:
-
-```text
-########################################
-[INFO] CUDA/PyTorch Configuration
-########################################
-[INFO] Detected CUDA version: 12.6
-[INFO] Selected wheel tag: cu126
-[INFO] PyTorch already installed with matching CUDA (12.6)
-[INFO] Skipping reinstallation
-----------------------------------------
-```
-
-Then it prints information for each selected pack:
+At startup, the entrypoint prints information for each selected pack:
 
 ```text
 ========================================
@@ -386,13 +344,13 @@ Notes: Full T2V and I2V workflows. Use --highvram for best performance.
 ----------------------------------------
 ```
 
-If a required HF_TOKEN is missing, the script fails with a clear error and the tutorial URL.
+If a required HF_TOKEN is missing, the pack is skipped with a warning and the tutorial URL. Non-gated models from other packs are still downloaded.
 
 ## Updating
 
 On each container start:
 
-1. **ComfyUI and ComfyUI-Manager** are fetched and reset to the latest on their default branches (master/main).
+1. **ComfyUI, ComfyUI-Manager, and Civicomfy** are fetched and reset to the latest on their default branch (main).
 2. **Models and workflows** are checked for version/hash updates via HTTP conditional GET. New files are downloaded; existing files are re-downloaded only when the remote has changed.
 
 To rebuild the image locally:

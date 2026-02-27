@@ -12,24 +12,69 @@ fi
 # Main Entrypoint Logic
 # =============================================================================
 
-# Install or update ComfyUI
-cd /app
-if [ ! -d "/app/ComfyUI" ]; then
-    echo "ComfyUI not found. Installing..."
-    chmod +x /scripts/install_comfyui.sh
-    bash /scripts/install_comfyui.sh
-else
-    echo "Updating ComfyUI..."
-    cd /app/ComfyUI
-    git fetch origin master
-    git reset --hard origin/master
-    uv pip install -r requirements.txt
-    echo "Updating ComfyUI-Manager..."
-    cd /app/ComfyUI/custom_nodes/ComfyUI-Manager
-    git fetch origin main
-    git reset --hard origin/main
-    uv pip install -r requirements.txt
+# Idempotent clone-or-update helper.
+# Handles three cases: existing git repo, pre-existing directory without
+# .git (e.g. Docker volume mount point), or directory does not exist.
+clone_or_update() {
+    local dir="$1"
+    local url="$2"
+    local branch="$3"
+    local name
+    name=$(basename "$dir")
+
+    if [ -d "${dir}/.git" ]; then
+        echo "[INFO] Updating ${name}..."
+        cd "$dir"
+        git fetch origin "$branch"
+        git reset --hard "origin/${branch}"
+    elif [ -d "$dir" ]; then
+        echo "[INFO] Initializing ${name} in existing directory..."
+        cd "$dir"
+        git init
+        git remote add origin "$url"
+        git fetch origin "$branch"
+        git reset --hard "origin/${branch}"
+        git submodule update --init --recursive
+    else
+        echo "[INFO] Cloning ${name}..."
+        git clone --recurse-submodules -b "$branch" "$url" "$dir"
+    fi
     cd /app
+}
+
+# Install requirements if present
+install_reqs() {
+    local req="$1"
+    if [ -f "$req" ]; then
+        uv pip install -r "$req" || echo "[WARN] Some deps from $req may have failed"
+    fi
+}
+
+cd /app
+
+COMFYUI_DIR="/app/ComfyUI"
+CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
+
+# ComfyUI
+clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "main"
+install_reqs "${COMFYUI_DIR}/requirements.txt"
+
+# ComfyUI-Manager
+mkdir -p "$CUSTOM_NODES_DIR"
+clone_or_update "${CUSTOM_NODES_DIR}/ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git" "main"
+install_reqs "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt"
+
+# Civicomfy (Civitai model downloader)
+clone_or_update "${CUSTOM_NODES_DIR}/Civicomfy" "https://github.com/MoonGoblinDev/Civicomfy.git" "main"
+install_reqs "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt"
+
+# Copy bundled workflows into ComfyUI
+BUNDLED_WORKFLOWS="/workflows"
+DEST_WORKFLOWS="${COMFYUI_DIR}/user/default/workflows"
+mkdir -p "$DEST_WORKFLOWS"
+if [ -d "$BUNDLED_WORKFLOWS" ] && [ -n "$(ls -A "$BUNDLED_WORKFLOWS" 2>/dev/null)" ]; then
+    cp -R "$BUNDLED_WORKFLOWS"/* "$DEST_WORKFLOWS/"
+    echo "[INFO] Bundled workflows copied."
 fi
 
 # =============================================================================
@@ -80,7 +125,7 @@ fi
 
 # Parse MODELS_DOWNLOAD: comma-separated selectors, default klein-distilled
 SELECTORS_RAW="${MODELS_DOWNLOAD:-klein-distilled}"
-SELECTORS_LC=$(echo "$SELECTORS_RAW" | tr '[:upper:]' '[:lower:]' | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
+SELECTORS_LC=$(echo "$SELECTORS_RAW" | tr '[:upper:]' '[:lower:]' | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' || true)
 if [ -z "$SELECTORS_LC" ]; then
     SELECTORS_LC="klein-distilled"
 fi
@@ -88,6 +133,7 @@ fi
 PACKS_DIR="/scripts/packs"
 TEMP_MODELS=$(mktemp)
 TEMP_WORKFLOWS=$(mktemp)
+trap 'rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"' EXIT
 
 # Function to resolve pack directory from selector
 resolve_pack_dir() {
@@ -124,7 +170,8 @@ print_pack_info() {
     local pack_json="${pack_dir}pack.json"
     
     if [ ! -f "$pack_json" ]; then
-        return 1
+        echo "[WARN] Missing pack.json in $pack_dir"
+        return 0
     fi
     
     local name=$(jq -r '.name // "unknown"' "$pack_json")
@@ -140,17 +187,17 @@ print_pack_info() {
     local workflow_count=0
     
     if [ -f "$models_file" ]; then
-        model_count=$(grep -c '^https' "$models_file" 2>/dev/null || echo 0)
+        model_count=$(grep '^https' "$models_file" 2>/dev/null | wc -l)
     fi
     if [ -f "$workflows_file" ]; then
-        workflow_count=$(grep -c '^https' "$workflows_file" 2>/dev/null || echo 0)
+        workflow_count=$(grep '^https' "$workflows_file" 2>/dev/null | wc -l)
     fi
     
     # Count custom nodes
     local nodes_file="${pack_dir}nodes.txt"
     local nodes_count=0
     if [ -f "$nodes_file" ]; then
-        nodes_count=$(grep -c '^https\|^git' "$nodes_file" 2>/dev/null || echo 0)
+        nodes_count=$(grep '^https\|^git' "$nodes_file" 2>/dev/null | wc -l)
     fi
     
     # Determine HF_TOKEN status
@@ -176,9 +223,6 @@ print_pack_info() {
         echo "Notes: $notes"
     fi
     echo "----------------------------------------"
-    
-    # Return pack name for error messages
-    echo "$name"
 }
 
 # Validate HF_TOKEN requirement for a pack
@@ -230,9 +274,11 @@ for sel in $SELECTORS_LC; do
     # Print pack info
     print_pack_info "$pack_dir"
     
-    # Validate HF_TOKEN
+    # Validate HF_TOKEN -- warn and skip pack if missing (don't kill the container)
     if ! validate_hf_token "$pack_dir"; then
-        exit 1
+        echo "[WARN] Skipping pack '$sel' due to missing HF_TOKEN."
+        echo "[WARN] Non-gated models from other packs will still be downloaded."
+        continue
     fi
     
     # Determine model and workflow files
@@ -269,7 +315,7 @@ for sel in $SELECTORS_LC; do
                     echo "  [SKIP] $repo_name already installed"
                 else
                     echo "  [INSTALL] $repo_name"
-                    git clone "$git_url" "$target_dir" 2>/dev/null || echo "  [WARN] Failed to clone $repo_name"
+                    git clone "$git_url" "$target_dir" || echo "  [WARN] Failed to clone $repo_name"
                     # Install requirements if present
                     if [ -f "$target_dir/requirements.txt" ]; then
                         uv pip install -r "$target_dir/requirements.txt" 2>/dev/null || true

@@ -1,9 +1,42 @@
-FROM python:3.12-slim-trixie
+# =============================================================================
+# Stage 1: builder -- compile C extensions, then discard compilers
+# =============================================================================
+FROM python:3.12-slim-trixie AS builder
 
-# Build arguments (use image tag for CUDA version, e.g. :cu130)
 ARG CUDA_VERSION=cu130
 
-# Environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        gcc \
+        g++ && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN uv venv /opt/venv
+
+RUN uv pip install --no-cache \
+    torch \
+    torchvision \
+    torchaudio \
+    xformers \
+    --index-url https://download.pytorch.org/whl/${CUDA_VERSION}
+
+# =============================================================================
+# Stage 2: runtime -- lean image with only what's needed at run time
+# =============================================================================
+FROM python:3.12-slim-trixie
+
+ARG CUDA_VERSION=cu130
+
 ENV DEBIAN_FRONTEND=noninteractive \
     UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
@@ -11,17 +44,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH="/opt/venv/bin:$PATH" \
     CLI_ARGS=""
 
-# Copy UV binaries
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         git \
-        build-essential \
-        gcc \
-        g++ \
         aria2 \
+        jq \
         libgl1 \
         libglib2.0-0 \
         fonts-dejavu-core \
@@ -30,40 +59,19 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-
-# Create application directories and user
 RUN useradd -m -d /app -s /bin/bash runner && \
     mkdir -p /app /scripts /workflows /opt/venv && \
     chown -R runner:runner /app /scripts /workflows /opt/venv && \
     echo "runner ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
     chmod 0440 /etc/sudoers.d/runner
 
-# Set working directory
-WORKDIR /app
+COPY --from=builder --chown=runner:runner /opt/venv /opt/venv
 
-# Switch to non-root user
+WORKDIR /app
 USER runner
 
-# Create virtual environment
-RUN uv venv /opt/venv
-
-# Install torch, torchvision, torchaudio and xformers
-RUN uv pip install --no-cache \
-    torch \
-    torchvision \
-    torchaudio \
-    xformers \
-    --index-url https://download.pytorch.org/whl/${CUDA_VERSION}
-
-# Install onnxruntime-gpu
-RUN uv pip install --no-cache \
-    onnxruntime-gpu \
-    --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
-
-# Copy application files
 COPY --chown=runner:runner scripts/. /scripts/
 COPY --chown=runner:runner workflows/. /workflows/
 
-VOLUME ["/app"]
 EXPOSE 8188
 CMD ["bash","/scripts/entrypoint.sh"]
