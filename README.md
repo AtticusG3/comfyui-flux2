@@ -43,10 +43,10 @@ Docker-based setup for [ComfyUI](https://github.com/Comfy-Org/ComfyUI) with sele
      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled}
    ```
 
-3. Run (builds the image if needed, then starts the container):
+3. Run (pulls the pre-built image and starts the container):
 
    ```bash
-   docker-compose up -d --build
+   docker-compose up -d
    ```
 
 4. Open ComfyUI at `http://localhost:8188`
@@ -114,8 +114,7 @@ The default compose uses a named volume `comfyui_data` for the ComfyUI source (c
 services:
   comfyui:
     container_name: comfyui
-    build: .
-    image: atticusg3/comfyui-flux2:latest
+    image: ghcr.io/atticusg3/comfyui-flux2:main
     restart: unless-stopped
     ports:
       - "8188:8188"
@@ -353,18 +352,21 @@ On each container start:
 1. **ComfyUI, ComfyUI-Manager, and Civicomfy** are fetched and reset to the latest on their default branch (main).
 2. **Models and workflows** are checked for version/hash updates via HTTP conditional GET. New files are downloaded; existing files are re-downloaded only when the remote has changed.
 
-To rebuild the image locally:
-
-```bash
-docker-compose up -d --build
-```
-
-To pull a pre-built image from a registry (if published):
+To pull the latest pre-built image from GHCR:
 
 ```bash
 docker-compose pull
 docker-compose up -d
 ```
+
+To build the image locally (for development or customization):
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+Note: Local builds require adding `build: .` to your `docker-compose.yml` under the `comfyui` service.
 
 ## Notes
 
