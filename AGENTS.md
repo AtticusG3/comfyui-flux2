@@ -41,8 +41,8 @@ clone_or_update(dir, url, branch):
   if dir does not exist  -> git clone -b branch url dir (fresh clone)
 ```
 
-Branch names (do NOT use `master`):
-- ComfyUI: `main`
+Branch names:
+- ComfyUI: `master` (default branch of Comfy-Org/ComfyUI)
 - ComfyUI-Manager: `main`
 - Civicomfy: `main`
 

@@ -92,7 +92,7 @@ COMFYUI_DIR="/app/ComfyUI"
 CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
 
 # ComfyUI
-clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "main"
+clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
 install_reqs "${COMFYUI_DIR}/requirements.txt"
 
 # ComfyUI-Manager
