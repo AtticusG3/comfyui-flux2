@@ -12,8 +12,10 @@ services:
       - "./data/output:/app/ComfyUI/output"
       - "./data/workflows:/app/ComfyUI/user/default/workflows"
     environment:
+      - TZ=${TZ:-UTC}
       - CLI_ARGS=
       - HF_TOKEN=${HF_TOKEN}
+      - CIVITAI_API_KEY=${CIVITAI_API_KEY}
       - LOW_VRAM=${LOW_VRAM:-false}
       - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled}
     deploy:

@@ -115,4 +115,6 @@ docker-compose logs -f comfyui
 | `MODELS_DOWNLOAD` | Comma-separated pack selectors. Default: `klein-distilled` |
 | `LOW_VRAM` | `true` = 16GB target, `false` = 20GB target |
 | `HF_TOKEN` | Hugging Face token for gated models |
+| `CIVITAI_API_KEY` | Civitai API token for Civicomfy model downloads |
 | `CLI_ARGS` | Extra args passed to `python3 main.py` (e.g. `--lowvram`) |
+| `TZ` | Timezone. Default: `UTC` |
