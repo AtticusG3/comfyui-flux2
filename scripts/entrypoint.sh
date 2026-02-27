@@ -2,11 +2,34 @@
 
 set -e
 
-# Ensure correct permissions for /app directory
+# =============================================================================
+# Permission Fixes for Docker Volumes
+# =============================================================================
+# Docker named volumes and bind mounts may have incorrect ownership from
+# previous runs (e.g., created as root). Fix ownership recursively before
+# any git operations.
+
+fix_permissions() {
+    local dir="$1"
+    if [ -d "$dir" ] && [ ! -w "$dir" ]; then
+        echo "[INFO] Fixing permissions on $dir..."
+        sudo chown -R "$(id -u):$(id -g)" "$dir"
+    fi
+    # Also check for .git directory specifically (common permission issue)
+    if [ -d "${dir}/.git" ] && [ ! -r "${dir}/.git" ]; then
+        echo "[INFO] Fixing permissions on ${dir}/.git..."
+        sudo chown -R "$(id -u):$(id -g)" "${dir}/.git"
+    fi
+}
+
+# Fix /app first
 if [ ! -w "/app" ]; then
-    echo "Warning: Cannot write to /app. Attempting to fix permissions..."
-    sudo chown -R $(id -u):$(id -g) /app
+    echo "[INFO] Fixing permissions on /app..."
+    sudo chown -R "$(id -u):$(id -g)" /app
 fi
+
+# Fix ComfyUI directory if it exists (Docker volume mount point)
+fix_permissions "/app/ComfyUI"
 
 # =============================================================================
 # Main Entrypoint Logic
@@ -21,6 +44,13 @@ clone_or_update() {
     local branch="$3"
     local name
     name=$(basename "$dir")
+
+    # Fix permissions if .git exists but is not accessible
+    # (stat returns 0 if path exists even if unreadable, unlike -d test)
+    if [ -e "${dir}/.git" ] && [ ! -r "${dir}/.git" ]; then
+        echo "[INFO] Fixing permissions on ${dir}/.git..."
+        sudo chown -R "$(id -u):$(id -g)" "${dir}/.git"
+    fi
 
     if [ -d "${dir}/.git" ]; then
         echo "[INFO] Updating ${name}..."
