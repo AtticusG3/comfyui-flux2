@@ -46,7 +46,6 @@ clone_or_update() {
     name=$(basename "$dir")
 
     # Fix permissions if .git exists but is not accessible
-    # (stat returns 0 if path exists even if unreadable, unlike -d test)
     if [ -e "${dir}/.git" ] && [ ! -r "${dir}/.git" ]; then
         echo "[INFO] Fixing permissions on ${dir}/.git..."
         sudo chown -R "$(id -u):$(id -g)" "${dir}/.git"
@@ -55,12 +54,19 @@ clone_or_update() {
     if [ -d "${dir}/.git" ]; then
         echo "[INFO] Updating ${name}..."
         cd "$dir"
+        # Ensure remote is configured (handles partially initialized repos)
+        if git remote get-url origin >/dev/null 2>&1; then
+            git remote set-url origin "$url"
+        else
+            git remote add origin "$url"
+        fi
         git fetch origin "$branch"
         git reset --hard "origin/${branch}"
+        git submodule update --init --recursive
     elif [ -d "$dir" ]; then
         echo "[INFO] Initializing ${name} in existing directory..."
         cd "$dir"
-        git init
+        git init -b "$branch"
         git remote add origin "$url"
         git fetch origin "$branch"
         git reset --hard "origin/${branch}"
