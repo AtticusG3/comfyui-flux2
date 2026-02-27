@@ -1,7 +1,7 @@
 services:
   comfyui:
     container_name: comfyui
-    image: ghcr.io/atticusg3/comfyui-flux2:main
+    image: ghcr.io/atticusg3/comfyui-flux2:latest
     restart: unless-stopped
     ports:
       - "8188:8188"

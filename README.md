@@ -1,11 +1,26 @@
 # ComfyUI Flux
 
-> **WARNING: This project is in a non-working state.**
-> The Docker container has known critical bugs that prevent it from building
-> and running correctly. Do not use in production. See the bug fix tracking
-> in open issues/PRs.
-
 Docker-based setup for [ComfyUI](https://github.com/Comfy-Org/ComfyUI) with selectable model packs for image, video, 3D, and audio generation.
+
+## Docker Images
+
+Pre-built images are available on GitHub Container Registry with multiple CUDA versions:
+
+| CUDA Version | Image Tag | PyTorch Index |
+|--------------|-----------|---------------|
+| CUDA 13.0 | `ghcr.io/atticusg3/comfyui-flux2:latest` | cu130 (default) |
+| CUDA 12.8 | `ghcr.io/atticusg3/comfyui-flux2:latest-cu128` | cu128 |
+| CUDA 12.6 | `ghcr.io/atticusg3/comfyui-flux2:latest-cu126` | cu126 |
+
+For pinned versions, use tags like `v1.0.0`, `v1.0.0-cu128`, etc.
+
+```bash
+# Pull default (CUDA 13.0)
+docker pull ghcr.io/atticusg3/comfyui-flux2:latest
+
+# Pull specific CUDA version
+docker pull ghcr.io/atticusg3/comfyui-flux2:latest-cu126
+```
 
 ## Features
 
@@ -20,7 +35,7 @@ Docker-based setup for [ComfyUI](https://github.com/Comfy-Org/ComfyUI) with sele
 ## Prerequisites
 
 - Docker and Docker Compose
-- NVIDIA GPU with CUDA support (CUDA 12.1 or newer recommended)
+- NVIDIA GPU with CUDA support (CUDA 12.6, 12.8, or 13.0 - see [Docker Images](#docker-images) for available tags)
 - (Optional) `HF_TOKEN` for packs that require Hugging Face (e.g. klein-distilled)
 
 ## Quick Start
@@ -114,7 +129,7 @@ The default compose uses a named volume `comfyui_data` for the ComfyUI source (c
 services:
   comfyui:
     container_name: comfyui
-    image: ghcr.io/atticusg3/comfyui-flux2:main
+    image: ghcr.io/atticusg3/comfyui-flux2:latest
     restart: unless-stopped
     ports:
       - "8188:8188"
