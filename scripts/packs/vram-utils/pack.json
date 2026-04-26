@@ -1,0 +1,16 @@
+{
+  "name": "vram-utils",
+  "selectors": ["vram-utils", "vram", "cleanup", "offload"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/development/comfyui-server/comms_routes"
+  ],
+  "upstream_urls": [
+    "https://github.com/kijai/ComfyUI-KJNodes",
+    "https://github.com/rgthree/rgthree-comfy",
+    "https://github.com/cubiq/ComfyUI_essentials"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Installs helper nodes for unload/free-memory, cache cleanup, tiled decode, and offload-friendly API workflows.",
+  "notes_high": "Installs helper nodes for cleanup between heavyweight API jobs and multi-pack sessions.",
+  "description": "Reusable VRAM cleanup and offload support nodes/workflows."
+}

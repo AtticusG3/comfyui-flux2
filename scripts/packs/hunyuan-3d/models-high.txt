@@ -1,0 +1,54 @@
+# Hunyuan3D 2.1 shape + paint/PBR models (high / LOW_VRAM=false)
+# Tutorial: https://www.comfy.org/workflows/3d_hunyuan3d-v2.1-bf82f1e42e83/
+# Texture generation can require 21GB+ VRAM.
+
+# Shape DiT
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-dit-v2-1/model.fp16.ckpt
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan3d-dit-v2-1.fp16.ckpt
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-dit-v2-1/config.yaml
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-dit-v2-1
+  out=config.yaml
+
+# Shape VAE
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-vae-v2-1/model.fp16.ckpt
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan3d-vae-v2-1.fp16.ckpt
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-vae-v2-1/config.yaml
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-vae-v2-1
+  out=config.yaml
+
+# Paint/PBR pipeline assets
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/model_index.json
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1
+  out=model_index.json
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/feature_extractor/preprocessor_config.json
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/feature_extractor
+  out=preprocessor_config.json
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/image_encoder/config.json
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/image_encoder
+  out=config.json
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/image_encoder/model.safetensors
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/image_encoder
+  out=model.safetensors
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/unet/config.json
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/unet
+  out=config.json
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/unet/diffusion_pytorch_model.bin
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/unet
+  out=diffusion_pytorch_model.bin
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/vae/config.json
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/vae
+  out=config.json
+
+https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-paintpbr-v2-1/vae/diffusion_pytorch_model.bin
+  dir=ComfyUI/models/hunyuan3d-2.1/hunyuan3d-paintpbr-v2-1/vae
+  out=diffusion_pytorch_model.bin

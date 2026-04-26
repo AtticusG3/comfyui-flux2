@@ -1,0 +1,3 @@
+# Audio save/helpers and VRAM cleanup support for long ACE-Step sessions.
+https://github.com/kijai/ComfyUI-KJNodes.git main
+https://github.com/rgthree/rgthree-comfy.git main

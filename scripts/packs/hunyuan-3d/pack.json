@@ -1,16 +1,16 @@
 {
   "name": "hunyuan-3d",
-  "selectors": ["hunyuan-3d", "hunyuan3d", "hunyuan3d-2"],
+  "selectors": ["hunyuan-3d", "hunyuan3d", "hunyuan3d-2", "hunyuan3d-2.1", "hy3d-2.1"],
   "tutorial_urls": [
-    "https://docs.comfy.org/tutorials/3d/hunyuan3D-2"
+    "https://www.comfy.org/workflows/3d_hunyuan3d-v2.1-bf82f1e42e83/"
   ],
   "upstream_urls": [
-    "https://github.com/Tencent/Hunyuan3D-2",
-    "https://huggingface.co/tencent/Hunyuan3D-2mv",
-    "https://huggingface.co/tencent/Hunyuan3D-2"
+    "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1",
+    "https://huggingface.co/tencent/Hunyuan3D-2.1",
+    "https://github.com/Yuan-ManX/ComfyUI-Hunyuan3D-2.1"
   ],
   "requires_hf_token": false,
-  "notes_16gb": "Lightweight 3D generation. Shape only needs 6GB VRAM. Use single-view workflow for lower memory.",
-  "notes_20gb": "Full multiview workflow with turbo variant. Shape + texture requires ~12GB VRAM.",
-  "description": "Hunyuan3D-2 - high-fidelity 3D model generation from text or images."
+  "notes_low": "Hunyuan3D 2.1 shape-only path. Texture/PBR generation is skipped for lower VRAM.",
+  "notes_high": "Hunyuan3D 2.1 shape + paint/PBR assets. Texture generation can require 21GB+ VRAM.",
+  "description": "Hunyuan3D 2.1 image-to-3D generation with shape and optional PBR texture workflows."
 }

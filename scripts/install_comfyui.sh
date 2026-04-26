@@ -8,56 +8,70 @@ set -euo pipefail
 
 COMFYUI_DIR="/app/ComfyUI"
 CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
+COMFYUI_BRANCH="master"
+
+clone_or_update() {
+    local dir="$1"
+    local url="$2"
+    local branch="$3"
+    local name
+    name=$(basename "$dir")
+
+    if [ -d "${dir}/.git" ]; then
+        echo "[INFO] Updating ${name}..."
+        cd "$dir"
+        if git remote get-url origin >/dev/null 2>&1; then
+            git remote set-url origin "$url"
+        else
+            git remote add origin "$url"
+        fi
+        git fetch origin "$branch"
+        git reset --hard "origin/${branch}"
+        git submodule update --init --recursive
+    elif [ -d "$dir" ]; then
+        echo "[INFO] Initializing ${name} in existing directory..."
+        cd "$dir"
+        git init -b "$branch"
+        git remote add origin "$url"
+        git fetch origin "$branch"
+        git reset --hard "origin/${branch}"
+        git submodule update --init --recursive
+    else
+        echo "[INFO] Cloning ${name}..."
+        git clone --recurse-submodules -b "$branch" "$url" "$dir"
+    fi
+}
 
 # Clone or init ComfyUI into potentially pre-existing directory (volume mount).
 # The directory may already exist as an empty named-volume mount point with
 # bind-mount subdirectories (models/, input/, output/, etc.) inside it.
 # git clone would fail on a non-empty directory, so we use git init instead.
-cd "$COMFYUI_DIR"
-if [ ! -d ".git" ]; then
-    echo "[INFO] Initializing ComfyUI repo in existing directory..."
-    git init
-    git remote add origin https://github.com/Comfy-Org/ComfyUI.git
-    git fetch origin main
-    git reset --hard origin/main
-    git submodule update --init --recursive
-else
-    echo "[INFO] ComfyUI repo already initialized, updating..."
-    git fetch origin main
-    git reset --hard origin/main
-fi
+clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "$COMFYUI_BRANCH"
 
 if [ -f "${COMFYUI_DIR}/requirements.txt" ]; then
     echo "[INFO] Installing ComfyUI requirements..."
-    uv pip install -r "${COMFYUI_DIR}/requirements.txt" || echo "[WARN] Some ComfyUI deps may have failed"
+    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "${COMFYUI_DIR}/requirements.txt" > /tmp/comfyui-requirements.filtered || true
+    uv pip install -r /tmp/comfyui-requirements.filtered || echo "[WARN] Some ComfyUI deps may have failed"
+    rm -f /tmp/comfyui-requirements.filtered
 fi
 
 # ComfyUI-Manager (sub-path of volume, not a mount point itself)
 mkdir -p "$CUSTOM_NODES_DIR"
-if [ ! -d "${CUSTOM_NODES_DIR}/ComfyUI-Manager" ]; then
-    echo "[INFO] Cloning ComfyUI-Manager..."
-    git clone --recurse-submodules \
-        https://github.com/ltdrdata/ComfyUI-Manager.git \
-        "${CUSTOM_NODES_DIR}/ComfyUI-Manager"
-else
-    echo "[INFO] ComfyUI-Manager already present."
-fi
+clone_or_update "${CUSTOM_NODES_DIR}/ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git" "main"
 if [ -f "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt" ]; then
     echo "[INFO] Installing ComfyUI-Manager requirements..."
-    uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt" || echo "[WARN] Some Manager deps may have failed"
+    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt" > /tmp/manager-requirements.filtered || true
+    uv pip install -r /tmp/manager-requirements.filtered || echo "[WARN] Some Manager deps may have failed"
+    rm -f /tmp/manager-requirements.filtered
 fi
 
 # Civicomfy (Civitai model downloader)
-if [ ! -d "${CUSTOM_NODES_DIR}/Civicomfy" ]; then
-    echo "[INFO] Cloning Civicomfy..."
-    git clone https://github.com/MoonGoblinDev/Civicomfy.git \
-        "${CUSTOM_NODES_DIR}/Civicomfy"
-else
-    echo "[INFO] Civicomfy already present."
-fi
+clone_or_update "${CUSTOM_NODES_DIR}/Civicomfy" "https://github.com/MoonGoblinDev/Civicomfy.git" "main"
 if [ -f "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt" ]; then
     echo "[INFO] Installing Civicomfy requirements..."
-    uv pip install -r "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt" || echo "[WARN] Some Civicomfy deps may have failed"
+    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt" > /tmp/civicomfy-requirements.filtered || true
+    uv pip install -r /tmp/civicomfy-requirements.filtered || echo "[WARN] Some Civicomfy deps may have failed"
+    rm -f /tmp/civicomfy-requirements.filtered
 fi
 
 # Copy bundled workflows

@@ -9,7 +9,7 @@
     "https://huggingface.co/Comfy-Org/FLUX.1-Krea-dev_ComfyUI"
   ],
   "requires_hf_token": false,
-  "notes_16gb": "Uses FP8 quantized model. Requires ~12GB VRAM with --lowvram. Natural aesthetic style.",
-  "notes_20gb": "Uses BF16 full precision model. Best quality, ~20GB VRAM. Exceptional realism.",
+  "notes_low": "Uses FP8 quantized model. Requires ~12GB VRAM with --lowvram. Natural aesthetic style.",
+  "notes_high": "Uses BF16 full precision model. Best quality, ~20GB VRAM. Exceptional realism.",
   "description": "Flux.1 Krea Dev - unique aesthetic style, natural details, no AI look."
 }

@@ -1,0 +1,17 @@
+{
+  "name": "trellis2-gguf",
+  "selectors": ["trellis2-gguf", "trellis2", "trellis", "3d-gguf"],
+  "tutorial_urls": [
+    "https://pixel-artistry.com/trellis2gguf",
+    "https://github.com/JanskNeh/ComfyUI-Trellis2-GGUF"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Aero-Ex/Trellis2-GGUF",
+    "https://github.com/JanskNeh/ComfyUI-Trellis2-GGUF",
+    "https://github.com/visualbruno/ComfyUI-Trellis2"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Experimental Docker support. Downloads Q4 512 GGUF shape/texture/refiner models and shared Trellis2 decoders/encoders.",
+  "notes_high": "Experimental Docker support. Downloads Q8 1024 GGUF shape/texture/refiner models and shared Trellis2 decoders/encoders.",
+  "description": "Trellis2 GGUF image-to-3D workflows using compressed model variants."
+}

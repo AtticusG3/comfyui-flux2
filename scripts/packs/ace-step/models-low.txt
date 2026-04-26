@@ -1,0 +1,8 @@
+# ACE-Step 1.5 Turbo AIO (low / LOW_VRAM=true)
+# Tutorial: https://blog.comfy.org/p/ace-step-15-is-now-available-in-comfyui
+# Fast all-in-one checkpoint for lyrics + style tag workflows.
+
+# ACE-Step 1.5 Turbo AIO checkpoint
+https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/checkpoints/ace_step_1.5_turbo_aio.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=ace_step_1.5_turbo_aio.safetensors

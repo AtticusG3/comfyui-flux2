@@ -1,0 +1,12 @@
+# ACE-Step 1.5 workflows (low / LOW_VRAM=true)
+# Uses the Turbo AIO checkpoint and exposes style tags, lyrics, duration, and seed.
+
+# Text-to-Music workflow (Turbo AIO)
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/audio_ace_step_1_5_checkpoint.json
+  dir=ComfyUI/user/default/workflows
+  out=ACE-Step 1.5 - Turbo Lyrics and Style Planner.json
+
+# Same template under an API-oriented name for integrations.
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/audio_ace_step_1_5_checkpoint.json
+  dir=ComfyUI/user/default/workflows
+  out=API - ACE-Step 1.5 Turbo Text to Music.json

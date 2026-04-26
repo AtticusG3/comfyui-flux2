@@ -1,0 +1,66 @@
+# Trellis2 GGUF high quality set (Q8 1024)
+# Source: https://huggingface.co/Aero-Ex/Trellis2-GGUF
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/pipeline.json
+  dir=ComfyUI/models/trellis2-gguf
+  out=pipeline.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/texturing_pipeline.json
+  dir=ComfyUI/models/trellis2-gguf
+  out=texturing_pipeline.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/Vision/dinov3-vitl16-pretrain-lvd1689m.safetensors
+  dir=ComfyUI/models/trellis2-gguf/Vision
+  out=dinov3-vitl16-pretrain-lvd1689m.safetensors
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/Vision/preprocessor_config.json
+  dir=ComfyUI/models/trellis2-gguf/Vision
+  out=preprocessor_config.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/shape/slat_flow_img2shape_dit_1_3B_1024_bf16_Q8_0.gguf
+  dir=ComfyUI/models/trellis2-gguf/shape
+  out=slat_flow_img2shape_dit_1_3B_1024_bf16_Q8_0.gguf
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/shape/slat_flow_img2shape_dit_1_3B_1024_bf16.json
+  dir=ComfyUI/models/trellis2-gguf/shape
+  out=slat_flow_img2shape_dit_1_3B_1024_bf16.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/texture/slat_flow_imgshape2tex_dit_1_3B_1024_bf16_Q8_0.gguf
+  dir=ComfyUI/models/trellis2-gguf/texture
+  out=slat_flow_imgshape2tex_dit_1_3B_1024_bf16_Q8_0.gguf
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/texture/slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json
+  dir=ComfyUI/models/trellis2-gguf/texture
+  out=slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/refiner/ss_flow_img_dit_1_3B_64_bf16_Q8_0.gguf
+  dir=ComfyUI/models/trellis2-gguf/refiner
+  out=ss_flow_img_dit_1_3B_64_bf16_Q8_0.gguf
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/refiner/ss_flow_img_dit_1_3B_64_bf16.json
+  dir=ComfyUI/models/trellis2-gguf/refiner
+  out=ss_flow_img_dit_1_3B_64_bf16.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/decoders/Stage1/ss_dec_conv3d_16l8_fp16.safetensors
+  dir=ComfyUI/models/trellis2-gguf/decoders/Stage1
+  out=ss_dec_conv3d_16l8_fp16.safetensors
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/decoders/Stage1/ss_dec_conv3d_16l8_fp16.json
+  dir=ComfyUI/models/trellis2-gguf/decoders/Stage1
+  out=ss_dec_conv3d_16l8_fp16.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/decoders/Stage2/shape_dec_next_dc_f16c32_fp16.safetensors
+  dir=ComfyUI/models/trellis2-gguf/decoders/Stage2
+  out=shape_dec_next_dc_f16c32_fp16.safetensors
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/decoders/Stage2/shape_dec_next_dc_f16c32_fp16.json
+  dir=ComfyUI/models/trellis2-gguf/decoders/Stage2
+  out=shape_dec_next_dc_f16c32_fp16.json
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/decoders/Stage2/tex_dec_next_dc_f16c32_fp16.safetensors
+  dir=ComfyUI/models/trellis2-gguf/decoders/Stage2
+  out=tex_dec_next_dc_f16c32_fp16.safetensors
+
+https://huggingface.co/Aero-Ex/Trellis2-GGUF/resolve/main/decoders/Stage2/tex_dec_next_dc_f16c32_fp16.json
+  dir=ComfyUI/models/trellis2-gguf/decoders/Stage2
+  out=tex_dec_next_dc_f16c32_fp16.json

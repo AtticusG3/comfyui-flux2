@@ -9,7 +9,7 @@
     "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8"
   ],
   "requires_hf_token": true,
-  "notes_16gb": "Uses 4B distilled model (flux-2-klein-4b-fp8). ~8.4GB VRAM with --lowvram. Fast inference ~1.2s on 5090.",
-  "notes_20gb": "Uses 9B distilled model (flux-2-klein-9b-fp8). Higher quality, ~9.2GB VRAM. Recommended with --highvram.",
+  "notes_low": "Uses 4B distilled model (flux-2-klein-4b-fp8). ~8.4GB VRAM with --lowvram. Fast inference ~1.2s on 5090.",
+  "notes_high": "Uses 9B distilled model (flux-2-klein-9b-fp8). Higher quality, ~9.2GB VRAM. Recommended with --highvram.",
   "description": "Flux.2 Klein distilled - fastest Flux model for text-to-image and image editing."
 }

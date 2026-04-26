@@ -1,0 +1,11 @@
+---
+description: Karpathy-inspired coding principles for this project
+alwaysApply: true
+---
+
+# Karpathy Principles
+
+- Think before coding. State assumptions, surface tradeoffs, and ask when requirements are ambiguous.
+- Simplicity first. Do the smallest thing that solves the real request; avoid speculative abstractions.
+- Surgical changes. Touch only files needed for the task; do not rewrite nearby code just because it could be cleaner.
+- Goal-driven execution. Define verifiable success criteria, then loop through focused checks until they pass.

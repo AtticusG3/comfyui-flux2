@@ -1,0 +1,17 @@
+# SDXL editing (high tier): base + inpaint + refiner + upscaler
+
+https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_base_1.0.safetensors
+
+https://huggingface.co/wangqyqq/sd_xl_base_1.0_inpainting_0.1.safetensors/resolve/main/sd_xl_base_1.0_inpainting_0.1.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_base_1.0_inpainting_0.1.safetensors
+
+https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_refiner_1.0.safetensors
+
+https://huggingface.co/lokCX/4x-Ultrasharp/resolve/main/4x-UltraSharp.pth
+  dir=ComfyUI/models/upscale_models
+  out=4x-UltraSharp.pth

@@ -1,0 +1,17 @@
+{
+  "name": "sdxl-lightning",
+  "selectors": ["sdxl-lightning", "lightning", "sdxl", "photo-sdxl"],
+  "tutorial_urls": [
+    "https://huggingface.co/ByteDance/SDXL-Lightning",
+    "https://github.com/Comfy-Org/ComfyUI/discussions/2867"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/ByteDance/SDXL-Lightning",
+    "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+    "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Uses SDXL base with the 4-step/8-step Lightning LoRAs, tiled decode, detailer nodes, and conservative upscale settings.",
+  "notes_high": "Adds refiner/inpaint-friendly workflows, detail LoRAs, face/hands detailer nodes, and larger tiled upscale paths.",
+  "description": "Photographic SDXL Lightning pack for fast T2I, editing, inpaint, detail, and tiling workflows."
+}

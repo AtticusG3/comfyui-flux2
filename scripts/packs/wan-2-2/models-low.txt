@@ -1,0 +1,26 @@
+# Wan 2.2 low VRAM model set
+# Source: https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged
+
+https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=umt5_xxl_fp8_e4m3fn_scaled.safetensors
+
+https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan2.2_vae.safetensors
+  dir=ComfyUI/models/vae
+  out=wan2.2_vae.safetensors
+
+https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors
+  dir=ComfyUI/models/vae
+  out=wan_2.1_vae.safetensors
+
+https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=wan2.2_ti2v_5B_fp16.safetensors
+
+https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_5B_bf16.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=wan2.2_fun_inpaint_5B_bf16.safetensors
+
+https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_control_5B_bf16.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=wan2.2_fun_control_5B_bf16.safetensors

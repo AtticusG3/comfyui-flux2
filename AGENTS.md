@@ -34,7 +34,7 @@ directory with bind-mount subdirectories (`models/`, `input/`, `output/`,
 
 Use the **clone_or_update** pattern defined in `entrypoint.sh`:
 
-```
+```text
 clone_or_update(dir, url, branch):
   if dir/.git exists   -> git fetch + git reset --hard (update)
   if dir exists, no .git -> git init + remote add + fetch + reset (volume mount)
@@ -42,6 +42,7 @@ clone_or_update(dir, url, branch):
 ```
 
 Branch names:
+
 - ComfyUI: `master` (default branch of Comfy-Org/ComfyUI)
 - ComfyUI-Manager: `main`
 - Civicomfy: `main`
@@ -50,34 +51,45 @@ Branch names:
 
 Each pack lives in `scripts/packs/<name>/` with these files:
 
-```
+```text
 pack.json           -- metadata: name, selectors[], requires_hf_token, tutorial_urls[]
-models-16gb.txt     -- model URLs for LOW_VRAM=true (aria2c input format)
-models-20gb.txt     -- model URLs for LOW_VRAM=false
-workflows-16gb.txt  -- workflow URLs for LOW_VRAM=true
-workflows-20gb.txt  -- workflow URLs for LOW_VRAM=false
-nodes.txt           -- (optional) custom node git URLs
+models-low.txt      -- model URLs for LOW_VRAM=true (aria2c input format)
+models-high.txt     -- model URLs for LOW_VRAM=false
+workflows-low.txt   -- workflow URLs for LOW_VRAM=true
+workflows-high.txt  -- workflow URLs for LOW_VRAM=false
+workflows-bundled/  -- (optional) *.json copied into ComfyUI on start (no aria2c; ship with image)
+nodes.txt           -- (optional) custom node git URLs, one `<url> [branch]` per line
 ```
 
 Model/workflow files use aria2c input format:
 
-```
+```text
 https://example.com/model.safetensors
   dir=ComfyUI/models/diffusion_models
   out=model.safetensors
 ```
 
 `dir=` paths are relative to `/app` (the CWD when aria2c runs). To add a new pack:
+
 1. Create `scripts/packs/<name>/`
 2. Add `pack.json` with `name`, `selectors` array, `requires_hf_token`, `tutorial_urls`
-3. Add model and workflow text files for both 16gb and 20gb variants
+3. Add model and workflow text files for both low and high VRAM tiers
+4. Add `nodes.txt` for required custom nodes instead of relying on Manager auto-install
+
+Additional selectors added in v1.1.0:
+
+- `trellis2-gguf` -- experimental Trellis2 GGUF image-to-3D
+- `wan-2-2` -- Wan 2.2 video, inpaint, and camera workflows
+- `sdxl-lightning` -- SDXL Lightning photographic image workflows
+- `sdxl-editing` -- SDXL inpaint / outpaint / img2img (no Lightning)
+- `vram-utils` -- cleanup/offload helper nodes
 
 ## Bundled Custom Nodes
 
 | Node | Repository | Branch |
-|------|-----------|--------|
-| ComfyUI-Manager | https://github.com/ltdrdata/ComfyUI-Manager.git | main |
-| Civicomfy | https://github.com/MoonGoblinDev/Civicomfy.git | main |
+| --- | --- | --- |
+| ComfyUI-Manager | <https://github.com/ltdrdata/ComfyUI-Manager.git> | main |
+| Civicomfy | <https://github.com/MoonGoblinDev/Civicomfy.git> | main |
 
 These are installed into `/app/ComfyUI/custom_nodes/<name>/`. These sub-paths are
 NOT Docker volume mount points, so regular `git clone` works for them on first install.
@@ -111,10 +123,20 @@ docker-compose logs -f comfyui
 ## Environment Variables
 
 | Variable | Purpose |
-|----------|---------|
+| --- | --- |
 | `MODELS_DOWNLOAD` | Comma-separated pack selectors. Default: `klein-distilled` |
-| `LOW_VRAM` | `true` = 16GB target, `false` = 20GB target |
+| `LOW_VRAM` | `true` = low VRAM tier (models-low / workflows-low) and automatic low-VRAM ComfyUI args, `false` = high tier |
+| `AUTO_VRAM_ARGS` | `true` = derive ComfyUI VRAM args from `LOW_VRAM` when `CLI_ARGS` is empty |
+| `COMFYUI_VRAM_ARGS` | Explicit VRAM/offload args override |
+| `RESERVE_VRAM_GB` | Reserve amount used by automatic low-VRAM mode |
 | `HF_TOKEN` | Hugging Face token for gated models |
 | `CIVITAI_API_KEY` | Civitai API token for Civicomfy model downloads |
 | `CLI_ARGS` | Extra args passed to `python3 main.py` (e.g. `--lowvram`) |
 | `TZ` | Timezone. Default: `UTC` |
+
+## Agent Rules
+
+- `.cursor/rules/karpathy-principles.mdc` captures think-before-coding, simplicity,
+  surgical changes, and goal-driven verification.
+- `.cursor/rules/caveman-ultra.mdc` keeps agent output terse while preserving normal
+  code, docs, commits, and PR prose.

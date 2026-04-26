@@ -10,7 +10,7 @@
     "https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged"
   ],
   "requires_hf_token": false,
-  "notes_16gb": "3.5B DiT model. Fits easily on 16GB. Anime-style with XML structured prompts.",
-  "notes_20gb": "Same model, full speed. Multi-character generation with attribute binding.",
+  "notes_low": "3.5B DiT model. Fits easily on low-tier VRAM. Anime-style with XML structured prompts.",
+  "notes_high": "Same model, full speed. Multi-character generation with attribute binding.",
   "description": "NewBie-image-Exp0.1 - 3.5B anime-style text-to-image with Next-DiT architecture."
 }

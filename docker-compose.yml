@@ -13,11 +13,15 @@ services:
       - "./data/workflows:/app/ComfyUI/user/default/workflows"
     environment:
       - TZ=${TZ:-UTC}
-      - CLI_ARGS=
+      - CLI_ARGS=${CLI_ARGS:-}
+      - AUTO_VRAM_ARGS=${AUTO_VRAM_ARGS:-true}
+      - COMFYUI_VRAM_ARGS=${COMFYUI_VRAM_ARGS:-}
+      - RESERVE_VRAM_GB=${RESERVE_VRAM_GB:-1.2}
       - HF_TOKEN=${HF_TOKEN}
       - CIVITAI_API_KEY=${CIVITAI_API_KEY}
       - LOW_VRAM=${LOW_VRAM:-false}
       - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled}
+    gpus: all
     deploy:
       resources:
         reservations:

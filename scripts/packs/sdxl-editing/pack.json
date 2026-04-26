@@ -1,0 +1,17 @@
+{
+  "name": "sdxl-editing",
+  "selectors": ["sdxl-editing", "sdxl-inpaint", "sdxl-edit"],
+  "tutorial_urls": [
+    "https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1",
+    "https://github.com/comfyanonymous/ComfyUI_examples/tree/master/sdxl"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
+    "https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0",
+    "https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "SDXL base plus SDXL 1.0 inpaint (diffusers-derived safetensors) for mask inpaint, canvas outpaint, and img2img edits. No Lightning or turbo LoRAs.",
+  "notes_high": "Adds the SDXL refiner checkpoint for optional two-pass polishing after img2img or inpaint, plus a 4x upscaler.",
+  "description": "Non-Lightning SDXL pack focused on inpainting, outpainting, and img2img editing."
+}

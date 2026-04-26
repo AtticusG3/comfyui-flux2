@@ -1,0 +1,5 @@
+# Utility nodes for VRAM cleanup, tiled decode/upscale, workflow switches, and API-safe graph helpers.
+https://github.com/kijai/ComfyUI-KJNodes.git main
+https://github.com/rgthree/rgthree-comfy.git main
+https://github.com/cubiq/ComfyUI_essentials.git main
+https://github.com/yolain/ComfyUI-Easy-Use.git main

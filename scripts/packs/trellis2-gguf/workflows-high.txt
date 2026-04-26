@@ -1,0 +1,13 @@
+# Trellis2 GGUF high quality workflows
+
+https://raw.githubusercontent.com/JanskNeh/ComfyUI-Trellis2-GGUF/main/example_workflows/High_Quality.json
+  dir=ComfyUI/user/default/workflows
+  out=Trellis2 GGUF - High Quality Image to 3D.json
+
+https://raw.githubusercontent.com/JanskNeh/ComfyUI-Trellis2-GGUF/main/example_workflows/Better_Texture.json
+  dir=ComfyUI/user/default/workflows
+  out=Trellis2 GGUF - Better Texture.json
+
+https://raw.githubusercontent.com/JanskNeh/ComfyUI-Trellis2-GGUF/main/example_workflows/MultiViews_TextureMesh.json
+  dir=ComfyUI/user/default/workflows
+  out=Trellis2 GGUF - Multiview Texture Mesh.json

@@ -1,0 +1,7 @@
+# SDXL detail, tiling, upscale, and workflow helpers.
+https://github.com/ltdrdata/ComfyUI-Impact-Pack.git Main
+https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git main
+https://github.com/Fannovel16/comfyui_controlnet_aux.git main
+https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git main
+https://github.com/kijai/ComfyUI-KJNodes.git main
+https://github.com/rgthree/rgthree-comfy.git main

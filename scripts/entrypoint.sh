@@ -41,7 +41,7 @@ fix_permissions "/app/ComfyUI"
 clone_or_update() {
     local dir="$1"
     local url="$2"
-    local branch="$3"
+    local branch="${3:-}"
     local name
     name=$(basename "$dir")
 
@@ -60,20 +60,42 @@ clone_or_update() {
         else
             git remote add origin "$url"
         fi
-        git fetch origin "$branch"
-        git reset --hard "origin/${branch}"
+        if [ -n "$branch" ]; then
+            git fetch origin "$branch"
+            git reset --hard "origin/${branch}"
+        else
+            git fetch origin
+            default_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
+            default_branch=${default_branch:-main}
+            git reset --hard "origin/${default_branch}"
+        fi
         git submodule update --init --recursive
     elif [ -d "$dir" ]; then
         echo "[INFO] Initializing ${name} in existing directory..."
         cd "$dir"
-        git init -b "$branch"
+        if [ -n "$branch" ]; then
+            git init -b "$branch"
+        else
+            git init
+        fi
         git remote add origin "$url"
-        git fetch origin "$branch"
-        git reset --hard "origin/${branch}"
+        if [ -n "$branch" ]; then
+            git fetch origin "$branch"
+            git reset --hard "origin/${branch}"
+        else
+            git fetch origin
+            default_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
+            default_branch=${default_branch:-main}
+            git reset --hard "origin/${default_branch}"
+        fi
         git submodule update --init --recursive
     else
         echo "[INFO] Cloning ${name}..."
-        git clone --recurse-submodules -b "$branch" "$url" "$dir"
+        if [ -n "$branch" ]; then
+            git clone --recurse-submodules -b "$branch" "$url" "$dir"
+        else
+            git clone --recurse-submodules "$url" "$dir"
+        fi
     fi
     cd /app
 }
@@ -82,7 +104,11 @@ clone_or_update() {
 install_reqs() {
     local req="$1"
     if [ -f "$req" ]; then
-        uv pip install -r "$req" || echo "[WARN] Some deps from $req may have failed"
+        local filtered_req
+        filtered_req=$(mktemp)
+        grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "$req" > "$filtered_req" || true
+        uv pip install -r "$filtered_req" || echo "[WARN] Some deps from $req may have failed"
+        rm -f "$filtered_req"
     fi
 }
 
@@ -145,18 +171,18 @@ echo ""
 
 cd /app
 
-# Normalize LOW_VRAM for case-insensitive comparison (16GB vs 20GB target)
+# Normalize LOW_VRAM for case-insensitive comparison (low vs high VRAM tier)
 LOW_VRAM_LC=$(echo "${LOW_VRAM:-false}" | tr '[:upper:]' '[:lower:]')
 
-# Determine VRAM suffix based on LOW_VRAM
+# Determine VRAM suffix based on LOW_VRAM (pack file names: models-low.txt, models-high.txt)
 if [ "$LOW_VRAM_LC" == "true" ]; then
     echo "[INFO] LOW_VRAM is set to true."
-    VRAM_SUFFIX="16gb"
-    VRAM_TARGET="16GB"
+    VRAM_SUFFIX="low"
+    VRAM_TARGET="low"
 else
     echo "[INFO] LOW_VRAM is not set or false."
-    VRAM_SUFFIX="20gb"
-    VRAM_TARGET="20GB"
+    VRAM_SUFFIX="high"
+    VRAM_TARGET="high"
 fi
 
 # Parse MODELS_DOWNLOAD: comma-separated selectors, default klein-distilled
@@ -198,6 +224,25 @@ resolve_pack_dir() {
     done
     
     echo "$pack_dir"
+}
+
+# Function to list valid primary selectors from pack metadata
+list_valid_selectors() {
+    local selectors=""
+    for dir in "$PACKS_DIR"/*/; do
+        if [ -f "${dir}pack.json" ]; then
+            local name
+            name=$(jq -r '.name // empty' "${dir}pack.json" 2>/dev/null)
+            if [ -n "$name" ]; then
+                if [ -n "$selectors" ]; then
+                    selectors="${selectors}, ${name}"
+                else
+                    selectors="$name"
+                fi
+            fi
+        fi
+    done
+    echo "$selectors"
 }
 
 # Function to print pack info block
@@ -250,7 +295,7 @@ print_pack_info() {
     echo "=== PACK: $name ==="
     echo "========================================"
     echo "Tutorial: $tutorial_url"
-    echo "Target VRAM: $VRAM_TARGET (LOW_VRAM=$LOW_VRAM_LC)"
+    echo "VRAM tier: $VRAM_TARGET (LOW_VRAM=$LOW_VRAM_LC)"
     echo "Models: $model_count files"
     echo "Workflows: $workflow_count files"
     echo "Custom nodes: $nodes_count"
@@ -303,12 +348,26 @@ for sel in $SELECTORS_LC; do
     
     if [ -z "$pack_dir" ]; then
         echo "[WARN] Unknown selector: $sel (skipping)"
-        echo "       Valid selectors: klein-distilled, hunyuan-3d, flux1-krea, hunyuan-video, ace-step, ovis-image, newbie-image"
+        echo "       Valid selectors: $(list_valid_selectors)"
         continue
     fi
     
     # Print pack info
     print_pack_info "$pack_dir"
+
+    # Copy pack-shipped workflow JSON before HF gating (bundled files do not need HF)
+    WB="${pack_dir}workflows-bundled"
+    if [ -d "$WB" ]; then
+        echo "[INFO] Installing bundled workflows for pack..."
+        mkdir -p /app/ComfyUI/user/default/workflows
+        shopt -s nullglob
+        for wf in "$WB"/*.json; do
+            bn=$(basename "$wf")
+            cp -f "$wf" "/app/ComfyUI/user/default/workflows/$bn"
+            echo "  [OK] $bn"
+        done
+        shopt -u nullglob
+    fi
     
     # Validate HF_TOKEN -- warn and skip pack if missing (don't kill the container)
     if ! validate_hf_token "$pack_dir"; then
@@ -345,17 +404,14 @@ for sel in $SELECTORS_LC; do
             if [[ "$git_url" =~ ^https://|^git:// ]]; then
                 # Extract repo name from URL
                 repo_name=$(basename "$git_url" .git)
+                repo_branch=$(echo "$line" | awk '{print $2}')
                 target_dir="/app/ComfyUI/custom_nodes/$repo_name"
-                
-                if [ -d "$target_dir" ]; then
-                    echo "  [SKIP] $repo_name already installed"
+
+                echo "  [SYNC] $repo_name"
+                if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
+                    install_reqs "$target_dir/requirements.txt"
                 else
-                    echo "  [INSTALL] $repo_name"
-                    git clone "$git_url" "$target_dir" || echo "  [WARN] Failed to clone $repo_name"
-                    # Install requirements if present
-                    if [ -f "$target_dir/requirements.txt" ]; then
-                        uv pip install -r "$target_dir/requirements.txt" 2>/dev/null || true
-                    fi
+                    echo "  [WARN] Failed to sync $repo_name"
                 fi
             fi
         done < "$N"
@@ -420,4 +476,23 @@ export PYTHONPYCACHEPREFIX="/app/.cache/pycache"
 
 cd /app
 
-python3 ./ComfyUI/main.py --listen --port 8188 ${CLI_ARGS}
+AUTO_VRAM_ARGS_LC=$(echo "${AUTO_VRAM_ARGS:-true}" | tr '[:upper:]' '[:lower:]')
+CLI_ARGS="${CLI_ARGS:-}"
+VRAM_RUNTIME_ARGS=""
+
+if [ -n "${COMFYUI_VRAM_ARGS:-}" ]; then
+    VRAM_RUNTIME_ARGS="$COMFYUI_VRAM_ARGS"
+    echo "[INFO] Using COMFYUI_VRAM_ARGS: $VRAM_RUNTIME_ARGS"
+elif [ "$AUTO_VRAM_ARGS_LC" != "true" ]; then
+    echo "[INFO] AUTO_VRAM_ARGS is disabled."
+elif [ -n "$CLI_ARGS" ]; then
+    echo "[INFO] CLI_ARGS provided; automatic VRAM args will not be added."
+elif [ "$LOW_VRAM_LC" == "true" ]; then
+    VRAM_RUNTIME_ARGS="--lowvram --reserve-vram ${RESERVE_VRAM_GB:-1.2}"
+    echo "[INFO] Auto VRAM args for LOW_VRAM=true: $VRAM_RUNTIME_ARGS"
+else
+    VRAM_RUNTIME_ARGS="--normalvram"
+    echo "[INFO] Auto VRAM args for LOW_VRAM=false: $VRAM_RUNTIME_ARGS"
+fi
+
+python3 ./ComfyUI/main.py --listen --port 8188 ${VRAM_RUNTIME_ARGS} ${CLI_ARGS}

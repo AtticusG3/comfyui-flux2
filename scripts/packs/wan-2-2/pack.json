@@ -1,0 +1,17 @@
+{
+  "name": "wan-2-2",
+  "selectors": ["wan-2-2", "wan22", "wan2.2", "wan"],
+  "tutorial_urls": [
+    "https://comfyanonymous.github.io/ComfyUI_examples/wan22/",
+    "https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-camera"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
+    "https://github.com/comfyanonymous/ComfyUI_examples/tree/master/wan22",
+    "https://github.com/Comfy-Org/workflow_templates/tree/main/templates"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Downloads the 5B TI2V model plus Fun 5B inpaint/control files for lower-VRAM text/image/video workflows.",
+  "notes_high": "Adds 14B T2V/I2V, Fun Inpaint, and Fun Camera Control FP8 high/low-noise models plus LightX2V LoRAs.",
+  "description": "Wan 2.2 video generation pack with T2V, I2V, inpaint, and camera-control workflows."
+}

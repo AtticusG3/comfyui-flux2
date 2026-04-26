@@ -1,0 +1,10 @@
+# SDXL editing (low tier): base + inpaint checkpoint
+
+https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_base_1.0.safetensors
+
+# Single-file safetensors converted from diffusers/stable-diffusion-xl-1.0-inpainting-0.1 (see model card).
+https://huggingface.co/wangqyqq/sd_xl_base_1.0_inpainting_0.1.safetensors/resolve/main/sd_xl_base_1.0_inpainting_0.1.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_base_1.0_inpainting_0.1.safetensors

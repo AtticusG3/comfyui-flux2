@@ -74,4 +74,7 @@ COPY --chown=runner:runner scripts/. /scripts/
 COPY --chown=runner:runner workflows/. /workflows/
 
 EXPOSE 8188
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5m --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8188/system_stats', timeout=5)" || exit 1
+
 CMD ["bash","/scripts/entrypoint.sh"]

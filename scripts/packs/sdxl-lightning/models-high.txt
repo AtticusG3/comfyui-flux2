@@ -1,0 +1,29 @@
+# SDXL Lightning high VRAM model set
+
+https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_base_1.0.safetensors
+
+https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=sd_xl_refiner_1.0.safetensors
+
+https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step_lora.safetensors
+  dir=ComfyUI/models/loras
+  out=sdxl_lightning_4step_lora.safetensors
+
+https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_8step_lora.safetensors
+  dir=ComfyUI/models/loras
+  out=sdxl_lightning_8step_lora.safetensors
+
+https://huggingface.co/fofr/comfyui/resolve/main/loras/add-detail-xl.safetensors
+  dir=ComfyUI/models/loras
+  out=add-detail-xl.safetensors
+
+https://huggingface.co/ntc-ai/SDXL-LoRA-slider.extremely-detailed/resolve/main/extremely%20detailed.safetensors
+  dir=ComfyUI/models/loras
+  out=extremely detailed.safetensors
+
+https://huggingface.co/lokCX/4x-Ultrasharp/resolve/main/4x-UltraSharp.pth
+  dir=ComfyUI/models/upscale_models
+  out=4x-UltraSharp.pth

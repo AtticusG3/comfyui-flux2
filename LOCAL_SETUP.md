@@ -1,100 +1,58 @@
-# Local Testing Setup (Windows PC)
+# Local Testing Setup
 
-> **WARNING: This project is in a non-working state.**
-> The Docker container has known critical bugs that prevent it from building
-> and running correctly. Do not use in production. See the bug fix tracking
-> in open issues/PRs.
-
-Step-by-step guide to run ComfyUI Flux2 locally on your Windows machine.
+This guide is for Windows with Docker Desktop and an NVIDIA GPU.
 
 ## Prerequisites
 
-1. **NVIDIA GPU** with CUDA 12.1 or newer
-2. **Windows 10 21H2+** or **Windows 11**
-3. **WSL 2** enabled
+- Windows 10 21H2+ or Windows 11
+- Docker Desktop with WSL 2 backend enabled
+- NVIDIA driver with WSL GPU support
 
-## 1. Install WSL 2 and update kernel
-
-In PowerShell (Run as Administrator):
+Verify GPU passthrough:
 
 ```powershell
-wsl --install
-wsl --update
+docker run --rm --gpus=all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
 ```
 
-Restart if prompted. Verify WSL 2:
+## Configure
+
+From the repository root:
 
 ```powershell
-wsl -l -v
+copy .env.example .env
 ```
 
-Both `docker-desktop` and your distro (e.g. Ubuntu) should show `VERSION 2`.
+Edit `.env`:
 
-## 2. Install NVIDIA driver for WSL
-
-1. Download the latest **Game Ready** or **Studio** driver from [NVIDIA Drivers](https://www.nvidia.com/Download/index.aspx)
-2. Install on Windows (no special CUDA-on-WSL driver needed; standard drivers include WSL support)
-3. Verify: open WSL and run `nvidia-smi` (should show your GPU)
-
-## 3. Install Docker Desktop
-
-1. Download [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
-2. Install and start Docker Desktop
-3. In **Settings > General**, enable **Use the WSL 2 based engine**
-4. In **Settings > Resources > WSL Integration**, enable your Linux distro
-5. Apply & Restart
-
-Verify GPU support:
-
-```powershell
-docker run --rm -it --gpus=all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+```text
+LOW_VRAM=true
+MODELS_DOWNLOAD=klein-distilled,vram-utils
+AUTO_VRAM_ARGS=true
 ```
 
-If this runs without error, GPU passthrough is working.
+Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected model requires it.
 
-## 4. Configure the project
-
-From the project root:
-
-1. Copy env template (optional):
-
-   ```powershell
-   copy .env.example .env
-   ```
-
-2. Edit `.env`:
-   - Set `HF_TOKEN=your_token` if using klein-distilled (get from [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens))
-   - Set `LOW_VRAM=true` for ~16GB VRAM GPUs
-   - Change `MODELS_DOWNLOAD` to select packs (see README for options)
-
-3. Data directories already created: `data/models`, `data/input`, `data/output`, `data/workflows`
-4. **Civicomfy** (Civitai model downloader) is bundled and provides an in-UI Civitai model browser -- no extra setup needed.
-
-## 5. Build and run
+## Build And Run
 
 ```powershell
-cd "C:\Cursor IDE\comfyui-flux2\comfyui-flux2"
 docker-compose up -d --build
 ```
 
-First run builds the image and downloads models; this can take 10–30+ minutes depending on pack(s).
+Open `http://localhost:8188`.
 
-## 6. Access ComfyUI
-
-Open **http://localhost:8188** in your browser.
-
-## Useful commands
+## Useful Commands
 
 | Command | Description |
-|---------|-------------|
-| `docker-compose up -d --build` | Build and start in background |
-| `docker-compose logs -f` | Stream container logs |
-| `docker-compose down` | Stop and remove containers (keeps data volumes) |
-| `docker-compose down -v` | Stop and remove containers and volumes |
+| --- | --- |
+| `docker-compose logs -f comfyui` | Stream startup and download logs. |
+| `docker-compose restart comfyui` | Test update/restart path. |
+| `docker-compose down` | Stop containers and keep data. |
+| `docker-compose down -v` | Remove containers and named volumes. |
+| `docker-compose config` | Validate compose syntax. |
 
 ## Troubleshooting
 
-- **GPU not detected**: Ensure NVIDIA driver is installed on Windows, WSL kernel is up to date (`wsl --update`), and Docker Desktop uses WSL 2 backend.
-- **HF_TOKEN required**: For klein-distilled, create a token at huggingface.co and add it to `.env`.
-- **Out of VRAM**: Set `LOW_VRAM=true` in `.env` and add `CLI_ARGS=--lowvram --reserve-vram 1.2` to `docker-compose.yml` under `environment:`.
-- **Bind mount errors**: Ensure `data/models`, `data/input`, `data/output`, and `data/workflows` exist; they are created during setup.
+- GPU not detected: verify Docker Desktop WSL integration and retry the NVIDIA sample command.
+- Out of VRAM: set `LOW_VRAM=true`, keep `AUTO_VRAM_ARGS=true`, or set `COMFYUI_VRAM_ARGS=--lowvram --reserve-vram 1.5 --cpu-vae`.
+- API clients timing out: wait for model downloads and ComfyUI startup to finish, then check `http://localhost:8188/object_info`.
+- Trellis2 GGUF fails to import: treat it as experimental and check upstream wheel compatibility for your Python/Torch/CUDA combination.

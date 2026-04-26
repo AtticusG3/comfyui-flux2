@@ -1,0 +1,4 @@
+# Hunyuan3D 2.1 integration and VRAM cleanup helpers.
+https://github.com/Yuan-ManX/ComfyUI-Hunyuan3D-2.1.git main
+https://github.com/kijai/ComfyUI-KJNodes.git main
+https://github.com/rgthree/rgthree-comfy.git main

@@ -1,0 +1,13 @@
+# Trellis2 GGUF low VRAM workflows
+
+https://raw.githubusercontent.com/JanskNeh/ComfyUI-Trellis2-GGUF/main/example_workflows/Only_Mesh_Simple.json
+  dir=ComfyUI/user/default/workflows
+  out=Trellis2 GGUF - Low VRAM Mesh Only.json
+
+https://raw.githubusercontent.com/JanskNeh/ComfyUI-Trellis2-GGUF/main/example_workflows/Simple.json
+  dir=ComfyUI/user/default/workflows
+  out=Trellis2 GGUF - Low VRAM Image to 3D.json
+
+https://raw.githubusercontent.com/JanskNeh/ComfyUI-Trellis2-GGUF/main/example_workflows/LowPoly.json
+  dir=ComfyUI/user/default/workflows
+  out=Trellis2 GGUF - Low Poly Asset.json
