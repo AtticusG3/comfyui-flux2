@@ -1,5 +1,19 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Bundled pack workflow JSONs into the repo for packs that previously fetched workflow JSON at runtime; startup now deploys bundled workflow trees from `/workflows/`.
+- Migrated `sdxl-lightning` from ByteDance SDXL Lightning checkpoints to RunDiffusion Juggernaut-XL-Lightning checkpoints (4-step low, 8-step high) with tuned sampler defaults.
+- Added automated low/high workflow tuning passes and default-value normalization across bundled workflows.
+- Extended NVFP4 handling docs and startup behavior to preserve original NVFP4 model filenames and align workflow references.
+
+### Changed
+
+- Startup workflow deployment now recursively copies the full `/workflows/` subtree and emits `[OK] Bundled workflows deployed from /workflows/`.
+- `sdxl-lightning` pack documentation now reflects Juggernaut-XL-Lightning defaults and notes that NVFP4 is not applicable.
+
 ## 1.2.3
 
 - Removed duplicate bypassed `SaveImage` nodes from all bundled Flux 2 Klein workflows, leaving a single active save path per workflow.
