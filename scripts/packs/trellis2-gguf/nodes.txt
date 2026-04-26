@@ -1,5 +1,4 @@
 # Trellis2 GGUF custom node. Experimental on Linux due compiled wheel constraints.
 https://github.com/aeroex/ComfyUI-Trellis2-GGUF.git main
-https://github.com/JanskNeh/ComfyUI-Trellis2-GGUF.git main
 https://github.com/kijai/ComfyUI-KJNodes.git main
 https://github.com/rgthree/rgthree-comfy.git main

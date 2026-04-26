@@ -51,44 +51,6 @@
       ]
     },
     {
-      "id": 94,
-      "type": "SaveImage",
-      "pos": [
-        850,
-        1430
-      ],
-      "size": [
-        416.6666666666667,
-        421.6666666666667
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 171
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "Flux2-Klein"
-      ]
-    },
-    {
       "id": 76,
       "type": "LoadImage",
       "pos": [
@@ -421,14 +383,6 @@
       0,
       92,
       1,
-      "IMAGE"
-    ],
-    [
-      171,
-      92,
-      0,
-      94,
-      0,
       "IMAGE"
     ],
     [

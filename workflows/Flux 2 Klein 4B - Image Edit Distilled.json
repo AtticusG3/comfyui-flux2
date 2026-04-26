@@ -5,44 +5,6 @@
   "last_link_id": 176,
   "nodes": [
     {
-      "id": 9,
-      "type": "SaveImage",
-      "pos": [
-        865.333500844887,
-        811.333308365479
-      ],
-      "size": [
-        375,
-        405
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 154
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "SaveImage",
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "Flux2-Klein"
-      ]
-    },
-    {
       "id": 97,
       "type": "MarkdownNote",
       "pos": [
@@ -395,14 +357,6 @@
     }
   ],
   "links": [
-    [
-      154,
-      75,
-      0,
-      9,
-      0,
-      "IMAGE"
-    ],
     [
       155,
       76,

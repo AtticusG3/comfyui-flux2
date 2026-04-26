@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.3
+
+- Removed duplicate bypassed `SaveImage` nodes from all bundled Flux 2 Klein workflows, leaving a single active save path per workflow.
+- Fixed Trellis2 GGUF custom node sync list by removing duplicate same-name repo entries that could overwrite each other during startup.
+- Updated NVFP4 Klein override mapping to use canonical official 4B/9B NVFP4 URLs and more robust FP8 filename-based matching.
+
 ## 1.2.2
 
 - Added `NVFP4_MODE` with `official-only`/`allow-community` policy and extended NVFP4 overrides to cover Flux 2 Klein 4B and 9B URLs while preserving workflow-compatible local filenames.

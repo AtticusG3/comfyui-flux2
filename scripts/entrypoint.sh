@@ -343,6 +343,8 @@ print_pack_info() {
 # Keep output filenames unchanged so bundled workflows/nodes do not need edits.
 apply_nvfp4_overrides() {
     local list_file="$1"
+    local flux2_klein_4b_nvfp4_url="https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-nvfp4/resolve/main/flux-2-klein-4b-nvfp4.safetensors"
+    local flux2_klein_9b_nvfp4_url="https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-nvfp4/resolve/main/flux-2-klein-9b-nvfp4.safetensors"
     if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
         return 0
     fi
@@ -351,12 +353,12 @@ apply_nvfp4_overrides() {
     fi
 
     local changed=0
-    if grep -q "FLUX.2-klein-4b-fp8" "$list_file"; then
-        sed -i 's#https://huggingface.co/black-forest-labs/FLUX\.2-klein-4b-fp8/resolve/main/flux-2-klein-4b-fp8\.safetensors#https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-nvfp4/resolve/main/flux-2-klein-4b-nvfp4.safetensors#g' "$list_file"
+    if grep -q "flux-2-klein-4b-fp8\\.safetensors" "$list_file"; then
+        sed -i "s#https://[^[:space:]]*/flux-2-klein-4b-fp8\\.safetensors#${flux2_klein_4b_nvfp4_url}#g" "$list_file"
         changed=1
     fi
-    if grep -q "FLUX.2-klein-9b-fp8" "$list_file"; then
-        sed -i 's#https://huggingface.co/black-forest-labs/FLUX\.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8\.safetensors#https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-nvfp4/resolve/main/flux-2-klein-9b-nvfp4.safetensors#g' "$list_file"
+    if grep -q "flux-2-klein-9b-fp8\\.safetensors" "$list_file"; then
+        sed -i "s#https://[^[:space:]]*/flux-2-klein-9b-fp8\\.safetensors#${flux2_klein_9b_nvfp4_url}#g" "$list_file"
         changed=1
     fi
 
