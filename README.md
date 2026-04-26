@@ -143,7 +143,7 @@ Executor examples are bundled at:
 | `hunyuan-3d` | 3D | Hunyuan3D 2.1 shape-only | Shape + paint/PBR assets | Texture generation can require 21GB+ VRAM. |
 | `ace-step` | Audio | ACE-Step 1.5 Turbo AIO | ACE-Step 1.5 XL SFT split files | Lyrics/style/metadata music workflows. |
 | `ovis-image` | Image | Ovis image pack | Ovis image pack | Text rendering. |
-| `newbie-image` | Image | NewBie image pack | NewBie image pack | Anime/XML prompt style. |
+| `newbie-image` | Image | NewBie image pack | NewBie image pack | Next-DiT 3.5B anime model. Dual encoder (Gemma3 + Jina CLIP v2). XML structured or natural language prompts. Requires ComfyUI-NewBie nodes. |
 | `trellis2-gguf` | 3D | Q4 512 GGUF | Q8 1024 GGUF | Experimental Docker support. |
 | `wan-2-2` | Video | 5B TI2V + Fun 5B | 14B T2V/I2V + Fun Inpaint/Camera | Official Wan 2.2 is video-first. |
 | `sdxl-lightning` | Image | Juggernaut-XL-Lightning 4-step checkpoint (LOW) | Juggernaut-XL-Lightning 8-step checkpoint (HIGH) | Photographic T2I/editing/tiling support. NVFP4 not applicable. |

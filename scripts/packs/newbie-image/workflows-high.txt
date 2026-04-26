@@ -1,6 +1,1 @@
-# NewBie-image-Exp0.1 workflows (high / LOW_VRAM=false)
-# Tutorial: https://docs.comfy.org/tutorials/image/newbie-image/newbie-image-exp-0-1
-
-# Text-to-Image workflow (anime style with XML structured prompts)
-  dir=ComfyUI/user/default/workflows
-  out=newbie-image-high-text-to-image.json
+# All newbie-image workflows are bundled in workflows/newbie-image/
