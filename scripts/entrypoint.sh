@@ -127,6 +127,34 @@ install_all_custom_node_reqs() {
     done < <(find "$root" -mindepth 2 -maxdepth 2 -type f -name "requirements.txt" | sort)
 }
 
+# Trellis2-GGUF requires extra binary deps (cumesh/o_voxel/etc.) that are
+# not included in requirements.txt. Run the node installer when needed.
+install_trellis2_gguf_deps() {
+    local node_dir="$1"
+    if [ ! -d "$node_dir" ]; then
+        return 0
+    fi
+
+    if python3 -c "import cumesh" >/dev/null 2>&1; then
+        echo "[INFO] Trellis dependency check: cumesh already available."
+        return 0
+    fi
+
+    if [ -f "$node_dir/install.py" ]; then
+        echo "[INFO] Trellis dependency check: cumesh missing. Running Trellis installer..."
+        if ! python3 "$node_dir/install.py"; then
+            echo "[WARN] Trellis installer reported errors."
+        fi
+    fi
+
+    if ! python3 -c "import cumesh" >/dev/null 2>&1; then
+        echo "[WARN] cumesh still missing after Trellis installer. Trying direct install..."
+        if ! uv pip install cumesh; then
+            echo "[WARN] Direct cumesh install failed. Trellis nodes may still fail to import."
+        fi
+    fi
+}
+
 cd /app
 
 COMFYUI_DIR="/app/ComfyUI"
@@ -153,8 +181,8 @@ BUNDLED_WORKFLOWS="/workflows"
 DEST_WORKFLOWS="${COMFYUI_DIR}/user/default/workflows"
 mkdir -p "$DEST_WORKFLOWS"
 if [ -d "$BUNDLED_WORKFLOWS" ] && [ -n "$(ls -A "$BUNDLED_WORKFLOWS" 2>/dev/null)" ]; then
-    cp -R "$BUNDLED_WORKFLOWS"/* "$DEST_WORKFLOWS/"
-    echo "[INFO] Bundled workflows copied."
+    cp -R "$BUNDLED_WORKFLOWS"/. "$DEST_WORKFLOWS"/
+    echo "[OK] Bundled workflows deployed from /workflows/"
 fi
 
 # =============================================================================
@@ -339,8 +367,8 @@ print_pack_info() {
     echo "----------------------------------------"
 }
 
-# Optionally switch selected Klein FP8 model URLs to NVFP4.
-# Keep output filenames unchanged so bundled workflows/nodes do not need edits.
+# Optionally switch selected FP8 model URLs to NVFP4.
+# Also switch output filenames so local model files keep their original NVFP4 names.
 apply_nvfp4_overrides() {
     local list_file="$1"
     local flux2_klein_4b_nvfp4_url="https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-nvfp4/resolve/main/flux-2-klein-4b-nvfp4.safetensors"
@@ -355,35 +383,75 @@ apply_nvfp4_overrides() {
     local changed=0
     if grep -q "flux-2-klein-4b-fp8\\.safetensors" "$list_file"; then
         sed -i "s#https://[^[:space:]]*/flux-2-klein-4b-fp8\\.safetensors#${flux2_klein_4b_nvfp4_url}#g" "$list_file"
+        sed -i "s#out=flux-2-klein-4b-fp8\\.safetensors#out=flux-2-klein-4b-nvfp4.safetensors#g" "$list_file"
         changed=1
     fi
     if grep -q "flux-2-klein-9b-fp8\\.safetensors" "$list_file"; then
         sed -i "s#https://[^[:space:]]*/flux-2-klein-9b-fp8\\.safetensors#${flux2_klein_9b_nvfp4_url}#g" "$list_file"
+        sed -i "s#out=flux-2-klein-9b-fp8\\.safetensors#out=flux-2-klein-9b-nvfp4.safetensors#g" "$list_file"
         changed=1
     fi
 
+    # Official Comfy-Org flux2-dev/klein fp4 endpoints were probed and currently
+    # return 404. Keep flux1-krea on FP8 unless a validated official NVFP4 URL is available.
+    if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
+        echo "[WARN] No validated official NVFP4 URL configured for flux1-krea; keeping FP8 model."
+    fi
+
     # Optional community quants when explicitly enabled.
-    # Keep local output filenames unchanged so existing workflows still resolve.
     if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
         if grep -q "wan2.2_i2v_high_noise_14B_fp8_scaled" "$list_file"; then
             sed -i 's#https://huggingface.co/Comfy-Org/Wan_2\.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2\.2_i2v_high_noise_14B_fp8_scaled\.safetensors#https://huggingface.co/GitMylo/Wan_2.2_nvfp4/resolve/main/wan2.2_i2v_high_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
+            sed -i 's#out=wan2\.2_i2v_high_noise_14B_fp8_scaled\.safetensors#out=wan2.2_i2v_high_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
             changed=1
         fi
         if grep -q "wan2.2_i2v_low_noise_14B_fp8_scaled" "$list_file"; then
             sed -i 's#https://huggingface.co/Comfy-Org/Wan_2\.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2\.2_i2v_low_noise_14B_fp8_scaled\.safetensors#https://huggingface.co/GitMylo/Wan_2.2_nvfp4/resolve/main/wan2.2_i2v_low_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
+            sed -i 's#out=wan2\.2_i2v_low_noise_14B_fp8_scaled\.safetensors#out=wan2.2_i2v_low_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
             changed=1
         fi
         # flux1-krea currently has community NF4/other derivatives but no known
-        # official drop-in NVFP4 checkpoint URL for this pack's current artifact.
+        # validated drop-in URL for this pack's current artifact.
         if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
             echo "[WARN] NVFP4_MODE=allow-community: no validated drop-in NVFP4 URL configured for flux1-krea."
         fi
     fi
 
     if [ "$changed" -eq 1 ]; then
-        echo "[INFO] NVFP4 override enabled: switched selected model download URLs to NVFP4 while keeping local filenames unchanged for workflow compatibility."
+        echo "[INFO] NVFP4 override enabled: switched selected model URLs and output filenames to NVFP4."
     else
         echo "[INFO] NVFP4 override enabled but no matching FP8 URLs found in selected packs."
+    fi
+}
+
+# Switch Klein workflow JSONs to match NVFP4 model filenames.
+# This keeps workflow defaults aligned with whichever model variant was selected.
+apply_nvfp4_workflow_overrides() {
+    local workflows_dir="$1"
+    if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
+        return 0
+    fi
+    if [ ! -d "$workflows_dir" ]; then
+        return 0
+    fi
+
+    local changed=0
+    local wf
+    for wf in \
+        "$workflows_dir/Flux 2 Klein 4B - Text to Image.json" \
+        "$workflows_dir/Flux 2 Klein 4B - Image Edit Distilled.json" \
+        "$workflows_dir/Flux 2 Klein 9B - Text to Image.json" \
+        "$workflows_dir/Flux 2 Klein 9B - Image Edit Distilled.json"
+    do
+        if [ -f "$wf" ]; then
+            sed -i 's/flux-2-klein-4b-fp8\.safetensors/flux-2-klein-4b-nvfp4.safetensors/g' "$wf"
+            sed -i 's/flux-2-klein-9b-fp8\.safetensors/flux-2-klein-9b-nvfp4.safetensors/g' "$wf"
+            changed=1
+        fi
+    done
+
+    if [ "$changed" -eq 1 ]; then
+        echo "[INFO] NVFP4 workflow override enabled: switched Klein workflows to NVFP4 model filenames."
     fi
 }
 
@@ -491,6 +559,9 @@ for sel in $SELECTORS_LC; do
                 echo "  [SYNC] $repo_name"
                 if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
                     install_reqs "$target_dir/requirements.txt"
+                    if [ "$repo_name" == "ComfyUI-Trellis2-GGUF" ]; then
+                        install_trellis2_gguf_deps "$target_dir"
+                    fi
                 else
                     echo "  [WARN] Failed to sync $repo_name"
                 fi
@@ -515,6 +586,8 @@ if [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; t
 else
     echo "[INFO] No workflow URLs for selected packs."
 fi
+
+apply_nvfp4_workflow_overrides "$WORKFLOWS_DIR"
 
 # Filter model list if HF_TOKEN not set (remove lines marked # Requires HF_TOKEN)
 if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then

@@ -43,7 +43,8 @@ persistent host-mounted data paths.
 - `NVFP4_MODE`:
   - `official-only` (default): official NVFP4 sources only.
   - `allow-community`: allows configured community NVFP4 overrides (experimental).
-- Preserve local output filenames when swapping URLs so existing workflows still load.
+- Preserve original NVFP4 model filenames when swapping URLs.
+- Ensure workflows are switched/updated to the NVFP4-specific model filenames.
 
 ## SDXL Lightning Policy
 

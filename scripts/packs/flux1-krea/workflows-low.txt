@@ -2,6 +2,5 @@
 # Tutorial: https://docs.comfy.org/tutorials/flux/flux1-krea-dev
 
 # Text-to-Image workflow
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/refs/heads/main/templates/flux1_krea_dev.json
   dir=ComfyUI/user/default/workflows
   out=flux1-krea-low-text-to-image.json

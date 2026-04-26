@@ -1,3 +1,1 @@
-# Flux.2 Klein low tier workflows are bundled in /workflows as:
-# - Flux 2 Klein 4B - Text to Image.json
-# - Flux 2 Klein 4B - Image Edit Distilled.json
+# All workflows for this pack are bundled in workflows/klein-distilled/

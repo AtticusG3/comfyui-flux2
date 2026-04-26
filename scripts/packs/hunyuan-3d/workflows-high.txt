@@ -2,11 +2,9 @@
 # Full shape + optional PBR texture path.
 
 # Single image to 3D workflow
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/3d_hunyuan3d-v2.1.json
   dir=ComfyUI/user/default/workflows
   out=Hunyuan3D 2.1 - Shape and PBR Texture.json
 
 # Same workflow under an API-oriented name for integrations.
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/3d_hunyuan3d-v2.1.json
   dir=ComfyUI/user/default/workflows
   out=API - Hunyuan3D 2.1 Image to 3D.json

@@ -1,9 +1,9 @@
 # SDXL Lightning low VRAM model set
 
 # Full all-in-one checkpoint preferred for ComfyUI (4-step for low tier)
-https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/sdxl_lightning_4step.safetensors
+https://huggingface.co/RunDiffusion/Juggernaut-XL-Lightning/resolve/main/Juggernaut_XL_Lightning_4Step.safetensors
   dir=ComfyUI/models/checkpoints
-  out=sdxl_lightning_4step.safetensors
+  out=Juggernaut_XL_Lightning_4Step.safetensors
 
 https://huggingface.co/fofr/comfyui/resolve/main/loras/add-detail-xl.safetensors
   dir=ComfyUI/models/loras

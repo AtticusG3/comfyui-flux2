@@ -2,11 +2,9 @@
 # High VRAM installs the XL SFT split files; use this template as a wrapper baseline.
 
 # Text-to-Music workflow
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/audio_ace_step_1_5_checkpoint.json
   dir=ComfyUI/user/default/workflows
   out=ACE-Step 1.5 - XL SFT Lyrics and Style Planner.json
 
 # Same template under an API-oriented name for integrations.
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/audio_ace_step_1_5_checkpoint.json
   dir=ComfyUI/user/default/workflows
   out=API - ACE-Step 1.5 XL SFT Text to Music.json

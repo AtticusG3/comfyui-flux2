@@ -1,13 +1,10 @@
 # Wan 2.2 low VRAM workflows
 
-https://raw.githubusercontent.com/comfyanonymous/ComfyUI_examples/master/wan22/text_to_video_wan22_5B.json
   dir=ComfyUI/user/default/workflows
   out=Wan 2.2 - 5B Text to Video.json
 
-https://raw.githubusercontent.com/comfyanonymous/ComfyUI_examples/master/wan22/image_to_video_wan22_5B.json
   dir=ComfyUI/user/default/workflows
   out=Wan 2.2 - 5B Image to Video.json
 
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/refs/heads/main/templates/video_wan2_2_14B_fun_inpaint.json
   dir=ComfyUI/user/default/workflows
   out=Wan 2.2 - Fun Inpaint.json

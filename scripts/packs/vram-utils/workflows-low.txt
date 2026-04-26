@@ -1,1 +1,1 @@
-# VRAM utility workflows are bundled with the image under /workflows.
+# All workflows for this pack are bundled in workflows/vram-utils/

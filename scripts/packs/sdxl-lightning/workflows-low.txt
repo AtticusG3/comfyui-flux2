@@ -1,5 +1,4 @@
 # SDXL Lightning low VRAM workflows
 
-https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/comfyui/sdxl_lightning_workflow_full.json
   dir=ComfyUI/user/default/workflows
   out=SDXL Lightning - 4 Step Full Checkpoint.json

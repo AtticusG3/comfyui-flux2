@@ -1,1 +1,1 @@
-# Workflows ship in workflows-bundled/ (copied by entrypoint).
+# All workflows for this pack are bundled in workflows/sdxl-editing/

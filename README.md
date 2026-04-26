@@ -126,7 +126,7 @@ Executor examples are bundled at:
 | `AUTO_VRAM_ARGS` | `true` auto-derives runtime VRAM flags when `COMFYUI_VRAM_ARGS` and `CLI_ARGS` are empty. |
 | `COMFYUI_VRAM_ARGS` | Explicit VRAM flag override, e.g. `--lowvram --reserve-vram 1.5 --cpu-vae`. |
 | `RESERVE_VRAM_GB` | Reserve value used when `LOW_VRAM=true` and automatic VRAM args are active. Default: `1.2`. |
-| `NVFP4_SUPPORTED` | `true` swaps Klein FP8 model URLs to NVFP4 URLs where configured, while keeping local model filenames unchanged for workflow compatibility. Default: `false`. |
+| `NVFP4_SUPPORTED` | `true` swaps configured FP8 model URLs to NVFP4 URLs and preserves original NVFP4 output filenames; matching workflows are switched to NVFP4 model references. Default: `false`. |
 | `NVFP4_MODE` | NVFP4 source policy: `official-only` (default) uses official model sources only; `allow-community` additionally enables configured community NVFP4 overrides (experimental). |
 | `CLI_ARGS` | Extra ComfyUI arguments. If set, automatic VRAM args are not added. |
 | `HF_TOKEN` | Hugging Face token for gated models, if a selected pack requires one. |
@@ -146,7 +146,7 @@ Executor examples are bundled at:
 | `newbie-image` | Image | NewBie image pack | NewBie image pack | Anime/XML prompt style. |
 | `trellis2-gguf` | 3D | Q4 512 GGUF | Q8 1024 GGUF | Experimental Docker support. |
 | `wan-2-2` | Video | 5B TI2V + Fun 5B | 14B T2V/I2V + Fun Inpaint/Camera | Official Wan 2.2 is video-first. |
-| `sdxl-lightning` | Image | SDXL Lightning 4-step full checkpoint | SDXL Lightning 8-step full checkpoint | Photographic T2I/editing/tiling support. |
+| `sdxl-lightning` | Image | Juggernaut-XL-Lightning 4-step checkpoint (LOW) | Juggernaut-XL-Lightning 8-step checkpoint (HIGH) | Photographic T2I/editing/tiling support. NVFP4 not applicable. |
 | `sdxl-editing` | Image | Base + SDXL 1.0 inpaint ckpt | + refiner + 4x UltraSharp | Inpaint, outpaint, img2img (no Lightning). |
 | `vram-utils` | Utility | Utility nodes | Utility nodes | Cleanup/offload helpers. |
 
@@ -168,9 +168,10 @@ MODELS_DOWNLOAD=klein-distilled
 
 Notes:
 
-- In `official-only` mode this swaps Klein 4B/9B FP8 URLs to official NVFP4 URLs.
+- In `official-only` mode this currently swaps Klein 4B/9B FP8 URLs to official NVFP4 URLs.
 - In `allow-community` mode, configured community Wan 2.2 I2V NVFP4 mixed URLs are also allowed (experimental).
-- Local output filenames stay unchanged so workflow/node graphs still resolve.
+- Local output filenames use original NVFP4 model names; matching workflows are updated to those names.
+- `flux1-krea` official NVFP4 URL is currently unverified and remains on FP8 fallback.
 - Keep this disabled on unsupported hardware/software. ComfyUI reports NVFP4 acceleration requiring PyTorch CUDA 13.0 and Blackwell GPUs; unsupported stacks can be slower than FP8. See the ComfyUI post: [New ComfyUI Optimizations for NVIDIA GPUs](https://blog.comfy.org/p/new-comfyui-optimizations-for-nvidia).
 
 Runtime VRAM arg precedence:

@@ -2,6 +2,5 @@
 # Shape-only path for lower VRAM.
 
 # Single image to 3D workflow
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/3d_hunyuan3d-v2.1.json
   dir=ComfyUI/user/default/workflows
   out=Hunyuan3D 2.1 - Low VRAM Shape Only.json
