@@ -31,6 +31,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Ensure Docker is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v docker >/dev/null 2>&1; then
+            echo "[INFO] Docker already installed."
+          else
+            echo "[WARN] Docker not found. Installing docker.io..."
+            if command -v sudo >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y docker.io
+            else
+              apt-get update
+              apt-get install -y docker.io
+            fi
+          fi
+
+          if command -v sudo >/dev/null 2>&1; then
+            sudo systemctl start docker || sudo service docker start || true
+          else
+            systemctl start docker || service docker start || true
+          fi
+
+          docker version
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
         with:
