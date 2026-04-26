@@ -37,15 +37,47 @@ The container exposes ComfyUI's normal UI and local API on port `8188`.
 
 This is useful for AnythingLLM, OpenWebUI, and other workflow runners. The default compose binds `8188:8188`; do not expose it directly to untrusted networks without a reverse proxy, firewall, or authentication layer.
 
+## AnythingLLM Companion Skill
+
+This repo ships AnythingLLM-native custom agent skill packages at:
+
+- `anythingllm/agent-skills/comfyui-companion`
+- `anythingllm/agent-skills/comfyui-companion-executor`
+
+Included files:
+
+- `plugin.json`
+- `handler.js`
+- `README.md`
+
+Install by copying that folder into your AnythingLLM storage path:
+
+```text
+STORAGE_DIR/plugins/agent-skills/comfyui-companion
+```
+
+Then enable it from `Settings > Agent Skills` in AnythingLLM.
+
+For the runnable executor variant, copy:
+
+```text
+STORAGE_DIR/plugins/agent-skills/comfyui-companion-executor
+```
+
+Executor examples are bundled at:
+
+- `anythingllm/agent-skills/comfyui-companion-executor/examples/workflow-t2i-api.json`
+- `anythingllm/agent-skills/comfyui-companion-executor/examples/workflow-edit-api.json`
+
 ## Environment Variables
 
 | Variable | Purpose |
 | --- | --- |
 | `MODELS_DOWNLOAD` | Comma-separated pack selectors. Default: `klein-distilled`. |
-| `LOW_VRAM` | `true` selects low-tier model/workflow lists and auto low-VRAM runtime flags. |
-| `AUTO_VRAM_ARGS` | `true` adds runtime VRAM flags when `CLI_ARGS` is empty. |
+| `LOW_VRAM` | `true` selects `models-low.txt`/`workflows-low.txt`; `false` selects `models-high.txt`/`workflows-high.txt`. |
+| `AUTO_VRAM_ARGS` | `true` auto-derives runtime VRAM flags when `COMFYUI_VRAM_ARGS` and `CLI_ARGS` are empty. |
 | `COMFYUI_VRAM_ARGS` | Explicit VRAM flag override, e.g. `--lowvram --reserve-vram 1.5 --cpu-vae`. |
-| `RESERVE_VRAM_GB` | Reserve value used by automatic low-VRAM mode. Default: `1.2`. |
+| `RESERVE_VRAM_GB` | Reserve value used when `LOW_VRAM=true` and automatic VRAM args are active. Default: `1.2`. |
 | `CLI_ARGS` | Extra ComfyUI arguments. If set, automatic VRAM args are not added. |
 | `HF_TOKEN` | Hugging Face token for gated models, if a selected pack requires one. |
 | `CIVITAI_API_KEY` | Optional Civitai token used by Civicomfy. |
@@ -55,7 +87,7 @@ This is useful for AnythingLLM, OpenWebUI, and other workflow runners. The defau
 
 | Selector | Type | LOW_VRAM=true | LOW_VRAM=false | Notes |
 | --- | --- | --- | --- | --- |
-| `klein-distilled` | Image | Flux 2 Klein 4B | Flux 2 Klein 9B | Default Flux pack. |
+| `klein-distilled` | Image | Flux 2 Klein 4B distilled workflows | Flux 2 Klein 9B distilled workflows | Default Flux pack. Base Klein workflows are removed. |
 | `flux1-krea` | Image | FP8 text encoder path | FP16 text encoder path | Natural image style. |
 | `hunyuan-video` | Video | T2V only | T2V + I2V | Heavy video pack. |
 | `hunyuan-3d` | 3D | Hunyuan3D 2.1 shape-only | Shape + paint/PBR assets | Texture generation can require 21GB+ VRAM. |
@@ -74,6 +106,14 @@ Example:
 MODELS_DOWNLOAD=klein-distilled,wan-2-2,vram-utils
 LOW_VRAM=true
 ```
+
+Runtime VRAM arg precedence:
+
+1. If `COMFYUI_VRAM_ARGS` is set, use it as-is.
+2. Else if `AUTO_VRAM_ARGS=false`, add no automatic VRAM args.
+3. Else if `CLI_ARGS` is non-empty, add no automatic VRAM args.
+4. Else if `LOW_VRAM=true`, add `--lowvram --reserve-vram <RESERVE_VRAM_GB>`.
+5. Else (`LOW_VRAM=false`), add no automatic VRAM args.
 
 ## Storage
 

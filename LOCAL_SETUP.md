@@ -32,6 +32,11 @@ AUTO_VRAM_ARGS=true
 
 Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected model requires it.
 
+`LOW_VRAM` controls both model/workflow tier selection and, by default, runtime flags:
+
+- `LOW_VRAM=true` -> use `models-low.txt` and `workflows-low.txt`
+- `LOW_VRAM=false` -> use `models-high.txt` and `workflows-high.txt`
+
 ## Build And Run
 
 ```powershell
@@ -56,3 +61,11 @@ Open `http://localhost:8188`.
 - Out of VRAM: set `LOW_VRAM=true`, keep `AUTO_VRAM_ARGS=true`, or set `COMFYUI_VRAM_ARGS=--lowvram --reserve-vram 1.5 --cpu-vae`.
 - API clients timing out: wait for model downloads and ComfyUI startup to finish, then check `http://localhost:8188/object_info`.
 - Trellis2 GGUF fails to import: treat it as experimental and check upstream wheel compatibility for your Python/Torch/CUDA combination.
+
+Runtime flag precedence (highest to lowest):
+
+1. `COMFYUI_VRAM_ARGS` (explicit override)
+2. `AUTO_VRAM_ARGS=false` (disable automatic flags)
+3. non-empty `CLI_ARGS` (disable automatic flags)
+4. `LOW_VRAM=true` + auto mode -> `--lowvram --reserve-vram <RESERVE_VRAM_GB>`
+5. `LOW_VRAM=false` + auto mode -> no extra VRAM flags

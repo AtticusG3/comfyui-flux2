@@ -76,13 +76,18 @@ https://example.com/model.safetensors
 3. Add model and workflow text files for both low and high VRAM tiers
 4. Add `nodes.txt` for required custom nodes instead of relying on Manager auto-install
 
-Additional selectors added in v1.1.0:
+Additional selectors added in v1.2.0:
 
 - `trellis2-gguf` -- experimental Trellis2 GGUF image-to-3D
 - `wan-2-2` -- Wan 2.2 video, inpaint, and camera workflows
 - `sdxl-lightning` -- SDXL Lightning photographic image workflows
 - `sdxl-editing` -- SDXL inpaint / outpaint / img2img (no Lightning)
 - `vram-utils` -- cleanup/offload helper nodes
+
+Flux 2 Klein policy:
+
+- `klein-distilled` is distilled-only by design.
+- Base Klein workflows (`Image Edit Base`, `Text to Image` non-distilled) are removed.
 
 ## Bundled Custom Nodes
 
@@ -133,6 +138,14 @@ docker-compose logs -f comfyui
 | `CIVITAI_API_KEY` | Civitai API token for Civicomfy model downloads |
 | `CLI_ARGS` | Extra args passed to `python3 main.py` (e.g. `--lowvram`) |
 | `TZ` | Timezone. Default: `UTC` |
+
+Runtime arg precedence:
+
+1. `COMFYUI_VRAM_ARGS` override
+2. `AUTO_VRAM_ARGS=false` disables automatic VRAM args
+3. Non-empty `CLI_ARGS` disables automatic VRAM args
+4. `LOW_VRAM=true` with auto mode adds `--lowvram --reserve-vram <RESERVE_VRAM_GB>`
+5. `LOW_VRAM=false` with auto mode adds no extra VRAM args
 
 ## Agent Rules
 
