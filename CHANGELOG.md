@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+- Added optional `NVFP4_SUPPORTED` flag to switch Klein 4B low-VRAM downloads from FP8 to NVFP4 while keeping workflow-compatible local filenames.
+- Wired `NVFP4_SUPPORTED` through `entrypoint.sh`, `.env.example`, `docker-compose.yml`, and setup/docs guidance.
+- Improved startup robustness by installing requirements for all detected custom nodes under `custom_nodes/`.
+
 ## 1.2.0
 
 - Added `sdxl-editing` pack (base + SDXL 1.0 inpaint weights, bundled inpaint/outpaint/img2img workflows).

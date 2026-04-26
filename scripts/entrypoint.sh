@@ -112,6 +112,21 @@ install_reqs() {
     fi
 }
 
+# Install requirements for every existing custom node directory.
+# This covers nodes added outside pack metadata (e.g. manually installed repos).
+install_all_custom_node_reqs() {
+    local root="$1"
+    if [ ! -d "$root" ]; then
+        return 0
+    fi
+
+    echo "[INFO] Installing requirements for all detected custom nodes..."
+    local req
+    while IFS= read -r req; do
+        install_reqs "$req"
+    done < <(find "$root" -mindepth 2 -maxdepth 2 -type f -name "requirements.txt" | sort)
+}
+
 cd /app
 
 COMFYUI_DIR="/app/ComfyUI"
@@ -129,6 +144,9 @@ install_reqs "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt"
 # Civicomfy (Civitai model downloader)
 clone_or_update "${CUSTOM_NODES_DIR}/Civicomfy" "https://github.com/MoonGoblinDev/Civicomfy.git" "main"
 install_reqs "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt"
+
+# Install requirements for any custom node already present in custom_nodes/.
+install_all_custom_node_reqs "$CUSTOM_NODES_DIR"
 
 # Copy bundled workflows into ComfyUI
 BUNDLED_WORKFLOWS="/workflows"
@@ -173,6 +191,7 @@ cd /app
 
 # Normalize LOW_VRAM for case-insensitive comparison (low vs high VRAM tier)
 LOW_VRAM_LC=$(echo "${LOW_VRAM:-false}" | tr '[:upper:]' '[:lower:]')
+NVFP4_SUPPORTED_LC=$(echo "${NVFP4_SUPPORTED:-false}" | tr '[:upper:]' '[:lower:]')
 
 # Determine VRAM suffix based on LOW_VRAM (pack file names: models-low.txt, models-high.txt)
 if [ "$LOW_VRAM_LC" == "true" ]; then
@@ -183,6 +202,12 @@ else
     echo "[INFO] LOW_VRAM is not set or false."
     VRAM_SUFFIX="high"
     VRAM_TARGET="high"
+fi
+
+if [ "$NVFP4_SUPPORTED_LC" == "true" ]; then
+    echo "[INFO] NVFP4_SUPPORTED is set to true."
+else
+    echo "[INFO] NVFP4_SUPPORTED is not set or false."
 fi
 
 # Parse MODELS_DOWNLOAD: comma-separated selectors, default klein-distilled
@@ -296,6 +321,7 @@ print_pack_info() {
     echo "========================================"
     echo "Tutorial: $tutorial_url"
     echo "VRAM tier: $VRAM_TARGET (LOW_VRAM=$LOW_VRAM_LC)"
+    echo "NVFP4 override: $NVFP4_SUPPORTED_LC"
     echo "Models: $model_count files"
     echo "Workflows: $workflow_count files"
     echo "Custom nodes: $nodes_count"
@@ -304,6 +330,30 @@ print_pack_info() {
         echo "Notes: $notes"
     fi
     echo "----------------------------------------"
+}
+
+# Optionally switch selected Klein FP8 model URLs to NVFP4.
+# Keep output filenames unchanged so bundled workflows/nodes do not need edits.
+apply_nvfp4_overrides() {
+    local list_file="$1"
+    if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
+        return 0
+    fi
+    if [ ! -f "$list_file" ]; then
+        return 0
+    fi
+
+    local changed=0
+    if grep -q "FLUX.2-klein-4b-fp8" "$list_file"; then
+        sed -i 's#https://huggingface.co/black-forest-labs/FLUX\.2-klein-4b-fp8/resolve/main/flux-2-klein-4b-fp8\.safetensors#https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-nvfp4/resolve/main/flux-2-klein-4b-nvfp4.safetensors#g' "$list_file"
+        changed=1
+    fi
+
+    if [ "$changed" -eq 1 ]; then
+        echo "[INFO] NVFP4 override enabled: switched Klein download URLs to NVFP4 while keeping local filenames unchanged for workflow compatibility."
+    else
+        echo "[INFO] NVFP4 override enabled but no matching Klein FP8 URLs found in selected packs."
+    fi
 }
 
 # Validate HF_TOKEN requirement for a pack
@@ -444,6 +494,8 @@ if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
     else
         DOWNLOAD_LIST="$TEMP_MODELS"
     fi
+
+    apply_nvfp4_overrides "$DOWNLOAD_LIST"
 
     if [ -s "$DOWNLOAD_LIST" ] && grep -q '^https' "$DOWNLOAD_LIST" 2>/dev/null; then
         echo "########################################"

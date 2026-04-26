@@ -41,6 +41,7 @@ services:
       - LOW_VRAM=${LOW_VRAM:-true}
       - AUTO_VRAM_ARGS=${AUTO_VRAM_ARGS:-true}
       - RESERVE_VRAM_GB=${RESERVE_VRAM_GB:-1.2}
+      - NVFP4_SUPPORTED=${NVFP4_SUPPORTED:-false}
     volumes:
       - "./data:/app"
       # Models
@@ -122,6 +123,7 @@ Executor examples are bundled at:
 | `AUTO_VRAM_ARGS` | `true` auto-derives runtime VRAM flags when `COMFYUI_VRAM_ARGS` and `CLI_ARGS` are empty. |
 | `COMFYUI_VRAM_ARGS` | Explicit VRAM flag override, e.g. `--lowvram --reserve-vram 1.5 --cpu-vae`. |
 | `RESERVE_VRAM_GB` | Reserve value used when `LOW_VRAM=true` and automatic VRAM args are active. Default: `1.2`. |
+| `NVFP4_SUPPORTED` | `true` swaps the Klein 4B FP8 URL to the 4B NVFP4 URL (low-VRAM Klein path) while keeping local model filenames unchanged for workflow compatibility. Default: `false`. |
 | `CLI_ARGS` | Extra ComfyUI arguments. If set, automatic VRAM args are not added. |
 | `HF_TOKEN` | Hugging Face token for gated models, if a selected pack requires one. |
 | `CIVITAI_API_KEY` | Optional Civitai token used by Civicomfy. |
@@ -150,6 +152,19 @@ Example:
 MODELS_DOWNLOAD=klein-distilled,wan-2-2,vram-utils
 LOW_VRAM=true
 ```
+
+Optional NVFP4 path for supported NVIDIA Blackwell systems:
+
+```bash
+LOW_VRAM=true
+NVFP4_SUPPORTED=true
+MODELS_DOWNLOAD=klein-distilled
+```
+
+Notes:
+
+- This toggle only changes Klein model download URLs; workflow/node graphs stay the same.
+- Keep this disabled on unsupported hardware/software. ComfyUI reports NVFP4 acceleration requiring PyTorch CUDA 13.0 and Blackwell GPUs; unsupported stacks can be slower than FP8. See the ComfyUI post: [New ComfyUI Optimizations for NVIDIA GPUs](https://blog.comfy.org/p/new-comfyui-optimizations-for-nvidia).
 
 Runtime VRAM arg precedence:
 

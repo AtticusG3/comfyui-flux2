@@ -28,6 +28,7 @@ Edit `.env`:
 LOW_VRAM=true
 MODELS_DOWNLOAD=klein-distilled,vram-utils
 AUTO_VRAM_ARGS=true
+NVFP4_SUPPORTED=false
 ```
 
 Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected model requires it.
@@ -36,6 +37,8 @@ Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected mod
 
 - `LOW_VRAM=true` -> use `models-low.txt` and `workflows-low.txt`
 - `LOW_VRAM=false` -> use `models-high.txt` and `workflows-high.txt`
+
+`NVFP4_SUPPORTED=true` optionally swaps the Klein 4B FP8 URL to the 4B NVFP4 URL (when `klein-distilled` is selected) while keeping local model filenames unchanged so existing workflows still resolve the same model names.
 
 ## Build And Run
 
