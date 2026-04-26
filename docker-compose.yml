@@ -18,6 +18,7 @@ services:
       - COMFYUI_VRAM_ARGS=${COMFYUI_VRAM_ARGS:-}
       - RESERVE_VRAM_GB=${RESERVE_VRAM_GB:-1.2}
       - NVFP4_SUPPORTED=${NVFP4_SUPPORTED:-false}
+      - NVFP4_MODE=${NVFP4_MODE:-official-only}
       - HF_TOKEN=${HF_TOKEN}
       - CIVITAI_API_KEY=${CIVITAI_API_KEY}
       - LOW_VRAM=${LOW_VRAM:-false}

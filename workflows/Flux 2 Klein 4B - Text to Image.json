@@ -232,94 +232,6 @@
         "qwen_3_4b.safetensors",
         "flux2-vae.safetensors"
       ]
-    },
-    {
-      "id": 77,
-      "type": "a67caa28-5f85-4917-8396-36004960dd30",
-      "pos": [
-        310.33338188549885,
-        951.3333226266111
-      ],
-      "size": [
-        400,
-        360
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 4,
-      "inputs": [
-        {
-          "label": "prompt",
-          "name": "text",
-          "type": "STRING",
-          "widget": {
-            "name": "text"
-          },
-          "link": 157
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            156
-          ]
-        }
-      ],
-      "properties": {
-        "proxyWidgets": [
-          [
-            "-1",
-            "text"
-          ],
-          [
-            "-1",
-            "value"
-          ],
-          [
-            "-1",
-            "value_1"
-          ],
-          [
-            "-1",
-            "unet_name"
-          ],
-          [
-            "-1",
-            "clip_name"
-          ],
-          [
-            "-1",
-            "vae_name"
-          ],
-          [
-            "73",
-            "noise_seed"
-          ],
-          [
-            "73",
-            "control_after_generate"
-          ]
-        ],
-        "cnr_id": "comfy-core",
-        "ver": "0.8.2",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "",
-        1024,
-        1024,
-        "flux-2-klein-4b.safetensors",
-        "qwen_3_4b.safetensors",
-        "flux2-vae.safetensors"
-      ]
     }
   ],
   "links": [
@@ -336,22 +248,6 @@
       76,
       0,
       75,
-      0,
-      "STRING"
-    ],
-    [
-      156,
-      77,
-      0,
-      78,
-      0,
-      "IMAGE"
-    ],
-    [
-      157,
-      76,
-      0,
-      77,
       0,
       "STRING"
     ]

@@ -1,13 +1,5 @@
 # SDXL Lightning high VRAM workflows
 
-https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/comfyui/sdxl_lightning_workflow_lora.json
-  dir=ComfyUI/user/default/workflows
-  out=SDXL Lightning - Photographic T2I with LoRA.json
-
 https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/comfyui/sdxl_lightning_workflow_full.json
   dir=ComfyUI/user/default/workflows
-  out=SDXL Lightning - Full Checkpoint Reference.json
-
-https://huggingface.co/ByteDance/SDXL-Lightning/resolve/main/comfyui/sdxl_lightning_workflow_full_1step.json
-  dir=ComfyUI/user/default/workflows
-  out=SDXL Lightning - One Step Reference.json
+  out=SDXL Lightning - 8 Step Full Checkpoint.json

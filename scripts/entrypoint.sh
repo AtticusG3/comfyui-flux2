@@ -192,6 +192,7 @@ cd /app
 # Normalize LOW_VRAM for case-insensitive comparison (low vs high VRAM tier)
 LOW_VRAM_LC=$(echo "${LOW_VRAM:-false}" | tr '[:upper:]' '[:lower:]')
 NVFP4_SUPPORTED_LC=$(echo "${NVFP4_SUPPORTED:-false}" | tr '[:upper:]' '[:lower:]')
+NVFP4_MODE_LC=$(echo "${NVFP4_MODE:-official-only}" | tr '[:upper:]' '[:lower:]')
 
 # Determine VRAM suffix based on LOW_VRAM (pack file names: models-low.txt, models-high.txt)
 if [ "$LOW_VRAM_LC" == "true" ]; then
@@ -209,6 +210,12 @@ if [ "$NVFP4_SUPPORTED_LC" == "true" ]; then
 else
     echo "[INFO] NVFP4_SUPPORTED is not set or false."
 fi
+
+if [ "$NVFP4_MODE_LC" != "official-only" ] && [ "$NVFP4_MODE_LC" != "allow-community" ]; then
+    echo "[WARN] Unknown NVFP4_MODE='$NVFP4_MODE_LC'. Falling back to official-only."
+    NVFP4_MODE_LC="official-only"
+fi
+echo "[INFO] NVFP4_MODE is '$NVFP4_MODE_LC'."
 
 # Parse MODELS_DOWNLOAD: comma-separated selectors, default klein-distilled
 SELECTORS_RAW="${MODELS_DOWNLOAD:-klein-distilled}"
@@ -348,11 +355,33 @@ apply_nvfp4_overrides() {
         sed -i 's#https://huggingface.co/black-forest-labs/FLUX\.2-klein-4b-fp8/resolve/main/flux-2-klein-4b-fp8\.safetensors#https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-nvfp4/resolve/main/flux-2-klein-4b-nvfp4.safetensors#g' "$list_file"
         changed=1
     fi
+    if grep -q "FLUX.2-klein-9b-fp8" "$list_file"; then
+        sed -i 's#https://huggingface.co/black-forest-labs/FLUX\.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8\.safetensors#https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-nvfp4/resolve/main/flux-2-klein-9b-nvfp4.safetensors#g' "$list_file"
+        changed=1
+    fi
+
+    # Optional community quants when explicitly enabled.
+    # Keep local output filenames unchanged so existing workflows still resolve.
+    if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
+        if grep -q "wan2.2_i2v_high_noise_14B_fp8_scaled" "$list_file"; then
+            sed -i 's#https://huggingface.co/Comfy-Org/Wan_2\.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2\.2_i2v_high_noise_14B_fp8_scaled\.safetensors#https://huggingface.co/GitMylo/Wan_2.2_nvfp4/resolve/main/wan2.2_i2v_high_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
+            changed=1
+        fi
+        if grep -q "wan2.2_i2v_low_noise_14B_fp8_scaled" "$list_file"; then
+            sed -i 's#https://huggingface.co/Comfy-Org/Wan_2\.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2\.2_i2v_low_noise_14B_fp8_scaled\.safetensors#https://huggingface.co/GitMylo/Wan_2.2_nvfp4/resolve/main/wan2.2_i2v_low_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
+            changed=1
+        fi
+        # flux1-krea currently has community NF4/other derivatives but no known
+        # official drop-in NVFP4 checkpoint URL for this pack's current artifact.
+        if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
+            echo "[WARN] NVFP4_MODE=allow-community: no validated drop-in NVFP4 URL configured for flux1-krea."
+        fi
+    fi
 
     if [ "$changed" -eq 1 ]; then
-        echo "[INFO] NVFP4 override enabled: switched Klein download URLs to NVFP4 while keeping local filenames unchanged for workflow compatibility."
+        echo "[INFO] NVFP4 override enabled: switched selected model download URLs to NVFP4 while keeping local filenames unchanged for workflow compatibility."
     else
-        echo "[INFO] NVFP4 override enabled but no matching Klein FP8 URLs found in selected packs."
+        echo "[INFO] NVFP4 override enabled but no matching FP8 URLs found in selected packs."
     fi
 }
 

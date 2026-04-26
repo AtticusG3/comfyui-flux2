@@ -29,6 +29,7 @@ LOW_VRAM=true
 MODELS_DOWNLOAD=klein-distilled,vram-utils
 AUTO_VRAM_ARGS=true
 NVFP4_SUPPORTED=false
+NVFP4_MODE=official-only
 ```
 
 Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected model requires it.
@@ -38,7 +39,12 @@ Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected mod
 - `LOW_VRAM=true` -> use `models-low.txt` and `workflows-low.txt`
 - `LOW_VRAM=false` -> use `models-high.txt` and `workflows-high.txt`
 
-`NVFP4_SUPPORTED=true` optionally swaps the Klein 4B FP8 URL to the 4B NVFP4 URL (when `klein-distilled` is selected) while keeping local model filenames unchanged so existing workflows still resolve the same model names.
+`NVFP4_SUPPORTED=true` enables NVFP4 URL overrides while keeping local model filenames unchanged so existing workflows still resolve the same model names.
+
+`NVFP4_MODE` controls source policy:
+
+- `official-only` (default): official NVFP4 URLs only (Klein 4B and 9B).
+- `allow-community`: also enables configured community NVFP4 overrides (currently Wan 2.2 I2V mixed checkpoints; experimental).
 
 ## Build And Run
 

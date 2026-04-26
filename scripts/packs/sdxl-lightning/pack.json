@@ -11,7 +11,7 @@
     "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
   ],
   "requires_hf_token": false,
-  "notes_low": "Uses SDXL base with the 4-step/8-step Lightning LoRAs, tiled decode, detailer nodes, and conservative upscale settings.",
-  "notes_high": "Adds refiner/inpaint-friendly workflows, detail LoRAs, face/hands detailer nodes, and larger tiled upscale paths.",
+  "notes_low": "Uses SDXL Lightning 4-step full checkpoint (all-in-one) with conservative upscale/detail defaults for low-tier targets.",
+  "notes_high": "Uses SDXL Lightning 8-step full checkpoint (all-in-one) with larger upscale/detail defaults for high-tier targets.",
   "description": "Photographic SDXL Lightning pack for fast T2I, editing, inpaint, detail, and tiling workflows."
 }

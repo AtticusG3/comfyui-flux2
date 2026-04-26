@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.2
+
+- Added `NVFP4_MODE` with `official-only`/`allow-community` policy and extended NVFP4 overrides to cover Flux 2 Klein 4B and 9B URLs while preserving workflow-compatible local filenames.
+- Updated `sdxl-lightning` to prefer all-in-one SDXL Lightning checkpoints in ComfyUI (`4step` low tier, `8step` high tier) instead of default LoRA-first pack behavior.
+- Removed duplicate Klein workflow template downloads, keeping bundled `Flux 2 Klein*` workflows as the canonical set.
+- Simplified both Klein text-to-image workflows by removing the legacy bypassed second model branch used for base/distilled switching.
+- Added Trellis2 node source coverage by including `aeroex/ComfyUI-Trellis2-GGUF` in the Trellis pack node list.
+- Aligned Docker publish tags with local usage by removing branch-ref (`:main`) image tag generation from CI metadata.
+- Replaced `AGENTS.md` with a concise project operations guide covering startup behavior, pack policy, NVFP4 rules, SDXL Lightning defaults, and release checklist.
+
 ## 1.2.1
 
 - Added optional `NVFP4_SUPPORTED` flag to switch Klein 4B low-VRAM downloads from FP8 to NVFP4 while keeping workflow-compatible local filenames.
