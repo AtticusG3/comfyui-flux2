@@ -1,0 +1,42 @@
+{
+  "klein-distilled": {
+    "t2i": "../workflow-flux2-klein-distilled-t2i-api.json",
+    "edit": "../workflow-flux2-klein-distilled-edit-api.json"
+  },
+  "flux1-krea": {
+    "t2i": "workflow-flux1-krea-t2i-api.json",
+    "edit": "workflow-flux1-krea-edit-api.json"
+  },
+  "newbie-image": {
+    "t2i": "workflow-newbie-image-t2i-api.json"
+  },
+  "ovis-image": {
+    "t2i": "workflow-ovis-image-t2i-api.json"
+  },
+  "sdxl-lightning": {
+    "t2i": "workflow-sdxl-lightning-t2i-api.json",
+    "edit": "workflow-sdxl-lightning-edit-api.json"
+  },
+  "sdxl-editing": {
+    "t2i": "workflow-sdxl-editing-t2i-api.json",
+    "edit": "workflow-sdxl-editing-edit-api.json"
+  },
+  "hunyuan-video": {
+    "t2v-template": "workflow-hunyuan-video-t2v-template.json"
+  },
+  "wan-2-2": {
+    "t2v-template": "workflow-wan-2-2-t2v-template.json"
+  },
+  "hunyuan-3d": {
+    "i2-3d-template": "workflow-hunyuan-3d-i23d-template.json"
+  },
+  "trellis2-gguf": {
+    "i2-3d-template": "workflow-trellis2-gguf-i23d-template.json"
+  },
+  "ace-step": {
+    "t2a-template": "workflow-ace-step-t2a-template.json"
+  },
+  "vram-utils": {
+    "utility-template": "workflow-vram-utils-template.json"
+  }
+}

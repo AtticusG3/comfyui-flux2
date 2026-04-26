@@ -1,0 +1,60 @@
+{
+  "active": true,
+  "hubId": "comfyui-companion-executor",
+  "name": "ComfyUI Companion Executor",
+  "description": "Routes prompt intent to the best ComfyUI pack, asks for missing details, submits a workflow to ComfyUI, polls completion, and returns inline image markdown with download links.",
+  "version": "1.0.0",
+  "author": "comfyui-flux2",
+  "license": "MIT",
+  "entrypoint": {
+    "file": "handler.js",
+    "params": {
+      "userRequest": {
+        "description": "Natural language request from the user.",
+        "type": "string"
+      },
+      "workflowApiJson": {
+        "description": "ComfyUI API workflow JSON string. Supports placeholders __PROMPT__, __NEGATIVE__, __SOURCE_IMAGE_URL__ in string fields.",
+        "type": "string"
+      },
+      "taskType": {
+        "description": "Optional explicit task type: t2i or edit.",
+        "type": "string"
+      },
+      "sourceImageUrl": {
+        "description": "Optional source image URL/path for edit jobs.",
+        "type": "string"
+      },
+      "preferInlineImage": {
+        "description": "True to prefer markdown inline image output.",
+        "type": "boolean"
+      },
+      "cachedInstalledPacks": {
+        "description": "Optional JSON array string from RAG memory for confirmed installed pack selectors.",
+        "type": "string"
+      },
+      "comfyuiBaseUrl": {
+        "description": "ComfyUI API URL. Default http://localhost:8188.",
+        "type": "string"
+      },
+      "pollTimeoutSeconds": {
+        "description": "Polling timeout in seconds. Default 120.",
+        "type": "number"
+      },
+      "pollIntervalMs": {
+        "description": "Polling interval in milliseconds. Default 1500.",
+        "type": "number"
+      }
+    }
+  },
+  "examples": [
+    {
+      "prompt": "Generate a photoreal product image and run it now.",
+      "call": "{\"userRequest\":\"Generate a photoreal product image and run it now.\",\"taskType\":\"t2i\",\"workflowApiJson\":\"{\\\"3\\\":{\\\"inputs\\\":{\\\"text\\\":\\\"__PROMPT__\\\"},\\\"class_type\\\":\\\"CLIPTextEncode\\\"}}\"}"
+    },
+    {
+      "prompt": "Edit this image to remove clutter and execute.",
+      "call": "{\"userRequest\":\"Edit this image to remove clutter and execute.\",\"taskType\":\"edit\",\"sourceImageUrl\":\"https://example.com/in.png\",\"workflowApiJson\":\"{\\\"3\\\":{\\\"inputs\\\":{\\\"text\\\":\\\"__PROMPT__\\\"},\\\"class_type\\\":\\\"CLIPTextEncode\\\"},\\\"12\\\":{\\\"inputs\\\":{\\\"image\\\":\\\"__SOURCE_IMAGE_URL__\\\"},\\\"class_type\\\":\\\"LoadImage\\\"}}\"}"
+    }
+  ]
+}

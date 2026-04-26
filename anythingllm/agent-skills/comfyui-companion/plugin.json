@@ -1,0 +1,52 @@
+{
+  "active": true,
+  "hubId": "comfyui-companion",
+  "name": "ComfyUI Companion",
+  "description": "Routes image generation/editing requests to the best ComfyUI pack, asks clarifying questions, optimizes prompts by model family, and returns inline image markdown when available with download link fallback.",
+  "version": "1.0.0",
+  "author": "comfyui-flux2",
+  "license": "MIT",
+  "entrypoint": {
+    "file": "handler.js",
+    "params": {
+      "userRequest": {
+        "description": "The user request in plain text.",
+        "type": "string"
+      },
+      "taskType": {
+        "description": "Optional explicit type: t2i or edit.",
+        "type": "string"
+      },
+      "sourceImageUrl": {
+        "description": "Optional source image URL/path for edit tasks.",
+        "type": "string"
+      },
+      "preferInlineImage": {
+        "description": "True to prefer inline markdown image output.",
+        "type": "boolean"
+      },
+      "cachedInstalledPacks": {
+        "description": "Optional JSON array string of known installed pack selectors from RAG/memory cache.",
+        "type": "string"
+      },
+      "comfyuiBaseUrl": {
+        "description": "ComfyUI API base URL. Defaults to http://localhost:8188.",
+        "type": "string"
+      }
+    }
+  },
+  "examples": [
+    {
+      "prompt": "Make an anime girl standing in neon rain, full body, cinematic.",
+      "call": "{\"userRequest\":\"Make an anime girl standing in neon rain, full body, cinematic.\",\"taskType\":\"t2i\",\"preferInlineImage\":true}"
+    },
+    {
+      "prompt": "Edit this portrait and remove the clutter in the background.",
+      "call": "{\"userRequest\":\"Edit this portrait and remove the clutter in the background.\",\"taskType\":\"edit\",\"sourceImageUrl\":\"https://example.com/photo.png\",\"preferInlineImage\":true}"
+    },
+    {
+      "prompt": "Generate a photoreal product shot of a running shoe on white background.",
+      "call": "{\"userRequest\":\"Generate a photoreal product shot of a running shoe on white background.\",\"taskType\":\"t2i\",\"cachedInstalledPacks\":\"[\\\"klein-distilled\\\",\\\"sdxl-lightning\\\"]\"}"
+    }
+  ]
+}

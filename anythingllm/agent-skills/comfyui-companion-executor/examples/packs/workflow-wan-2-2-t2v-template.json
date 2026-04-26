@@ -1,0 +1,11 @@
+{
+  "_pack": "wan-2-2",
+  "_task": "t2v",
+  "_template": true,
+  "_note": "Starter template. Replace with API JSON exported from your Wan 2.2 workflow.",
+  "_placeholders": [
+    "__PROMPT__",
+    "__NEGATIVE__",
+    "__SOURCE_IMAGE_URL__"
+  ]
+}

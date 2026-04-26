@@ -1,0 +1,10 @@
+{
+  "_pack": "hunyuan-video",
+  "_task": "t2v",
+  "_template": true,
+  "_note": "Starter template. Replace with API JSON exported from your Hunyuan video workflow.",
+  "_placeholders": [
+    "__PROMPT__",
+    "__NEGATIVE__"
+  ]
+}

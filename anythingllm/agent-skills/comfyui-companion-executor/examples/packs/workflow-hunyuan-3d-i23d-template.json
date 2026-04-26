@@ -1,0 +1,10 @@
+{
+  "_pack": "hunyuan-3d",
+  "_task": "i2-3d",
+  "_template": true,
+  "_note": "Starter template. Replace with API JSON exported from your Hunyuan 3D workflow.",
+  "_placeholders": [
+    "__SOURCE_IMAGE_URL__",
+    "__PROMPT__"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "_pack": "trellis2-gguf",
+  "_task": "i2-3d",
+  "_template": true,
+  "_note": "Starter template. Replace with API JSON exported from your Trellis2 GGUF workflow.",
+  "_placeholders": [
+    "__SOURCE_IMAGE_URL__",
+    "__PROMPT__"
+  ]
+}

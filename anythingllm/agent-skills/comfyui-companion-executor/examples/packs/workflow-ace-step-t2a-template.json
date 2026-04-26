@@ -1,0 +1,10 @@
+{
+  "_pack": "ace-step",
+  "_task": "text-to-audio",
+  "_template": true,
+  "_note": "Starter template. Replace with API JSON exported from your ACE-Step workflow.",
+  "_placeholders": [
+    "__PROMPT__",
+    "__NEGATIVE__"
+  ]
+}

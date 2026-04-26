@@ -68,6 +68,9 @@ Executor examples are bundled at:
 
 - `anythingllm/agent-skills/comfyui-companion-executor/examples/workflow-t2i-api.json`
 - `anythingllm/agent-skills/comfyui-companion-executor/examples/workflow-edit-api.json`
+- `anythingllm/agent-skills/comfyui-companion-executor/examples/workflow-flux2-klein-distilled-t2i-api.json`
+- `anythingllm/agent-skills/comfyui-companion-executor/examples/workflow-flux2-klein-distilled-edit-api.json`
+- `anythingllm/agent-skills/comfyui-companion-executor/examples/packs/workflow-pack-variant-index.json`
 
 ## Environment Variables
 

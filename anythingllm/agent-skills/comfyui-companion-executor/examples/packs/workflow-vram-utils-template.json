@@ -1,0 +1,6 @@
+{
+  "_pack": "vram-utils",
+  "_task": "utility-cleanup",
+  "_template": true,
+  "_note": "Utility pack has no single generation graph. Use API endpoint POST /free and any installed cleanup nodes/workflows."
+}
