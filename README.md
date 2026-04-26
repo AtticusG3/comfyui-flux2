@@ -36,13 +36,15 @@ services:
     image: ghcr.io/atticusg3/comfyui-flux2:latest
     restart: unless-stopped
     environment:
-      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled,sdxl-lightning,vram-utils}
-      - HF_TOKEN=${HF_TOKEN:-hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
-      - LOW_VRAM=${LOW_VRAM:-true}
-      - AUTO_VRAM_ARGS=${AUTO_VRAM_ARGS:-true}
-      - RESERVE_VRAM_GB=${RESERVE_VRAM_GB:-1.2}
-      - NVFP4_SUPPORTED=${NVFP4_SUPPORTED:-false}
-      - NVFP4_MODE=${NVFP4_MODE:-official-only}
+      TZ: ${TZ:-UTC}
+      MODELS_DOWNLOAD: ${MODELS_DOWNLOAD:-klein-distilled,sdxl-lightning,vram-utils}
+      HF_TOKEN: ${HF_TOKEN:-hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
+      CIVITAI_API_KEY: ${CIVITAI_API_KEY:-}
+      LOW_VRAM: ${LOW_VRAM:-true}
+      AUTO_VRAM_ARGS: ${AUTO_VRAM_ARGS:-true}
+      RESERVE_VRAM_GB: ${RESERVE_VRAM_GB:-1.2}
+      NVFP4_SUPPORTED: ${NVFP4_SUPPORTED:-false}
+      NVFP4_MODE: ${NVFP4_MODE:-official-only}
     volumes:
       - "./data:/app"
       # Models
