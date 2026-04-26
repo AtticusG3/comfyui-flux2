@@ -25,6 +25,47 @@ docker-compose up -d
 
 Open ComfyUI at `http://localhost:8188`.
 
+## Docker Compose Example (Copy/Paste)
+
+If you are new to Docker Compose, start from this minimal file:
+
+```yaml
+services:
+  comfyui:
+    container_name: comfyui-flux2
+    image: ghcr.io/atticusg3/comfyui-flux2:latest
+    restart: unless-stopped
+    environment:
+      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled,sdxl-lightning,vram-utils}
+      - HF_TOKEN=${HF_TOKEN:-hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
+      - LOW_VRAM=${LOW_VRAM:-true}
+      - AUTO_VRAM_ARGS=${AUTO_VRAM_ARGS:-true}
+      - RESERVE_VRAM_GB=${RESERVE_VRAM_GB:-1.2}
+    volumes:
+      - "./data:/app"
+      # Models
+      - ~/comfyui/models:/app/ComfyUI/models
+      # Workflows
+      - ~/comfyui/workflows:/app/ComfyUI/user/default/workflows
+      # I/O folders
+      - ~/comfyui/output:/app/ComfyUI/output
+      - ~/comfyui/input:/app/ComfyUI/input
+    ports:
+      - "8188:8188"
+    gpus: all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+```
+
+Notes:
+
+- On Linux/macOS, `~` paths work as shown. On Windows, replace those with full paths (for example `C:/comfyui/models:/app/ComfyUI/models`).
+- Replace the placeholder `HF_TOKEN` value or set it empty if your selected packs do not require gated Hugging Face downloads.
+
 ## API Access
 
 The container exposes ComfyUI's normal UI and local API on port `8188`.
