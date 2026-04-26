@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.5] -- Round 2: NewBie Pack Remediation
+
+### Fixed
+- newbie-image pack completely rebuilt after architecture misidentification in the initial prompt run. The model is Next-DiT (NewBie-image-Exp0.1), not SDXL. Changes:
+  - Replaced the workflow set with clean low/high variants derived from the official Comfy-Org template (`image_newbieimage_exp0_1-t2i.json`).
+  - Added `ComfyUI-NewBie` custom node repo to `scripts/packs/newbie-image/nodes.txt` (`https://github.com/E-Anlia/ComfyUI-NewBie`).
+  - Set low/high tier workflow runtime defaults for newbie variants (low: 20 steps, 896x896; high: 28 steps, 1024x1024).
+  - Removed SDXL-style negative-prompt injection for newbie variants and restored XML-structured themed prompts aligned with the pack's expected prompt format.
+  - Updated README newbie-image pack notes to reflect Next-DiT architecture and dual-encoder requirements.
+
+### Audited
+- Ran a read-only workflow contamination audit across non-newbie packs after prior global prompt injection pass; flagged anomalies for manual follow-up without auto-modifying other packs.
+
 ## [Unreleased]
 
 ### Added
