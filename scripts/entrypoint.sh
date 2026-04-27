@@ -476,6 +476,40 @@ install_reqs() {
     fi
 }
 
+# Ensure ComfyUI frontend package tracks the version required by ComfyUI.
+# ComfyUI now ships frontend separately via pip package.
+ensure_comfyui_frontend_package() {
+    local req="$1"
+    if [ ! -f "$req" ]; then
+        return 0
+    fi
+
+    local frontend_req
+    frontend_req=$(awk '
+        {
+            line=$0
+            sub(/[[:space:]]*#.*/, "", line)
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
+            if (tolower(line) ~ /^comfyui-frontend-package([<>=!~].*)?$/) {
+                print line
+                exit
+            }
+        }
+    ' "$req")
+
+    if [ -z "$frontend_req" ]; then
+        return 0
+    fi
+
+    echo "[INFO] Ensuring ComfyUI frontend package is up to date: $frontend_req"
+    if ! uv pip install --upgrade "$frontend_req"; then
+        echo "[WARN] uv frontend package upgrade failed; trying pip fallback..."
+        if ! python3 -m pip install --upgrade "$frontend_req"; then
+            echo "[WARN] Frontend package upgrade failed. ComfyUI may warn about frontend version mismatch."
+        fi
+    fi
+}
+
 # Install requirements for every existing custom node directory.
 # This covers nodes added outside pack metadata (e.g. manually installed repos).
 install_all_custom_node_reqs() {
@@ -542,6 +576,7 @@ CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
 # ComfyUI
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
 install_reqs "${COMFYUI_DIR}/requirements.txt"
+ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
 
 # ComfyUI-Manager
 mkdir -p "$CUSTOM_NODES_DIR"
@@ -1004,6 +1039,17 @@ for sel in $SELECTORS_LC; do
                 repo_name=$(basename "$git_url" .git)
                 repo_branch=$(echo "$line" | awk '{print $2}')
                 target_dir="/app/ComfyUI/custom_nodes/$repo_name"
+
+                # Historical cleanup: older newbie pack pointed to a ComfyUI fork
+                # (ComfyUI-NewBie) instead of the NewBie custom node repo.
+                # Remove stale bad clone to avoid import failures at startup.
+                if [ "$repo_name" == "ComfyUI-Newbie-Nodes" ]; then
+                    legacy_newbie_dir="/app/ComfyUI/custom_nodes/ComfyUI-NewBie"
+                    if [ -d "$legacy_newbie_dir" ] && [ ! -f "$legacy_newbie_dir/__init__.py" ]; then
+                        echo "  [WARN] Removing stale legacy node folder: ComfyUI-NewBie"
+                        rm -rf "$legacy_newbie_dir"
+                    fi
+                fi
 
                 echo "  [SYNC] $repo_name"
                 if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then

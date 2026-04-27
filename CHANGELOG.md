@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.8] -- NewBie Node Source Fix and Frontend Auto-Upgrade
+
+### Fixed
+- Corrected `newbie-image` custom node source to `NewBieAI-Lab/ComfyUI-Newbie-Nodes` instead of the previously referenced `E-Anlia/ComfyUI-NewBie` fork, preventing startup import failures from missing `__init__.py`.
+- Added legacy cleanup during pack node sync to remove stale `/app/ComfyUI/custom_nodes/ComfyUI-NewBie` directories that were created from the old source and can break imports.
+- Added startup frontend package reconciliation so containers automatically upgrade `comfyui-frontend-package` from ComfyUI `requirements.txt`, addressing frontend version mismatch warnings.
+
 ## [1.2.7] -- Trellis Linux Hardening and SDXL Lightning Realignment
 
 ### Fixed
