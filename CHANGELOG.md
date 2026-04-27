@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.9] -- Publish :main Docker Alias
+
+### Changed
+- Updated `.github/workflows/docker-publish.yml` so default cu130 image publishes both `:latest` and `:main` tags on default-branch builds.
+- Keeps existing CUDA-suffixed tags unchanged (`-cu126`, `-cu128`, `-cu130`) while making `:main` mirror `:latest` for users pinned to the branch-style tag.
+
 ## [1.2.8] -- NewBie Node Source Fix and Frontend Auto-Upgrade
 
 ### Fixed
