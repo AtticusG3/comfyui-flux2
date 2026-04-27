@@ -259,7 +259,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "Change the woman's clothing from the bathrobe to a fashionable modern outfit while preserving her exact facial features, dark skin tone, pose, expression, and hand position. Keep her seated on the rattan chair in the exact same position, maintain the same scene with dusty rose pink wall, arched alcove, tropical plants, woven baskets, and all background elements unchanged. Only modify the clothing from bathrobe and towel turban to contemporary fashion wear.",
+        "Transform the vehicle into a widebody Mazda RX-7 FD3S with rocket bunny kit, deep metallic midnight blue paint, matching the original composition and lighting, Akihabara streetscape background at night with neon billboards, keep the same road surface and reflections",
         "flux-2-klein-4b-fp8.safetensors",
         "qwen_3_4b.safetensors",
         "flux2-vae.safetensors"
@@ -349,7 +349,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "stylize the handbag in image1 with the colours and logo from image 2",
+        "Transform the vehicle into a widebody Mazda RX-7 FD3S with rocket bunny kit, deep metallic midnight blue paint, matching the original composition and lighting, Akihabara streetscape background at night with neon billboards, keep the same road surface and reflections",
         "flux-2-klein-4b-fp8.safetensors",
         "qwen_3_4b.safetensors",
         "flux2-vae.safetensors"
@@ -1199,7 +1199,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "Change the woman's clothing from the bathrobe to a fashionable modern outfit while preserving her exact facial features, dark skin tone, pose, expression, and hand position. Keep her seated on the rattan chair in the exact same position, maintain the same scene with dusty rose pink wall, arched alcove, tropical plants, woven baskets, and all background elements unchanged. Only modify the clothing from bathrobe and towel turban to contemporary fashion wear."
+              "Transform the vehicle into a widebody Mazda RX-7 FD3S with rocket bunny kit, deep metallic midnight blue paint, matching the original composition and lighting, Akihabara streetscape background at night with neon billboards, keep the same road surface and reflections"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -2629,7 +2629,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "stylize the handbag in image1 with the colours and logo from image 2"
+              "Transform the vehicle into a widebody Mazda RX-7 FD3S with rocket bunny kit, deep metallic midnight blue paint, matching the original composition and lighting, Akihabara streetscape background at night with neon billboards, keep the same road surface and reflections"
             ],
             "color": "#232",
             "bgcolor": "#353"

@@ -235,7 +235,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "Replace the background with a quiet coastal cliff at overcast sunset. Remove all buildings and streets. Add wind-shaped grass and a distant ocean horizon. Keep the subject’s pose and framing unchanged.",
+        "Transform the foreground vehicle into a Nissan Fairlady 370Z Nismo in satin gunmetal with a bosozoku-inspired aero setup, preserving original camera angle and lighting, Harajuku side street with lit paper lantern signs and manga billboards in the background, maintain existing pavement texture and reflections",
         432262096973502,
         null,
         "flux-2-klein-9b-fp8.safetensors",
@@ -327,7 +327,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "stylize the handbag in image1 with the colours and logo from image 2",
+        "Transform the foreground vehicle into a Nissan Fairlady 370Z Nismo in satin gunmetal with a bosozoku-inspired aero setup, preserving original camera angle and lighting, Harajuku side street with lit paper lantern signs and manga billboards in the background, maintain existing pavement texture and reflections",
         432262096973495,
         null,
         "flux-2-klein-9b-fp8.safetensors",
@@ -1225,7 +1225,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "Replace the background with a quiet coastal cliff at overcast sunset. Remove all buildings and streets. Add wind-shaped grass and a distant ocean horizon. Keep the subject’s pose and framing unchanged."
+              "Transform the foreground vehicle into a Nissan Fairlady 370Z Nismo in satin gunmetal with a bosozoku-inspired aero setup, preserving original camera angle and lighting, Harajuku side street with lit paper lantern signs and manga billboards in the background, maintain existing pavement texture and reflections"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -2685,7 +2685,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "stylize the handbag in image1 with the colours and logo from image 2"
+              "Transform the foreground vehicle into a Nissan Fairlady 370Z Nismo in satin gunmetal with a bosozoku-inspired aero setup, preserving original camera angle and lighting, Harajuku side street with lit paper lantern signs and manga billboards in the background, maintain existing pavement texture and reflections"
             ],
             "color": "#232",
             "bgcolor": "#353"

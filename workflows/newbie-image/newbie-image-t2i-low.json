@@ -80,7 +80,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "You are an assistant designed to generate high-quality anime images with the highest degree of image-text alignment based on xml format textual prompts. <Prompt Start>\n{\n\"character_1\": {\n\"bbox\": [\n0,\n0,\n1000,\n1000\n],\n\"name\": \"$character_1$\"\n},\n\"image\": {\n\"tags\": \"\n{user_prompt}\n\",\n\"caption\": \"{caption}\"\n}\n}"
+        "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> <background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> <style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> <quality>masterpiece, best quality, 8k, sharp</quality>"
       ]
     },
     {
@@ -184,7 +184,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "An extremely detailed, vibrant, and dynamic digital illustration in an anime style features a young girl, identified as $character_1$, in an extreme close-up, tight shot, captured with a dramatic Dutch angle[cite: 36, 38]. $Character_1$, who resembles Roxy Migurdia, is positioned to fill the entire frame in the center-foreground, creating an intense, immersive perspective[cite: 15, 32]. She has long, bright **blue hair** that appears to be floating dynamically around her head and shoulders, with a small **ahoge** visible on top[cite: 31, 32]. Her intense, **concerned blue eyes** with sharp pupils stare directly out of the frame toward the viewer, conveying a serious and focused expression, categorized as **jitome**[cite: 31, 34]. The top half of her face is obscured by a shadow cast by her very large, wide-brimmed **black witch hat**, creating a dramatic **cut light** effect that enhances the intense atmosphere and contributes to her shaded face[cite: 36, 37]. She is wearing a complex, **multicolored outfit** that includes a high-collared garment, possibly a coat or shawl, over what appears to be a **white and blue dress** with intricate trim, suggesting a magical or fantasy setting[cite: 31]. The clothing is obscured in parts by the surrounding special effects[cite: 38]. Her action is highly dynamic: her left arm extends dramatically out of the image plane, with her **hand open and pointing towards the camera**[cite: 32]. Her right hand is used to hold or adjust the brim of the large hat on her head[cite: 32]. The entire scene is enveloped in a powerful, dynamic effect of **fluid dynamics** and a **vortex**[cite: 36, 38]. **Cerulean blue water, or fluid**, is spiraling and swirling around her body and hand, creating a **three-dimensional spiral structure** that dominates the composition[cite: 38]. Scattered among the fluid are multiple sharp, glowing **blue crystal petals** and shards, giving the scene a magical and crystalline quality[cite: 37, 38]. The art style is defined by high resolution, best quality, and master-level detail, with noticeable artistic effects such as **chromatic aberration** and **bokeh** enhancing the sense of motion and depth[cite: 37]. The dark, abstract background further emphasizes the character and the vibrant blue light of the surrounding magical effects[cite: 36]. The lighting is highly dramatic, with a strong, artificial light source highlighting the crystalline fluids and the bottom of her face[cite: 37]. This is an illustration with an epic composition[cite: 36]."
+        "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> <background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> <style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> <quality>masterpiece, best quality, 8k, sharp</quality>"
       ]
     },
     {
@@ -286,7 +286,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "<character_1>\n<n>$touge_racer$</n>\n<gender>1girl</gender>\n<appearance>long_hair, silver_hair, wind-blown_hair, sharp_eyes, red_eyes,\nracing_helmet_off, helmet_under_arm, athletic_build</appearance>\n<clothing>racing_suit, open_collar, red_racing_suit, white_stripes,\nracing_gloves, boots, sponsor_logos</clothing>\n<expression>determined, slight_smirk, focused</expression>\n<action>leaning_against_car, arms_crossed, looking_at_viewer</action>\n<position>center</position>\n</character_1>\n\n<general_tags>\n<count>1girl, solo</count>\n<style>anime_style, dynamic_lighting, detailed, high_resolution</style>\n<background>mountain_pass, night, hairpin_corner, guardrail, cedar_forest,\nheadlights_illuminating_road, stars_visible, dark_sky, AE86_trueno_in_background,\ninitial_d_aesthetic</background>\n<atmosphere>intense, cool, midnight_touge</atmosphere>\n<quality>masterpiece, best_quality, 8k, sharp_focus, detailed_clothing</quality>\n<objects>racing_helmet, car_keys, gloves</objects>\n<other>touge, japanese_mountain_road, racing_culture</other>\n</general_tags>"
+        "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> <background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> <style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> <quality>masterpiece, best quality, 8k, sharp</quality>"
       ]
     },
     {
@@ -424,7 +424,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "",
+        "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> <background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> <style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> <quality>masterpiece, best quality, 8k, sharp</quality>",
         "You are an assistant designed to generate low-quality images based on textual prompts. <Prompt Start>",
         null,
         null,
@@ -1077,7 +1077,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> <background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> <style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> <quality>masterpiece, best quality, 8k, sharp</quality>"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -1138,7 +1138,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "You are an assistant designed to generate low-quality images based on textual prompts. <Prompt Start>"
+              "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> <background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> <style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> <quality>masterpiece, best quality, 8k, sharp</quality>"
             ],
             "color": "#223",
             "bgcolor": "#335"

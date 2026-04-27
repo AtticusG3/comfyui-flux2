@@ -80,7 +80,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "You are an assistant designed to generate high-quality anime images with the highest degree of image-text alignment based on xml format textual prompts. <Prompt Start>\n{\n\"character_1\": {\n\"bbox\": [\n0,\n0,\n1000,\n1000\n],\n\"name\": \"$character_1$\"\n},\n\"image\": {\n\"tags\": \"\n{user_prompt}\n\",\n\"caption\": \"{caption}\"\n}\n}"
+        "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> <quality>masterpiece, best quality</quality>"
       ]
     },
     {
@@ -184,7 +184,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "An extremely detailed, vibrant, and dynamic digital illustration in an anime style features a young girl, identified as $character_1$, in an extreme close-up, tight shot, captured with a dramatic Dutch angle[cite: 36, 38]. $Character_1$, who resembles Roxy Migurdia, is positioned to fill the entire frame in the center-foreground, creating an intense, immersive perspective[cite: 15, 32]. She has long, bright **blue hair** that appears to be floating dynamically around her head and shoulders, with a small **ahoge** visible on top[cite: 31, 32]. Her intense, **concerned blue eyes** with sharp pupils stare directly out of the frame toward the viewer, conveying a serious and focused expression, categorized as **jitome**[cite: 31, 34]. The top half of her face is obscured by a shadow cast by her very large, wide-brimmed **black witch hat**, creating a dramatic **cut light** effect that enhances the intense atmosphere and contributes to her shaded face[cite: 36, 37]. She is wearing a complex, **multicolored outfit** that includes a high-collared garment, possibly a coat or shawl, over what appears to be a **white and blue dress** with intricate trim, suggesting a magical or fantasy setting[cite: 31]. The clothing is obscured in parts by the surrounding special effects[cite: 38]. Her action is highly dynamic: her left arm extends dramatically out of the image plane, with her **hand open and pointing towards the camera**[cite: 32]. Her right hand is used to hold or adjust the brim of the large hat on her head[cite: 32]. The entire scene is enveloped in a powerful, dynamic effect of **fluid dynamics** and a **vortex**[cite: 36, 38]. **Cerulean blue water, or fluid**, is spiraling and swirling around her body and hand, creating a **three-dimensional spiral structure** that dominates the composition[cite: 38]. Scattered among the fluid are multiple sharp, glowing **blue crystal petals** and shards, giving the scene a magical and crystalline quality[cite: 37, 38]. The art style is defined by high resolution, best quality, and master-level detail, with noticeable artistic effects such as **chromatic aberration** and **bokeh** enhancing the sense of motion and depth[cite: 37]. The dark, abstract background further emphasizes the character and the vibrant blue light of the surrounding magical effects[cite: 36]. The lighting is highly dramatic, with a strong, artificial light source highlighting the crystalline fluids and the bottom of her face[cite: 37]. This is an illustration with an epic composition[cite: 36]."
+        "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> <quality>masterpiece, best quality</quality>"
       ]
     },
     {
@@ -286,7 +286,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "<character_1>\n<n>$rei_type$</n>\n<gender>1girl</gender>\n<appearance>short_hair, pale_blue_hair, red_eyes, emotionless_expression,\nfair_skin, slender</appearance>\n<clothing>NERV_plugsuit, white_plugsuit, interface_headset,\nform_fitting_suit, pilot_suit</clothing>\n<expression>calm, neutral, slightly_vacant_gaze</expression>\n<action>standing, hands_at_sides, looking_at_viewer</action>\n<position>center_left</position>\n</character_1>\n\n<character_2>\n<n>$asuka_type$</n>\n<gender>1girl</gender>\n<appearance>long_hair, auburn_hair, twin_tails, blue_eyes, confident_expression,\nathletic, fair_skin</appearance>\n<clothing>red_plugsuit, NERV_pilot_suit, interface_headset,\nform_fitting_suit, sponsor_logos</clothing>\n<expression>fierce, competitive, smirking, one_eye_closed</expression>\n<action>hand_on_hip, leaning_forward, pointing_at_viewer</action>\n<position>center_right</position>\n</character_2>\n\n<general_tags>\n<count>2girls, multiple_girls</count>\n<style>anime_style, evangelion_aesthetic, cinematic_composition,\ndramatic_lighting, detailed, high_resolution</style>\n<background>geofront_interior, NERV_headquarters, massive_cavern,\ndramatic_architecture, shaft_of_light, industrial_pipes, depth_of_field,\nTokyo-3_skyline_visible_through_window</background>\n<atmosphere>dramatic, intense, pre_battle, sci-fi</atmosphere>\n<quality>masterpiece, best_quality, 8k, sharp_focus, complex_background</quality>\n<objects>entry_plug, equipment_racks, holographic_displays</objects>\n<other>neon_genesis_evangelion_inspired, original_characters, mecha_universe</other>\n</general_tags>"
+        "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> <quality>masterpiece, best quality</quality>"
       ]
     },
     {
@@ -424,7 +424,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "",
+        "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> <quality>masterpiece, best quality</quality>",
         "You are an assistant designed to generate low-quality images based on textual prompts. <Prompt Start>",
         null,
         null,
@@ -1077,7 +1077,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> <quality>masterpiece, best quality</quality>"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -1138,7 +1138,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "You are an assistant designed to generate low-quality images based on textual prompts. <Prompt Start>"
+              "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> <quality>masterpiece, best quality</quality>"
             ],
             "color": "#223",
             "bgcolor": "#335"

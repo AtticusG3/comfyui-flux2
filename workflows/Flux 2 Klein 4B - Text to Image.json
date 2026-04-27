@@ -104,7 +104,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "A cheerful hedgehog at a birthday table, tiny striped party hat, colorful confetti in motion, disposable flash camera look, authentic 2000s digicam grain, candid framing, soft motion blur, warm indoor tungsten lighting, realistic fur detail\n"
+        "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field"
       ]
     },
     {
@@ -187,7 +187,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "",
+        "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field",
         1024,
         1024,
         "flux-2-klein-4b-fp8.safetensors",
@@ -740,7 +740,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field"
             ],
             "color": "#322",
             "bgcolor": "#533"
@@ -1129,7 +1129,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -2223,7 +2223,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field"
             ],
             "color": "#232",
             "bgcolor": "#353"

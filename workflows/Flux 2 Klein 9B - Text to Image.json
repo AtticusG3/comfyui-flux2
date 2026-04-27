@@ -81,7 +81,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "A restored vintage motorcycle parked outside a chrome retro diner at blue-hour sunset, neon signs reflecting on wet pavement, cinematic 80s analog photo look, subtle halation, fine film grain, orange-pink sky gradient, shallow depth of field\n"
+        "Rei Ayanami standing at the entrance of a Shinto shrine at golden hour, wearing her NERV plugsuit, cherry blossom petals falling, giant EVA Unit-00 silhouetted in the background behind the shrine gate, dramatic backlight, photorealistic, 4K sharp detail, film grain"
       ]
     },
     {
@@ -229,7 +229,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "",
+        "Rei Ayanami standing at the entrance of a Shinto shrine at golden hour, wearing her NERV plugsuit, cherry blossom petals falling, giant EVA Unit-00 silhouetted in the background behind the shrine gate, dramatic backlight, photorealistic, 4K sharp detail, film grain",
         1024,
         1024,
         "flux-2-klein-9b-fp8.safetensors",
@@ -784,7 +784,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "Rei Ayanami standing at the entrance of a Shinto shrine at golden hour, wearing her NERV plugsuit, cherry blossom petals falling, giant EVA Unit-00 silhouetted in the background behind the shrine gate, dramatic backlight, photorealistic, 4K sharp detail, film grain"
             ],
             "color": "#322",
             "bgcolor": "#533"
@@ -1173,7 +1173,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "Rei Ayanami standing at the entrance of a Shinto shrine at golden hour, wearing her NERV plugsuit, cherry blossom petals falling, giant EVA Unit-00 silhouetted in the background behind the shrine gate, dramatic backlight, photorealistic, 4K sharp detail, film grain"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -2269,7 +2269,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              ""
+              "Rei Ayanami standing at the entrance of a Shinto shrine at golden hour, wearing her NERV plugsuit, cherry blossom petals falling, giant EVA Unit-00 silhouetted in the background behind the shrine gate, dramatic backlight, photorealistic, 4K sharp detail, film grain"
             ],
             "color": "#232",
             "bgcolor": "#353"

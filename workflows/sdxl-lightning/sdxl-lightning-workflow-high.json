@@ -168,7 +168,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "Honda NSX-R rolling through floodlit Shibuya at night rain, neon reflections, medium-format photoreal texture"
+        "Shibuya crossing at 3am during a typhoon, a heavily modified Honda NSX-R C30 with Kanjo style livery rolling through standing water, reflections of red and white traffic lights on the flooded road surface, background figures with umbrellas, cinematic anamorphic bokeh, Hasselblad medium-format texture, photorealistic"
       ]
     },
     {
@@ -207,7 +207,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "(octane render, render, drawing, anime, bad photo, bad photography:1.3), (worst quality, low quality, blurry:1.2), (bad teeth, deformed teeth, deformed lips), (bad anatomy, bad proportions:1.1), (deformed iris, deformed pupils), (deformed eyes, bad eyes), (deformed face, ugly face, bad face), (deformed hands, bad hands, fused fingers), morbid, mutilated, mutation, disfigured"
+        "worst quality, low quality, normal quality, jpeg artifacts, blurry, watermark, signature, text overlay, deformed, bad anatomy, extra fingers, mutated hands, disfigured, (poorly drawn hands:1.3), bad proportions, cropped, out of frame, overexposed, underexposed"
       ]
     },
     {
