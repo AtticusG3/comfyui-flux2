@@ -177,10 +177,66 @@ doctor_probe_provider() {
             ;;
     esac
 
-    if curl "${curl_args[@]}" "$url" >/dev/null 2>&1; then
+    # Prefer curl when available. If missing or inconclusive, fallback to Python.
+    # Host reachability is considered OK even when HTTP status is denied
+    # (401/403/404/405), because that still proves DNS/TCP/TLS path works.
+    if command -v curl >/dev/null 2>&1; then
+        local http_code
+        if http_code=$(curl "${curl_args[@]}" --output /dev/null --write-out '%{http_code}' "$url" 2>/dev/null); then
+            if [ -n "$http_code" ] && [ "$http_code" != "000" ]; then
+                echo "[OK] Connectivity doctor: $provider reachable ($mode), http=$http_code."
+                return 0
+            fi
+        fi
+    fi
+
+    local py_proxy=""
+    if [ "$mode" == "proxy" ] && [ -n "$proxy" ]; then
+        py_proxy="$proxy"
+    fi
+    if PROVIDER="$provider" PROBE_URL="$url" PROBE_PROXY="$py_proxy" python3 - <<'PY'
+import os
+import sys
+import urllib.request
+import urllib.error
+
+url = os.environ.get("PROBE_URL", "")
+proxy = os.environ.get("PROBE_PROXY", "")
+
+opener = urllib.request.build_opener()
+if proxy:
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({"http": proxy, "https": proxy})
+    )
+
+req = urllib.request.Request(url, method="HEAD")
+try:
+    with opener.open(req, timeout=12) as resp:
+        code = getattr(resp, "status", 200)
+        print(code)
+        sys.exit(0)
+except urllib.error.HTTPError as e:
+    # HTTP error still confirms network path to provider.
+    print(e.code)
+    sys.exit(0)
+except Exception:
+    # Retry with GET in case HEAD is blocked.
+    try:
+        req = urllib.request.Request(url, method="GET")
+        with opener.open(req, timeout=12) as resp:
+            code = getattr(resp, "status", 200)
+            print(code)
+            sys.exit(0)
+    except urllib.error.HTTPError as e:
+        print(e.code)
+        sys.exit(0)
+    except Exception:
+        sys.exit(1)
+PY
+    then
         echo "[OK] Connectivity doctor: $provider reachable ($mode)."
     else
-        echo "[WARN] Connectivity doctor: $provider probe failed ($mode) -> $url"
+        echo "[WARN] Connectivity doctor: $provider network probe failed ($mode) -> $url"
     fi
 }
 
