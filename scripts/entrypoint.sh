@@ -3,6 +3,206 @@
 set -e
 
 # =============================================================================
+# Connectivity Routing (restricted-network support)
+# =============================================================================
+# Route modes:
+# - direct: no proxy, default resolver behavior
+# - proxy: use provider-specific or global proxy URL
+# - smart-dns: no proxy, but prefer provider-specific DNS resolvers for aria2
+# - vpn: no proxy override; assumes host/container networking already routes via VPN
+
+normalize_mode() {
+    local mode
+    mode=$(echo "${1:-direct}" | tr '[:upper:]' '[:lower:]')
+    case "$mode" in
+        direct|proxy|smart-dns|vpn)
+            echo "$mode"
+            ;;
+        *)
+            echo "[WARN] Unknown connectivity mode '$1'. Falling back to direct."
+            echo "direct"
+            ;;
+    esac
+}
+
+CONNECTIVITY_ROUTE_DEFAULT=$(normalize_mode "${CONNECTIVITY_ROUTE_DEFAULT:-direct}")
+CONNECTIVITY_ROUTE_HUGGINGFACE="${CONNECTIVITY_ROUTE_HUGGINGFACE:-inherit}"
+CONNECTIVITY_ROUTE_GITHUB="${CONNECTIVITY_ROUTE_GITHUB:-inherit}"
+CONNECTIVITY_ROUTE_CIVITAI="${CONNECTIVITY_ROUTE_CIVITAI:-inherit}"
+
+PROXY_URL="${PROXY_URL:-}"
+HUGGINGFACE_PROXY_URL="${HUGGINGFACE_PROXY_URL:-}"
+GITHUB_PROXY_URL="${GITHUB_PROXY_URL:-}"
+CIVITAI_PROXY_URL="${CIVITAI_PROXY_URL:-}"
+
+DNS_SERVERS="${DNS_SERVERS:-}"
+HUGGINGFACE_DNS_SERVERS="${HUGGINGFACE_DNS_SERVERS:-}"
+GITHUB_DNS_SERVERS="${GITHUB_DNS_SERVERS:-}"
+CIVITAI_DNS_SERVERS="${CIVITAI_DNS_SERVERS:-}"
+
+resolve_route_mode() {
+    local provider="$1"
+    local candidate="inherit"
+    case "$provider" in
+        huggingface) candidate="$CONNECTIVITY_ROUTE_HUGGINGFACE" ;;
+        github) candidate="$CONNECTIVITY_ROUTE_GITHUB" ;;
+        civitai) candidate="$CONNECTIVITY_ROUTE_CIVITAI" ;;
+    esac
+    if [ -z "$candidate" ] || [ "$candidate" == "inherit" ]; then
+        echo "$CONNECTIVITY_ROUTE_DEFAULT"
+        return 0
+    fi
+    normalize_mode "$candidate" | tail -n 1
+}
+
+resolve_proxy_url() {
+    local provider="$1"
+    local specific=""
+    case "$provider" in
+        huggingface) specific="$HUGGINGFACE_PROXY_URL" ;;
+        github) specific="$GITHUB_PROXY_URL" ;;
+        civitai) specific="$CIVITAI_PROXY_URL" ;;
+    esac
+    if [ -n "$specific" ]; then
+        echo "$specific"
+    else
+        echo "$PROXY_URL"
+    fi
+}
+
+resolve_dns_servers() {
+    local provider="$1"
+    local specific=""
+    case "$provider" in
+        huggingface) specific="$HUGGINGFACE_DNS_SERVERS" ;;
+        github) specific="$GITHUB_DNS_SERVERS" ;;
+        civitai) specific="$CIVITAI_DNS_SERVERS" ;;
+    esac
+    if [ -n "$specific" ]; then
+        echo "$specific"
+    else
+        echo "$DNS_SERVERS"
+    fi
+}
+
+provider_for_url() {
+    local url="$1"
+    local host
+    host=$(echo "$url" | sed -E 's#^[a-zA-Z]+://([^/]+).*#\1#')
+    case "$host" in
+        huggingface.co|hf.co|cdn-lfs.huggingface.co)
+            echo "huggingface"
+            ;;
+        github.com|raw.githubusercontent.com|objects.githubusercontent.com|api.github.com|codeload.github.com)
+            echo "github"
+            ;;
+        civitai.com|*.civitai.com)
+            echo "civitai"
+            ;;
+        *)
+            echo "other"
+            ;;
+    esac
+}
+
+git_with_connectivity() {
+    local provider="$1"
+    shift
+    local mode
+    mode=$(resolve_route_mode "$provider")
+    local proxy
+    proxy=$(resolve_proxy_url "$provider")
+    if [ "$mode" == "proxy" ]; then
+        if [ -z "$proxy" ]; then
+            echo "[WARN] $provider route=proxy but no proxy URL set; using direct git."
+            git "$@"
+        else
+            git -c http.proxy="$proxy" -c https.proxy="$proxy" "$@"
+        fi
+        return $?
+    fi
+    if [ "$mode" == "smart-dns" ]; then
+        echo "[INFO] $provider route=smart-dns for git (DNS settings depend on container resolver)."
+    elif [ "$mode" == "vpn" ]; then
+        echo "[INFO] $provider route=vpn for git (expects host/container VPN path)."
+    fi
+    git "$@"
+}
+
+print_connectivity_summary() {
+    local p
+    echo "########################################"
+    echo "[INFO] Connectivity routing"
+    echo "########################################"
+    echo "Default route: $CONNECTIVITY_ROUTE_DEFAULT"
+    for p in huggingface github civitai; do
+        local mode
+        mode=$(resolve_route_mode "$p")
+        local proxy
+        proxy=$(resolve_proxy_url "$p")
+        local dns
+        dns=$(resolve_dns_servers "$p")
+        echo "  - $p: mode=$mode proxy=${proxy:-<none>} dns=${dns:-<default>}"
+    done
+    echo "----------------------------------------"
+}
+
+doctor_probe_provider() {
+    local provider="$1"
+    local url="$2"
+    local mode
+    mode=$(resolve_route_mode "$provider")
+    local proxy
+    proxy=$(resolve_proxy_url "$provider")
+    local dns
+    dns=$(resolve_dns_servers "$provider")
+
+    local curl_args=(-I --silent --show-error --location --max-time 12)
+    case "$mode" in
+        proxy)
+            if [ -n "$proxy" ]; then
+                curl_args+=(-x "$proxy")
+            else
+                echo "[WARN] Connectivity doctor: $provider route=proxy but no proxy URL set."
+            fi
+            ;;
+        smart-dns)
+            # curl cannot set DNS resolver directly in a portable way; this is a hint only.
+            if [ -n "$dns" ]; then
+                echo "[INFO] Connectivity doctor: $provider smart-dns configured ($dns). Probe uses container resolver."
+            fi
+            ;;
+        vpn)
+            echo "[INFO] Connectivity doctor: $provider route=vpn (expects host/container VPN path)."
+            ;;
+    esac
+
+    if curl "${curl_args[@]}" "$url" >/dev/null 2>&1; then
+        echo "[OK] Connectivity doctor: $provider reachable ($mode)."
+    else
+        echo "[WARN] Connectivity doctor: $provider probe failed ($mode) -> $url"
+    fi
+}
+
+connectivity_doctor() {
+    local enabled_lc
+    enabled_lc=$(echo "${CONNECTIVITY_DOCTOR_ENABLED:-true}" | tr '[:upper:]' '[:lower:]')
+    if [ "$enabled_lc" != "true" ]; then
+        echo "[INFO] Connectivity doctor disabled (CONNECTIVITY_DOCTOR_ENABLED=false)."
+        return 0
+    fi
+
+    echo ""
+    echo "########################################"
+    echo "[INFO] Connectivity doctor preflight"
+    echo "########################################"
+    doctor_probe_provider "huggingface" "https://huggingface.co/"
+    doctor_probe_provider "github" "https://github.com/"
+    doctor_probe_provider "civitai" "https://civitai.com/"
+    echo "----------------------------------------"
+}
+
+# =============================================================================
 # Permission Fixes for Docker Volumes
 # =============================================================================
 # Docker named volumes and bind mounts may have incorrect ownership from
@@ -51,53 +251,161 @@ clone_or_update() {
         sudo chown -R "$(id -u):$(id -g)" "${dir}/.git"
     fi
 
+    local provider
+    provider=$(provider_for_url "$url")
+
     if [ -d "${dir}/.git" ]; then
         echo "[INFO] Updating ${name}..."
         cd "$dir"
         # Ensure remote is configured (handles partially initialized repos)
-        if git remote get-url origin >/dev/null 2>&1; then
-            git remote set-url origin "$url"
+        if git_with_connectivity "$provider" remote get-url origin >/dev/null 2>&1; then
+            git_with_connectivity "$provider" remote set-url origin "$url"
         else
-            git remote add origin "$url"
+            git_with_connectivity "$provider" remote add origin "$url"
         fi
         if [ -n "$branch" ]; then
-            git fetch origin "$branch"
-            git reset --hard "origin/${branch}"
+            git_with_connectivity "$provider" fetch origin "$branch"
+            git_with_connectivity "$provider" reset --hard "origin/${branch}"
         else
-            git fetch origin
-            default_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
+            git_with_connectivity "$provider" fetch origin
+            default_branch=$(git_with_connectivity "$provider" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
             default_branch=${default_branch:-main}
-            git reset --hard "origin/${default_branch}"
+            git_with_connectivity "$provider" reset --hard "origin/${default_branch}"
         fi
-        git submodule update --init --recursive
+        git_with_connectivity "$provider" submodule update --init --recursive
     elif [ -d "$dir" ]; then
         echo "[INFO] Initializing ${name} in existing directory..."
         cd "$dir"
         if [ -n "$branch" ]; then
-            git init -b "$branch"
+            git_with_connectivity "$provider" init -b "$branch"
         else
-            git init
+            git_with_connectivity "$provider" init
         fi
-        git remote add origin "$url"
+        git_with_connectivity "$provider" remote add origin "$url"
         if [ -n "$branch" ]; then
-            git fetch origin "$branch"
-            git reset --hard "origin/${branch}"
+            git_with_connectivity "$provider" fetch origin "$branch"
+            git_with_connectivity "$provider" reset --hard "origin/${branch}"
         else
-            git fetch origin
-            default_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
+            git_with_connectivity "$provider" fetch origin
+            default_branch=$(git_with_connectivity "$provider" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
             default_branch=${default_branch:-main}
-            git reset --hard "origin/${default_branch}"
+            git_with_connectivity "$provider" reset --hard "origin/${default_branch}"
         fi
-        git submodule update --init --recursive
+        git_with_connectivity "$provider" submodule update --init --recursive
     else
         echo "[INFO] Cloning ${name}..."
         if [ -n "$branch" ]; then
-            git clone --recurse-submodules -b "$branch" "$url" "$dir"
+            git_with_connectivity "$provider" clone --recurse-submodules -b "$branch" "$url" "$dir"
         else
-            git clone --recurse-submodules "$url" "$dir"
+            git_with_connectivity "$provider" clone --recurse-submodules "$url" "$dir"
         fi
     fi
     cd /app
+}
+
+split_download_list_by_provider() {
+    local input_file="$1"
+    local out_hf="$2"
+    local out_gh="$3"
+    local out_cv="$4"
+    local out_other="$5"
+
+    : > "$out_hf"
+    : > "$out_gh"
+    : > "$out_cv"
+    : > "$out_other"
+
+    local block
+    block=$(mktemp)
+    local target_file="$out_other"
+    local has_content=0
+
+    while IFS= read -r line || [ -n "$line" ]; do
+        if [[ "$line" =~ ^[[:space:]]*$ ]]; then
+            if [ "$has_content" -eq 1 ]; then
+                cat "$block" >> "$target_file"
+                echo "" >> "$target_file"
+                : > "$block"
+                target_file="$out_other"
+                has_content=0
+            fi
+            continue
+        fi
+
+        if [ "$has_content" -eq 0 ] && [[ "$line" =~ ^https?:// ]]; then
+            local provider
+            provider=$(provider_for_url "$line")
+            case "$provider" in
+                huggingface) target_file="$out_hf" ;;
+                github) target_file="$out_gh" ;;
+                civitai) target_file="$out_cv" ;;
+                *) target_file="$out_other" ;;
+            esac
+        fi
+
+        echo "$line" >> "$block"
+        has_content=1
+    done < "$input_file"
+
+    if [ "$has_content" -eq 1 ]; then
+        cat "$block" >> "$target_file"
+        echo "" >> "$target_file"
+    fi
+    rm -f "$block"
+}
+
+download_with_connectivity() {
+    local provider="$1"
+    local list_file="$2"
+    local label="$3"
+    shift 3
+    local extra_args=("$@")
+
+    if [ ! -s "$list_file" ] || ! grep -q '^https' "$list_file" 2>/dev/null; then
+        return 0
+    fi
+
+    local mode
+    mode=$(resolve_route_mode "$provider")
+    local proxy
+    proxy=$(resolve_proxy_url "$provider")
+    local dns
+    dns=$(resolve_dns_servers "$provider")
+    local aria_args=(
+        --input-file="$list_file"
+        --allow-overwrite=true
+        --auto-file-renaming=false
+        --continue=true
+        --max-connection-per-server=5
+        --conditional-get=true
+    )
+    local a
+    for a in "${extra_args[@]}"; do
+        aria_args+=("$a")
+    done
+
+    case "$mode" in
+        proxy)
+            if [ -n "$proxy" ]; then
+                aria_args+=(--all-proxy="$proxy")
+            else
+                echo "[WARN] $provider route=proxy but no proxy URL set; using direct download."
+            fi
+            ;;
+        smart-dns)
+            if [ -n "$dns" ]; then
+                aria_args+=(--async-dns=true --async-dns-server="$dns")
+            else
+                echo "[WARN] $provider route=smart-dns but no DNS servers configured; using default resolver."
+            fi
+            ;;
+        vpn)
+            echo "[INFO] $provider route=vpn for $label (expects host/container VPN path)."
+            ;;
+    esac
+
+    echo "[INFO] Downloading $label for provider '$provider' with route '$mode'..."
+    aria2c "${aria_args[@]}"
 }
 
 # Install requirements if present
@@ -156,6 +464,8 @@ install_trellis2_gguf_deps() {
 }
 
 cd /app
+print_connectivity_summary
+connectivity_doctor
 
 COMFYUI_DIR="/app/ComfyUI"
 CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
@@ -175,15 +485,6 @@ install_reqs "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt"
 
 # Install requirements for any custom node already present in custom_nodes/.
 install_all_custom_node_reqs "$CUSTOM_NODES_DIR"
-
-# Copy bundled workflows into ComfyUI
-BUNDLED_WORKFLOWS="/workflows"
-DEST_WORKFLOWS="${COMFYUI_DIR}/user/default/workflows"
-mkdir -p "$DEST_WORKFLOWS"
-if [ -d "$BUNDLED_WORKFLOWS" ] && [ -n "$(ls -A "$BUNDLED_WORKFLOWS" 2>/dev/null)" ]; then
-    cp -R "$BUNDLED_WORKFLOWS"/. "$DEST_WORKFLOWS"/
-    echo "[OK] Bundled workflows deployed from /workflows/"
-fi
 
 # =============================================================================
 # Directory Initialization and Mount Detection
@@ -255,7 +556,36 @@ fi
 PACKS_DIR="/scripts/packs"
 TEMP_MODELS=$(mktemp)
 TEMP_WORKFLOWS=$(mktemp)
-trap 'rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"' EXIT
+TEMP_MANAGED_WORKFLOWS=$(mktemp)
+trap 'rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS" "$TEMP_MANAGED_WORKFLOWS"' EXIT
+MANAGED_WORKFLOWS_MANIFEST="${WORKFLOWS_DIR}/.managed-workflows.txt"
+
+register_managed_workflow() {
+    local wf="$1"
+    if [ -n "$wf" ]; then
+        echo "$wf" >> "$TEMP_MANAGED_WORKFLOWS"
+    fi
+}
+
+cleanup_prev_managed_workflows() {
+    if [ ! -f "$MANAGED_WORKFLOWS_MANIFEST" ]; then
+        return 0
+    fi
+    while IFS= read -r wf || [ -n "$wf" ]; do
+        [[ -z "$wf" ]] && continue
+        if [[ "$wf" == "$WORKFLOWS_DIR/"* ]] && [ -f "$wf" ]; then
+            rm -f "$wf"
+        fi
+    done < "$MANAGED_WORKFLOWS_MANIFEST"
+}
+
+write_managed_workflow_manifest() {
+    if [ -s "$TEMP_MANAGED_WORKFLOWS" ]; then
+        sort -u "$TEMP_MANAGED_WORKFLOWS" > "$MANAGED_WORKFLOWS_MANIFEST"
+    else
+        : > "$MANAGED_WORKFLOWS_MANIFEST"
+    fi
+}
 
 # Function to resolve pack directory from selector
 resolve_pack_dir() {
@@ -441,7 +771,11 @@ apply_nvfp4_workflow_overrides() {
         "$workflows_dir/Flux 2 Klein 4B - Text to Image.json" \
         "$workflows_dir/Flux 2 Klein 4B - Image Edit Distilled.json" \
         "$workflows_dir/Flux 2 Klein 9B - Text to Image.json" \
-        "$workflows_dir/Flux 2 Klein 9B - Image Edit Distilled.json"
+        "$workflows_dir/Flux 2 Klein 9B - Image Edit Distilled.json" \
+        "$workflows_dir/FLUX.2 Klein 4B Distilled - Text to Image.json" \
+        "$workflows_dir/FLUX.2 Klein 4B Distilled - Image Edit.json" \
+        "$workflows_dir/FLUX.2 Klein 9B Distilled - Text to Image.json" \
+        "$workflows_dir/FLUX.2 Klein 9B Distilled - Image Edit.json"
     do
         if [ -f "$wf" ]; then
             sed -i 's/flux-2-klein-4b-fp8\.safetensors/flux-2-klein-4b-nvfp4.safetensors/g' "$wf"
@@ -492,6 +826,9 @@ echo "[INFO] Processing selected packs..."
 echo "########################################"
 echo ""
 
+# Remove previously managed workflow files so only current selected packs remain.
+cleanup_prev_managed_workflows
+
 for sel in $SELECTORS_LC; do
     pack_dir=$(resolve_pack_dir "$sel")
     
@@ -504,18 +841,61 @@ for sel in $SELECTORS_LC; do
     # Print pack info
     print_pack_info "$pack_dir"
 
-    # Copy pack-shipped workflow JSON before HF gating (bundled files do not need HF)
+    # Copy pack workflow JSON before HF gating (bundled files do not need HF)
+    # Supported formats:
+    # - workflows-bundled/ directory: copies each .json file with original filename
+    # - workflows-bundled.txt file: "source_path|destination_filename"
+    # - default fallback: /workflows/<pack-name>/*.json
     WB="${pack_dir}workflows-bundled"
-    if [ -d "$WB" ]; then
-        echo "[INFO] Installing bundled workflows for pack..."
-        mkdir -p /app/ComfyUI/user/default/workflows
+    WBL="${pack_dir}workflows-bundled.txt"
+    PACK_WORKFLOW_DIR="/workflows/$(basename "$pack_dir")"
+    if [ -d "$PACK_WORKFLOW_DIR" ] && [ ! -f "$WBL" ]; then
+        echo "[INFO] Installing pack workflows from $PACK_WORKFLOW_DIR..."
         shopt -s nullglob
-        for wf in "$WB"/*.json; do
+        for wf in "$PACK_WORKFLOW_DIR"/*.json; do
             bn=$(basename "$wf")
-            cp -f "$wf" "/app/ComfyUI/user/default/workflows/$bn"
+            dst="$WORKFLOWS_DIR/$bn"
+            cp -f "$wf" "$dst"
+            register_managed_workflow "$dst"
             echo "  [OK] $bn"
         done
         shopt -u nullglob
+    fi
+    if [ -d "$WB" ] || [ -f "$WBL" ]; then
+        echo "[INFO] Installing bundled workflows for pack..."
+        mkdir -p "$WORKFLOWS_DIR"
+        if [ -d "$WB" ]; then
+            shopt -s nullglob
+            for wf in "$WB"/*.json; do
+                bn=$(basename "$wf")
+                dst="$WORKFLOWS_DIR/$bn"
+                cp -f "$wf" "$dst"
+                register_managed_workflow "$dst"
+                echo "  [OK] $bn"
+            done
+            shopt -u nullglob
+        fi
+        if [ -f "$WBL" ]; then
+            while IFS= read -r line || [ -n "$line" ]; do
+                [[ "$line" =~ ^[[:space:]]*# ]] && continue
+                [[ -z "$line" ]] && continue
+                src_rel=$(echo "$line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                dst_name=$(echo "$line" | cut -d'|' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                if [ -z "$src_rel" ] || [ -z "$dst_name" ]; then
+                    echo "  [WARN] Invalid workflows-bundled entry: $line"
+                    continue
+                fi
+                src_abs="/workflows/$src_rel"
+                if [ -f "$src_abs" ]; then
+                    dst="$WORKFLOWS_DIR/$dst_name"
+                    cp -f "$src_abs" "$dst"
+                    register_managed_workflow "$dst"
+                    echo "  [OK] $dst_name"
+                else
+                    echo "  [WARN] Missing bundled workflow source: $src_abs"
+                fi
+            done < "$WBL"
+        fi
     fi
     
     # Validate HF_TOKEN -- warn and skip pack if missing (don't kill the container)
@@ -577,12 +957,19 @@ if [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; t
     echo "########################################"
     echo "[INFO] Downloading workflows..."
     echo "########################################"
-    if ! aria2c --input-file="$TEMP_WORKFLOWS" \
-        --allow-overwrite=true --auto-file-renaming=false --continue=true \
-        --max-connection-per-server=5 --conditional-get=true 2>&1; then
+    TEMP_WORKFLOWS_HF=$(mktemp)
+    TEMP_WORKFLOWS_GH=$(mktemp)
+    TEMP_WORKFLOWS_CV=$(mktemp)
+    TEMP_WORKFLOWS_OTHER=$(mktemp)
+    split_download_list_by_provider "$TEMP_WORKFLOWS" "$TEMP_WORKFLOWS_HF" "$TEMP_WORKFLOWS_GH" "$TEMP_WORKFLOWS_CV" "$TEMP_WORKFLOWS_OTHER"
+    if ! download_with_connectivity "huggingface" "$TEMP_WORKFLOWS_HF" "workflows" \
+        || ! download_with_connectivity "github" "$TEMP_WORKFLOWS_GH" "workflows" \
+        || ! download_with_connectivity "civitai" "$TEMP_WORKFLOWS_CV" "workflows" \
+        || ! download_with_connectivity "other" "$TEMP_WORKFLOWS_OTHER" "workflows" 2>&1; then
         echo "[ERROR] Workflow download failed. Check network and URLs above."
         exit 1
     fi
+    rm -f "$TEMP_WORKFLOWS_HF" "$TEMP_WORKFLOWS_GH" "$TEMP_WORKFLOWS_CV" "$TEMP_WORKFLOWS_OTHER"
 else
     echo "[INFO] No workflow URLs for selected packs."
 fi
@@ -605,13 +992,23 @@ if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
         echo "########################################"
         echo "[INFO] Downloading models..."
         echo "########################################"
-        if ! aria2c --input-file="$DOWNLOAD_LIST" \
-            --allow-overwrite=true --auto-file-renaming=false --continue=true \
-            --max-connection-per-server=5 --conditional-get=true \
-            ${HF_TOKEN:+--header="Authorization: Bearer ${HF_TOKEN}"} 2>&1; then
+        TEMP_MODELS_HF=$(mktemp)
+        TEMP_MODELS_GH=$(mktemp)
+        TEMP_MODELS_CV=$(mktemp)
+        TEMP_MODELS_OTHER=$(mktemp)
+        split_download_list_by_provider "$DOWNLOAD_LIST" "$TEMP_MODELS_HF" "$TEMP_MODELS_GH" "$TEMP_MODELS_CV" "$TEMP_MODELS_OTHER"
+        MODEL_AUTH_HEADER=()
+        if [ -n "${HF_TOKEN}" ]; then
+            MODEL_AUTH_HEADER=(--header="Authorization: Bearer ${HF_TOKEN}")
+        fi
+        if ! download_with_connectivity "huggingface" "$TEMP_MODELS_HF" "models" "${MODEL_AUTH_HEADER[@]}" \
+            || ! download_with_connectivity "github" "$TEMP_MODELS_GH" "models" \
+            || ! download_with_connectivity "civitai" "$TEMP_MODELS_CV" "models" \
+            || ! download_with_connectivity "other" "$TEMP_MODELS_OTHER" "models" 2>&1; then
             echo "[ERROR] Model download failed. Check HF_TOKEN and URLs above."
             exit 1
         fi
+        rm -f "$TEMP_MODELS_HF" "$TEMP_MODELS_GH" "$TEMP_MODELS_CV" "$TEMP_MODELS_OTHER"
     else
         echo "[WARN] No models to download (list empty or all require HF_TOKEN)."
     fi
@@ -620,6 +1017,7 @@ else
 fi
 
 rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"
+write_managed_workflow_manifest
 
 echo ""
 echo "########################################"

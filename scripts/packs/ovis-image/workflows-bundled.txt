@@ -1,0 +1,2 @@
+# source_path|destination_filename
+ovis-image/image-ovis-text-to-image.json|Ovis Image - Text to Image.json

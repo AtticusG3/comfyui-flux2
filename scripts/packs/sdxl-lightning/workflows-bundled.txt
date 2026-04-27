@@ -1,0 +1,4 @@
+# source_path|destination_filename
+sdxl-lightning/sdxl-lightning-workflow-low.json|SDXL Lightning - 4 Step Full Checkpoint.json
+sdxl-lightning/sdxl-lightning-workflow-high.json|SDXL Lightning - 8 Step Full Checkpoint.json
+sdxl-lightning/sdxl-lightning-workflow-full.json|SDXL Lightning - Full Workflow.json

@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.2.6] -- Workflow Packaging and Naming Consistency
+
+### Fixed
+- Startup workflow deployment is now selector-scoped and convergent: only workflows for selected `MODELS_DOWNLOAD` packs/options are kept after startup, and stale previously managed workflow files are removed.
+- Removed unconditional copy of the full `/workflows/` tree at startup to prevent unrelated pack workflows from being distributed.
+- Added managed workflow manifest tracking to keep workflow state deterministic across pack switches.
+- Updated default prompt seeds in Flux 2 Klein distilled text-to-image workflows to replace stale placeholder examples.
+
+### Added
+- Added `workflows-bundled.txt` mapping support in pack startup logic to map source workflow files to human-readable deployed filenames.
+- Added per-pack bundled workflow mappings for:
+  - `klein-distilled`
+  - `newbie-image`
+  - `ovis-image`
+  - `flux1-krea`
+  - `sdxl-lightning`
+  - `hunyuan-3d`
+
+### Changed
+- Normalized Hunyuan Video workflow output names to human-readable `out=` values for low/high VRAM variants.
+- Extended NVFP4 workflow filename rewrite coverage to include new human-readable Klein workflow names.
+
 ## [1.2.5] -- Round 2: NewBie Pack Remediation
 
 ### Fixed

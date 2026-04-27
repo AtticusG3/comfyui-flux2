@@ -1,0 +1,3 @@
+# source_path|destination_filename
+newbie-image/newbie-image-t2i-low.json|Newbie Image - Text to Image (Low VRAM).json
+newbie-image/newbie-image-t2i-high.json|Newbie Image - Text to Image (High VRAM).json

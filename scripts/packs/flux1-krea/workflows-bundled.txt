@@ -1,0 +1,2 @@
+# source_path|destination_filename
+flux1-krea/flux1-krea-dev.json|FLUX.1 Krea Dev - Text to Image.json

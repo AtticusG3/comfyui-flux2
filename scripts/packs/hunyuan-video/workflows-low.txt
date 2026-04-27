@@ -6,4 +6,4 @@
 # Text-to-Video workflow (recommended for low-tier VRAM)
 https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/t2v/kitchen.webp
   dir=ComfyUI/user/default/workflows
-  out=hunyuan-video-low-t2v.webp
+  out=Hunyuan Video - Low VRAM Text to Video.webp

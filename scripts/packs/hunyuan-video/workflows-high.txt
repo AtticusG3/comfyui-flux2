@@ -5,14 +5,14 @@
 # Text-to-Video workflow
 https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/t2v/kitchen.webp
   dir=ComfyUI/user/default/workflows
-  out=hunyuan-video-high-t2v.webp
+  out=Hunyuan Video - High VRAM Text to Video.webp
 
 # Image-to-Video v1 "concat" workflow (better motion)
 https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/i2v/v1_robot.webp
   dir=ComfyUI/user/default/workflows
-  out=hunyuan-video-high-i2v-v1.webp
+  out=Hunyuan Video - High VRAM Image to Video v1.webp
 
 # Image-to-Video v2 "replace" workflow (better image guidance)
 https://raw.githubusercontent.com/Comfy-Org/example_workflows/main/hunyuan-video/i2v/v2_fennec_gril.webp
   dir=ComfyUI/user/default/workflows
-  out=hunyuan-video-high-i2v-v2.webp
+  out=Hunyuan Video - High VRAM Image to Video v2.webp

@@ -1,0 +1,2 @@
+# source_path|destination_filename
+hunyuan-3d/3d-hunyuan3d-v2-1.json|Hunyuan3D 2.1 - Image to 3D.json

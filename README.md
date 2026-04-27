@@ -45,6 +45,18 @@ services:
       RESERVE_VRAM_GB: ${RESERVE_VRAM_GB:-1.2}
       NVFP4_SUPPORTED: ${NVFP4_SUPPORTED:-false}
       NVFP4_MODE: ${NVFP4_MODE:-official-only}
+      CONNECTIVITY_ROUTE_DEFAULT: ${CONNECTIVITY_ROUTE_DEFAULT:-direct}
+      CONNECTIVITY_ROUTE_HUGGINGFACE: ${CONNECTIVITY_ROUTE_HUGGINGFACE:-inherit}
+      CONNECTIVITY_ROUTE_GITHUB: ${CONNECTIVITY_ROUTE_GITHUB:-inherit}
+      CONNECTIVITY_ROUTE_CIVITAI: ${CONNECTIVITY_ROUTE_CIVITAI:-inherit}
+      PROXY_URL: ${PROXY_URL:-}
+      HUGGINGFACE_PROXY_URL: ${HUGGINGFACE_PROXY_URL:-}
+      GITHUB_PROXY_URL: ${GITHUB_PROXY_URL:-}
+      CIVITAI_PROXY_URL: ${CIVITAI_PROXY_URL:-}
+      DNS_SERVERS: ${DNS_SERVERS:-}
+      HUGGINGFACE_DNS_SERVERS: ${HUGGINGFACE_DNS_SERVERS:-}
+      GITHUB_DNS_SERVERS: ${GITHUB_DNS_SERVERS:-}
+      CIVITAI_DNS_SERVERS: ${CIVITAI_DNS_SERVERS:-}
     volumes:
       - "./data:/app"
       # Models
@@ -131,6 +143,19 @@ Executor examples are bundled at:
 | `CLI_ARGS` | Extra ComfyUI arguments. If set, automatic VRAM args are not added. |
 | `HF_TOKEN` | Hugging Face token for gated models, if a selected pack requires one. |
 | `CIVITAI_API_KEY` | Optional Civitai token used by Civicomfy. |
+| `CONNECTIVITY_ROUTE_DEFAULT` | Default route policy for provider downloads and git sync: `direct`, `proxy`, `smart-dns`, or `vpn`. |
+| `CONNECTIVITY_ROUTE_HUGGINGFACE` | Route override for Hugging Face: `inherit`, `direct`, `proxy`, `smart-dns`, or `vpn`. |
+| `CONNECTIVITY_ROUTE_GITHUB` | Route override for GitHub: `inherit`, `direct`, `proxy`, `smart-dns`, or `vpn`. |
+| `CONNECTIVITY_ROUTE_CIVITAI` | Route override for Civitai: `inherit`, `direct`, `proxy`, `smart-dns`, or `vpn`. |
+| `PROXY_URL` | Global fallback proxy URL used when route is `proxy` and no provider-specific proxy is set. |
+| `HUGGINGFACE_PROXY_URL` | Optional Hugging Face specific proxy URL. |
+| `GITHUB_PROXY_URL` | Optional GitHub specific proxy URL. |
+| `CIVITAI_PROXY_URL` | Optional Civitai specific proxy URL. |
+| `DNS_SERVERS` | Global fallback DNS resolver list for `smart-dns` mode (comma-separated, passed to aria2). |
+| `HUGGINGFACE_DNS_SERVERS` | Optional Hugging Face specific DNS resolver list for `smart-dns`. |
+| `GITHUB_DNS_SERVERS` | Optional GitHub specific DNS resolver list for `smart-dns`. |
+| `CIVITAI_DNS_SERVERS` | Optional Civitai specific DNS resolver list for `smart-dns`. |
+| `CONNECTIVITY_DOCTOR_ENABLED` | Enables startup preflight probes for Hugging Face, GitHub, and Civitai with configured routing. Default: `true`. |
 | `TZ` | Container timezone. |
 
 ## Available Packs
@@ -181,6 +206,33 @@ Runtime VRAM arg precedence:
 3. Else if `CLI_ARGS` is non-empty, add no automatic VRAM args.
 4. Else if `LOW_VRAM=true`, add `--lowvram --reserve-vram <RESERVE_VRAM_GB>`.
 5. Else (`LOW_VRAM=false`), add no automatic VRAM args.
+
+Connectivity routing examples:
+
+```bash
+# Default everything through VPN/tunnel path managed outside container
+CONNECTIVITY_ROUTE_DEFAULT=vpn
+```
+
+```bash
+# Proxy only Hugging Face, keep GitHub/Civitai direct
+CONNECTIVITY_ROUTE_DEFAULT=direct
+CONNECTIVITY_ROUTE_HUGGINGFACE=proxy
+HUGGINGFACE_PROXY_URL=socks5://host.docker.internal:1080
+```
+
+```bash
+# Smart DNS only for Civitai downloads
+CONNECTIVITY_ROUTE_DEFAULT=direct
+CONNECTIVITY_ROUTE_CIVITAI=smart-dns
+CIVITAI_DNS_SERVERS=1.1.1.1,8.8.8.8
+```
+
+Notes:
+
+- `vpn` mode is routing-only metadata in this project. It assumes host or container networking is already routed through a VPN/tunnel.
+- `smart-dns` currently affects `aria2` downloads. Git operations still use container resolver/network stack.
+- `proxy` mode is applied to both `aria2` downloads and git sync operations for provider-hosted repositories.
 
 ## Storage
 
