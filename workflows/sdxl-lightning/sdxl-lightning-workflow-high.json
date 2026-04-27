@@ -1,123 +1,7 @@
 {
-  "last_node_id": 13,
-  "last_link_id": 13,
+  "last_node_id": 18,
+  "last_link_id": 22,
   "nodes": [
-    {
-      "id": 8,
-      "type": "VAEDecode",
-      "pos": [
-        1209,
-        188
-      ],
-      "size": {
-        "0": 210,
-        "1": 46
-      },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 7
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 8
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            9
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      }
-    },
-    {
-      "id": 7,
-      "type": "CLIPTextEncode",
-      "pos": [
-        413,
-        389
-      ],
-      "size": {
-        "0": 425.27801513671875,
-        "1": 180.6060791015625
-      },
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 5
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            6
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "worst quality, low quality, normal quality, jpeg artifacts, blurry, watermark, signature, text overlay, deformed, bad anatomy, extra fingers, mutated hands, disfigured, poorly drawn hands, bad proportions, cropped, out of frame, overexposed, underexposed"
-      ]
-    },
-    {
-      "id": 6,
-      "type": "CLIPTextEncode",
-      "pos": [
-        415,
-        186
-      ],
-      "size": {
-        "0": 422.84503173828125,
-        "1": 164.31304931640625
-      },
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            4
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "Honda NSX-R rolling through floodlit Shibuya at night rain, neon reflections, medium-format photoreal texture"
-      ]
-    },
     {
       "id": 5,
       "type": "EmptyLatentImage",
@@ -152,32 +36,6 @@
       ]
     },
     {
-      "id": 9,
-      "type": "SaveImage",
-      "pos": [
-        1451,
-        189
-      ],
-      "size": {
-        "0": 210,
-        "1": 270
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 9
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        "sdxl-lightning/"
-      ]
-    },
-    {
       "id": 12,
       "type": "Note",
       "pos": [
@@ -199,6 +57,158 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 13,
+      "type": "Note",
+      "pos": [
+        914,
+        60
+      ],
+      "size": {
+        "0": 420,
+        "1": 80
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "RealVis Lightning recommendations:\nPass 1: 5 steps, DPM++ SDE Karras, CFG 1.0-2.0.\nHires fix pass: 3 steps, denoise 0.5, upscale 1.1-1.5."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        45,
+        192
+      ],
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            13,
+            18
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            3,
+            5
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            8,
+            16,
+            22
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "Juggernaut_RunDiffusionPhoto2_Lightning_4Steps.safetensors"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        415,
+        186
+      ],
+      "size": {
+        "0": 422.84503173828125,
+        "1": 164.31304931640625
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            4,
+            19
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "Honda NSX-R rolling through floodlit Shibuya at night rain, neon reflections, medium-format photoreal texture"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [
+        413,
+        389
+      ],
+      "size": {
+        "0": 425.27801513671875,
+        "1": 180.6060791015625
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            6,
+            20
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "(octane render, render, drawing, anime, bad photo, bad photography:1.3), (worst quality, low quality, blurry:1.2), (bad teeth, deformed teeth, deformed lips), (bad anatomy, bad proportions:1.1), (deformed iris, deformed pupils), (deformed eyes, bad eyes), (deformed face, ugly face, bad face), (deformed hands, bad hands, fused fingers), morbid, mutilated, mutation, disfigured"
+      ]
     },
     {
       "id": 3,
@@ -252,7 +262,7 @@
       "widgets_values": [
         777803651532148,
         "randomize",
-        8,
+        5,
         2.0,
         "dpmpp_sde",
         "karras",
@@ -260,74 +270,279 @@
       ]
     },
     {
-      "id": 13,
-      "type": "Note",
+      "id": 18,
+      "type": "VAEDecode",
       "pos": [
-        861,
-        72
+        1221,
+        492
       ],
       "size": {
-        "0": 315.6669921875,
-        "1": 58
+        "0": 210,
+        "1": 46
       },
       "flags": {},
-      "order": 2,
+      "order": 7,
       "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Use Euler sampler with sgm_uniform.\nCFG 1 is the fastest."
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 7
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 22
+        }
       ],
-      "color": "#432",
-      "bgcolor": "#653"
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            14
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
     },
     {
-      "id": 4,
-      "type": "CheckpointLoaderSimple",
+      "id": 14,
+      "type": "UpscaleModelLoader",
       "pos": [
-        45,
-        192
+        894,
+        623
       ],
       "size": {
         "0": 315,
-        "1": 98
+        "1": 58
       },
       "flags": {},
-      "order": 3,
+      "order": 8,
       "mode": 0,
       "outputs": [
         {
-          "name": "MODEL",
-          "type": "MODEL",
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL",
           "links": [
             13
           ],
           "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            3,
-            5
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            8
-          ],
-          "slot_index": 2
         }
       ],
       "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "Node name for S&R": "UpscaleModelLoader"
       },
       "widgets_values": [
-        "Juggernaut_XL_Lightning_8Step.safetensors"
+        "4x_NMKD-Superscale-SP_178000_G.pth"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "ImageUpscaleWithModel",
+      "pos": [
+        1221,
+        622
+      ],
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 13
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageUpscaleWithModel"
+      }
+    },
+    {
+      "id": 16,
+      "type": "VAEEncode",
+      "pos": [
+        1554,
+        622
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 15
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            17
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": 17,
+      "type": "KSampler",
+      "pos": [
+        1554,
+        364
+      ],
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 18
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 19
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 20
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            21
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        202604271118,
+        "randomize",
+        3,
+        2.0,
+        "dpmpp_sde",
+        "karras",
+        0.5
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": [
+        1887,
+        364
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 21
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            9
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 9,
+      "type": "SaveImage",
+      "pos": [
+        2130,
+        364
+      ],
+      "size": {
+        "0": 210,
+        "1": 270
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "sdxl-lightning/"
       ]
     }
   ],
@@ -376,7 +591,7 @@
       7,
       3,
       0,
-      8,
+      18,
       0,
       "LATENT"
     ],
@@ -403,6 +618,86 @@
       3,
       0,
       "MODEL"
+    ],
+    [
+      13,
+      14,
+      0,
+      15,
+      0,
+      "UPSCALE_MODEL"
+    ],
+    [
+      14,
+      18,
+      0,
+      15,
+      1,
+      "IMAGE"
+    ],
+    [
+      15,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      4,
+      2,
+      16,
+      1,
+      "VAE"
+    ],
+    [
+      17,
+      16,
+      0,
+      17,
+      3,
+      "LATENT"
+    ],
+    [
+      18,
+      4,
+      0,
+      17,
+      0,
+      "MODEL"
+    ],
+    [
+      19,
+      6,
+      0,
+      17,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      20,
+      7,
+      0,
+      17,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      21,
+      17,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      22,
+      4,
+      2,
+      18,
+      1,
+      "VAE"
     ]
   ],
   "groups": [],

@@ -504,6 +504,19 @@ install_trellis2_gguf_deps() {
         return 0
     fi
 
+    # Linux-first path: install known binary deps directly.
+    # This avoids platform-mismatched wheel URLs in some upstream installers.
+    if [ "$(uname -s)" = "Linux" ]; then
+        echo "[INFO] Trellis dependency check: attempting Linux-safe direct deps (cumesh, flex-gemm)..."
+        if ! uv pip install cumesh flex-gemm; then
+            echo "[WARN] Direct Linux Trellis deps install reported errors."
+        fi
+        if python3 -c "import cumesh" >/dev/null 2>&1; then
+            echo "[INFO] Trellis dependency check: cumesh available after direct deps install."
+            return 0
+        fi
+    fi
+
     if [ -f "$node_dir/install.py" ]; then
         echo "[INFO] Trellis dependency check: cumesh missing. Running Trellis installer..."
         if ! python3 "$node_dir/install.py"; then

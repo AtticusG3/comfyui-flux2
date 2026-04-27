@@ -327,7 +327,7 @@
         "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "Juggernaut_XL_Lightning_4Step.safetensors"
+        "Juggernaut_RunDiffusionPhoto2_Lightning_4Steps.safetensors"
       ]
     }
   ],

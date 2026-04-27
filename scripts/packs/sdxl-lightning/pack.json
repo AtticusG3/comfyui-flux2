@@ -2,16 +2,18 @@
   "name": "sdxl-lightning",
   "selectors": ["sdxl-lightning", "lightning", "sdxl", "photo-sdxl"],
   "tutorial_urls": [
-    "https://huggingface.co/ByteDance/SDXL-Lightning",
+    "https://huggingface.co/RunDiffusion/Juggernaut-XL-Lightning",
+    "https://huggingface.co/SG161222/RealVisXL_V5.0_Lightning",
     "https://github.com/Comfy-Org/ComfyUI/discussions/2867"
   ],
   "upstream_urls": [
-    "https://huggingface.co/ByteDance/SDXL-Lightning",
+    "https://huggingface.co/RunDiffusion/Juggernaut-XL-Lightning",
+    "https://huggingface.co/SG161222/RealVisXL_V5.0_Lightning",
     "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0",
     "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
   ],
   "requires_hf_token": false,
   "notes_low": "Uses SDXL Lightning 4-step full checkpoint (all-in-one) with conservative upscale/detail defaults for low-tier targets.",
-  "notes_high": "Uses SDXL Lightning 8-step full checkpoint (all-in-one) with larger upscale/detail defaults for high-tier targets.",
+  "notes_high": "Uses RunDiffusion Juggernaut XL Lightning 4-step checkpoint with RealVis-style high-tier prompt/sampling defaults plus 4x-UltraSharp and 4x_NMKD upscalers.",
   "description": "Photographic SDXL Lightning pack for fast T2I, editing, inpaint, detail, and tiling workflows."
 }

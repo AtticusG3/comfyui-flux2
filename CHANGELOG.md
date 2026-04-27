@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.7] -- Trellis Linux Hardening and SDXL Lightning Realignment
+
+### Fixed
+- Hardened Trellis2 GGUF dependency install in `entrypoint.sh` for Linux containers by attempting direct `cumesh`/`flex-gemm` installation before invoking upstream installer logic that can select platform-mismatched wheels.
+- Updated SDXL Lightning pack model URLs to the RunDiffusion `Juggernaut_RunDiffusionPhoto2_Lightning_4Steps.safetensors` artifact for both low/high VRAM tiers to avoid invalid/removed prior checkpoint references.
+
+### Changed
+- Aligned `sdxl-lightning` workflows (`low`, `full`, `high`) to the RunDiffusion 4-step checkpoint filename.
+- Applied RealVis-style high-tier defaults in `sdxl-lightning-workflow-high.json` (negative prompt, 5-step first pass, DPM++ SDE Karras, CFG 2.0).
+- Added a real hires-fix chain to `sdxl-lightning-workflow-high.json`: first-pass decode -> model upscale -> VAE encode -> second-pass 3-step denoise (0.5) -> final decode/save.
+- Added `4x_NMKD-Superscale-SP_178000_G.pth` to SDXL Lightning high-tier model downloads while keeping `4x-UltraSharp.pth`.
+- Updated SDXL Lightning pack metadata/tutorial links and high-tier notes to match RunDiffusion + RealVis guidance.
+
 ## [1.2.6] -- Workflow Packaging and Naming Consistency
 
 ### Fixed
