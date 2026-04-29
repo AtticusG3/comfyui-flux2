@@ -573,6 +573,13 @@ connectivity_doctor
 COMFYUI_DIR="/app/ComfyUI"
 CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
 
+# Git 2.35+ treats repos whose directory owner != current user as "dubious" and
+# aborts (fatal). Docker named volumes and bind mounts often have mixed UIDs.
+# This container runs one non-root user; trust all repos under this workspace.
+if ! git config --global --get-all safe.directory 2>/dev/null | grep -qxF '*'; then
+    git config --global --add safe.directory '*'
+fi
+
 # ComfyUI
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
 install_reqs "${COMFYUI_DIR}/requirements.txt"
@@ -844,11 +851,11 @@ apply_nvfp4_overrides() {
             sed -i 's#out=wan2\.2_i2v_low_noise_14B_fp8_scaled\.safetensors#out=wan2.2_i2v_low_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
             changed=1
         fi
-        # ERNIE-Image-Turbo: swap FP8 community quant -> NVFP4 community quant
-        # (same Abiray repo hosts both variants).
-        if grep -q "ernie-image-turbo-fp8\\.safetensors" "$list_file"; then
-            sed -i 's#https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-fp8\.safetensors#https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-nvfp4.safetensors#g' "$list_file"
-            sed -i 's#out=ernie-image-turbo-fp8\.safetensors#out=ernie-image-turbo-nvfp4.safetensors#g' "$list_file"
+        # ERNIE-Image-Turbo GGUF (Unsloth): swap Q5_K_M -> UD-Q5_K_M for NVFP4-oriented quant
+        # when explicitly allowed (same HF repo).
+        if grep -Fq "ernie-image-turbo-Q5_K_M.gguf" "$list_file"; then
+            sed -i 's#resolve/main/ernie-image-turbo-Q5_K_M.gguf#resolve/main/ernie-image-turbo-UD-Q5_K_M.gguf#g' "$list_file"
+            sed -i 's#out=ernie-image-turbo-Q5_K_M.gguf#out=ernie-image-turbo-UD-Q5_K_M.gguf#g' "$list_file"
             changed=1
         fi
         # flux1-krea currently has community NF4/other derivatives but no known
@@ -899,17 +906,14 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] NVFP4 workflow override enabled: switched Klein workflows to NVFP4 model filenames."
     fi
 
-    # ERNIE-Image-Turbo: only override under allow-community since the NVFP4
-    # quant is a community artifact (Abiray) rather than an official source.
+    # ERNIE-Image-Turbo GGUF: match workflow default filename to UD-Q5 variant when gated.
     if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
-        local ernie_changed=0
-        local ewf="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
-        if [ -f "$ewf" ]; then
-            sed -i 's/ernie-image-turbo-fp8\.safetensors/ernie-image-turbo-nvfp4.safetensors/g' "$ewf"
-            ernie_changed=1
-        fi
-        if [ "$ernie_changed" -eq 1 ]; then
-            echo "[INFO] NVFP4 workflow override enabled: switched ERNIE-Image-Turbo workflow to NVFP4 model filename."
+        local ewf_ud="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
+        if [ -f "$ewf_ud" ]; then
+            if grep -Fq "ernie-image-turbo-Q5_K_M.gguf" "$ewf_ud"; then
+                sed -i 's/ernie-image-turbo-Q5_K_M\.gguf/ernie-image-turbo-UD-Q5_K_M.gguf/g' "$ewf_ud"
+                echo "[INFO] NVFP4 workflow override enabled: switched ERNIE GGUF workflow filename to UD-Q5_K_M."
+            fi
         fi
     fi
 }

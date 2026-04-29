@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.2] -- Git safe.directory startup fix
+
+### Fixed
+- Git 2.35+ `fatal: detected dubious ownership` on `/app/ComfyUI` (and clones under `custom_nodes/`) when volume ownership differs from the container user. The entrypoint now registers `safe.directory '*'` once so startup can fetch and reset repos instead of exiting under `set -e` and looping with `restart: unless-stopped`.
+
+## [1.3.1] -- ERNIE Low VRAM: Unsloth GGUF + city96 ComfyUI-GGUF
+
+### Changed
+- `ernie-image` low VRAM tier now downloads Unsloth `ernie-image-turbo-Q5_K_M.gguf` to `models/unet` (replaces Abiray FP8 safetensors in `diffusion_models`).
+- Added `scripts/packs/ernie-image/nodes.txt` to install [city96/ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF).
+- `ERNIE-Image-Turbo - Text to Image.json` uses `UnetLoaderGGUF` for the Turbo path (city96) instead of core `UNETLoader`.
+- NVFP4 community path: when `NVFP4_SUPPORTED=true` and `NVFP4_MODE=allow-community`, swap Q5_K_M -> `ernie-image-turbo-UD-Q5_K_M.gguf` on the same Unsloth repo (model list + workflow rewrite); removed Abiray FP8/NVFP4 safetensors override.
+
 ## [1.3.0] -- ERNIE-Image Pack and Themed Prompt Refresh
 
 ### Added

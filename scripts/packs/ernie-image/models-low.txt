@@ -1,12 +1,12 @@
-# ERNIE-Image-Turbo (low / LOW_VRAM=true)
+# ERNIE-Image-Turbo GGUF (low / LOW_VRAM=true)
 # Tutorial: https://docs.comfy.org/tutorials/image/ernie-image/ernie-image
 # Blog: https://ernie.baidu.com/blog/posts/ernie-image/
-# Uses the community FP8 quant of the 8-step Turbo model (~8.2GB) for tight VRAM.
+# Uses Unsloth Q5 GGUF (~5.9GB); load with city96 ComfyUI-GGUF Unet Loader (GGUF).
 
-# Diffusion model (ERNIE-Image-Turbo, FP8 community quant)
-https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-fp8.safetensors
-  dir=ComfyUI/models/diffusion_models
-  out=ernie-image-turbo-fp8.safetensors
+# Diffusion model (ERNIE-Image-Turbo, Q5 GGUF)
+https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF/resolve/main/ernie-image-turbo-Q5_K_M.gguf
+  dir=ComfyUI/models/unet
+  out=ernie-image-turbo-Q5_K_M.gguf
 
 # Text encoder (Ministral-3 3B, used by ERNIE-Image)
 https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ministral-3-3b.safetensors
