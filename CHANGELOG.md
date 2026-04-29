@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0] -- ERNIE-Image Pack and Themed Prompt Refresh
+
+### Added
+- New `ernie-image` pack (`MODELS_DOWNLOAD=ernie-image`) for Baidu's 8B Diffusion Transformer text-to-image model:
+  - High VRAM tier downloads the official Comfy-Org repackaged ERNIE-Image SFT (~16GB BF16, ~50 steps).
+  - Low VRAM tier downloads the community ERNIE-Image-Turbo FP8 quant from `Abiray/ERNIE-Image-Turbo-FP8-NVFP4` (~8.2GB, 8-step distilled).
+  - Both tiers ship the `ministral-3-3b` text encoder, `ernie-image-prompt-enhancer` (3B PE), and `flux2-vae`.
+  - Bundles the official Comfy-Org workflow templates as `ERNIE-Image - Text to Image.json` and `ERNIE-Image-Turbo - Text to Image.json`. The Turbo workflow is patched to load the FP8 quant filename and Abiray repo URL.
+- Selectors: `ernie-image`, `ernie`, `ernieimage`.
+
+### Changed
+- Extended `apply_nvfp4_overrides` in `scripts/entrypoint.sh` to swap the ERNIE-Image-Turbo FP8 community quant for the NVFP4 community quant (~4.8GB) when `NVFP4_SUPPORTED=true` and `NVFP4_MODE=allow-community`.
+- Extended `apply_nvfp4_workflow_overrides` to rewrite the bundled ERNIE-Image-Turbo workflow filename references (`ernie-image-turbo-fp8.safetensors` -> `ernie-image-turbo-nvfp4.safetensors`) under the same gating.
+- Refreshed base Flux 2 Klein workflow templates to current ComfyUI shape.
+- Replaced placeholder example prompts across bundled workflow nodes with curated Japan/JDM/anime themed prompts to better showcase each model's strengths.
+
 ## [1.2.9] -- Publish :main Docker Alias
 
 ### Changed

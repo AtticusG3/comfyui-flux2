@@ -1,0 +1,3 @@
+# source_path|destination_filename
+ernie-image/ERNIE-Image - Text to Image.json|ERNIE-Image - Text to Image.json
+ernie-image/ERNIE-Image-Turbo - Text to Image.json|ERNIE-Image-Turbo - Text to Image.json

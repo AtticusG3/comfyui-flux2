@@ -1,0 +1,18 @@
+{
+  "name": "ernie-image",
+  "selectors": ["ernie-image", "ernie", "ernieimage"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/image/ernie-image/ernie-image",
+    "https://ernie.baidu.com/blog/posts/ernie-image/"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Comfy-Org/ERNIE-Image",
+    "https://huggingface.co/Baidu/ERNIE-Image",
+    "https://huggingface.co/Baidu/ERNIE-Image-Turbo",
+    "https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Uses ERNIE-Image-Turbo FP8 community quant (~8.2GB, 8-step distilled). Pairs with ministral-3-3b text encoder, prompt enhancer, and flux2-vae. Targets ~12GB+ VRAM with --lowvram. Set NVFP4_SUPPORTED=true NVFP4_MODE=allow-community to swap to the ~4.8GB NVFP4 community quant.",
+  "notes_high": "Uses ERNIE-Image SFT (~16GB BF16, ~50 steps) for top quality and instruction fidelity. Ships ministral-3-3b text encoder, prompt enhancer, and flux2-vae. Targets 24GB+ VRAM.",
+  "description": "ERNIE-Image - Baidu's 8B Diffusion Transformer text-to-image model with strong text rendering, instruction following, and a built-in 3B Prompt Enhancer."
+}

@@ -844,6 +844,13 @@ apply_nvfp4_overrides() {
             sed -i 's#out=wan2\.2_i2v_low_noise_14B_fp8_scaled\.safetensors#out=wan2.2_i2v_low_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
             changed=1
         fi
+        # ERNIE-Image-Turbo: swap FP8 community quant -> NVFP4 community quant
+        # (same Abiray repo hosts both variants).
+        if grep -q "ernie-image-turbo-fp8\\.safetensors" "$list_file"; then
+            sed -i 's#https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-fp8\.safetensors#https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-nvfp4.safetensors#g' "$list_file"
+            sed -i 's#out=ernie-image-turbo-fp8\.safetensors#out=ernie-image-turbo-nvfp4.safetensors#g' "$list_file"
+            changed=1
+        fi
         # flux1-krea currently has community NF4/other derivatives but no known
         # validated drop-in URL for this pack's current artifact.
         if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
@@ -890,6 +897,20 @@ apply_nvfp4_workflow_overrides() {
 
     if [ "$changed" -eq 1 ]; then
         echo "[INFO] NVFP4 workflow override enabled: switched Klein workflows to NVFP4 model filenames."
+    fi
+
+    # ERNIE-Image-Turbo: only override under allow-community since the NVFP4
+    # quant is a community artifact (Abiray) rather than an official source.
+    if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
+        local ernie_changed=0
+        local ewf="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
+        if [ -f "$ewf" ]; then
+            sed -i 's/ernie-image-turbo-fp8\.safetensors/ernie-image-turbo-nvfp4.safetensors/g' "$ewf"
+            ernie_changed=1
+        fi
+        if [ "$ernie_changed" -eq 1 ]; then
+            echo "[INFO] NVFP4 workflow override enabled: switched ERNIE-Image-Turbo workflow to NVFP4 model filename."
+        fi
     fi
 }
 
