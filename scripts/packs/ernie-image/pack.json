@@ -9,11 +9,10 @@
     "https://huggingface.co/Comfy-Org/ERNIE-Image",
     "https://huggingface.co/Baidu/ERNIE-Image",
     "https://huggingface.co/Baidu/ERNIE-Image-Turbo",
-    "https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF",
-    "https://github.com/city96/ComfyUI-GGUF"
+    "https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4"
   ],
   "requires_hf_token": false,
-  "notes_low": "Low VRAM: Unsloth ERNIE-Image-Turbo Q5_K_M GGUF in models/unet (city96 ComfyUI-GGUF Unet Loader (GGUF)). Text encoders + PE + VAE unchanged. With NVFP4_SUPPORTED=true and NVFP4_MODE=allow-community, entrypoint swaps to Unsloth UD-Q5_K_M.gguf (same repo; larger file on HF than Q5_K_M).",
+  "notes_low": "Low VRAM: Abiray ERNIE-Image-Turbo FP8 safetensors in models/diffusion_models (core UNETLoader). When NVFP4_SUPPORTED=true, entrypoint swaps to ernie-image-turbo-nvfp4.safetensors (same HF repo; mirrors Klein NVFP4 policy). Community quant; not affiliated with Baidu/Comfy-Org.",
   "notes_high": "Uses ERNIE-Image SFT (~16GB BF16, ~50 steps) for top quality and instruction fidelity. Ships ministral-3-3b text encoder, prompt enhancer, and flux2-vae. Targets 24GB+ VRAM.",
   "description": "ERNIE-Image - Baidu's 8B Diffusion Transformer text-to-image model with strong text rendering, instruction following, and a built-in 3B Prompt Enhancer."
 }

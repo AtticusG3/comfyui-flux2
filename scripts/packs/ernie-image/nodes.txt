@@ -1,1 +1,0 @@
-https://github.com/city96/ComfyUI-GGUF.git main

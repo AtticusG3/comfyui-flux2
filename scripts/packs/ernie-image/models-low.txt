@@ -1,12 +1,12 @@
-# ERNIE-Image-Turbo GGUF (low / LOW_VRAM=true)
+# ERNIE-Image-Turbo FP8 (low / LOW_VRAM=true)
+# Community repack: Abiray/ERNIE-Image-Turbo-FP8-NVFP4 (FP8 + NVFP4 safetensors in same repo).
 # Tutorial: https://docs.comfy.org/tutorials/image/ernie-image/ernie-image
-# Blog: https://ernie.baidu.com/blog/posts/ernie-image/
-# Uses Unsloth Q5 GGUF (~5.9GB); load with city96 ComfyUI-GGUF Unet Loader (GGUF).
+# When NVFP4_SUPPORTED=true, entrypoint swaps this URL/out to ernie-image-turbo-nvfp4.safetensors (same repo; mirror Flux Klein NVFP4).
 
-# Diffusion model (ERNIE-Image-Turbo, Q5 GGUF)
-https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF/resolve/main/ernie-image-turbo-Q5_K_M.gguf
-  dir=ComfyUI/models/unet
-  out=ernie-image-turbo-Q5_K_M.gguf
+# Diffusion model (Turbo FP8 transformer; NVFP4 variant selected at startup when flagged)
+https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-fp8.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=ernie-image-turbo-fp8.safetensors
 
 # Text encoder (Ministral-3 3B, used by ERNIE-Image)
 https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ministral-3-3b.safetensors

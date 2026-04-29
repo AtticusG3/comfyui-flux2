@@ -833,6 +833,13 @@ apply_nvfp4_overrides() {
         changed=1
     fi
 
+    # ERNIE-Image-Turbo (Abiray): FP8 -> NVFP4 safetensors when NVFP4 is enabled (mirror Klein).
+    if grep -Fq "ernie-image-turbo-fp8.safetensors" "$list_file"; then
+        sed -i 's#https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-fp8\.safetensors#https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-nvfp4.safetensors#g' "$list_file"
+        sed -i 's#out=ernie-image-turbo-fp8\.safetensors#out=ernie-image-turbo-nvfp4.safetensors#g' "$list_file"
+        changed=1
+    fi
+
     # Official Comfy-Org flux2-dev/klein fp4 endpoints were probed and currently
     # return 404. Keep flux1-krea on FP8 unless a validated official NVFP4 URL is available.
     if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
@@ -851,13 +858,7 @@ apply_nvfp4_overrides() {
             sed -i 's#out=wan2\.2_i2v_low_noise_14B_fp8_scaled\.safetensors#out=wan2.2_i2v_low_noise_14B_nvfp4_mixed.safetensors#g' "$list_file"
             changed=1
         fi
-        # ERNIE-Image-Turbo GGUF (Unsloth): swap Q5_K_M -> UD-Q5_K_M for NVFP4-oriented quant
-        # when explicitly allowed (same HF repo).
-        if grep -Fq "ernie-image-turbo-Q5_K_M.gguf" "$list_file"; then
-            sed -i 's#resolve/main/ernie-image-turbo-Q5_K_M.gguf#resolve/main/ernie-image-turbo-UD-Q5_K_M.gguf#g' "$list_file"
-            sed -i 's#out=ernie-image-turbo-Q5_K_M.gguf#out=ernie-image-turbo-UD-Q5_K_M.gguf#g' "$list_file"
-            changed=1
-        fi
+
         # flux1-krea currently has community NF4/other derivatives but no known
         # validated drop-in URL for this pack's current artifact.
         if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
@@ -906,14 +907,12 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] NVFP4 workflow override enabled: switched Klein workflows to NVFP4 model filenames."
     fi
 
-    # ERNIE-Image-Turbo GGUF: match workflow default filename to UD-Q5 variant when gated.
-    if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
-        local ewf_ud="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
-        if [ -f "$ewf_ud" ]; then
-            if grep -Fq "ernie-image-turbo-Q5_K_M.gguf" "$ewf_ud"; then
-                sed -i 's/ernie-image-turbo-Q5_K_M\.gguf/ernie-image-turbo-UD-Q5_K_M.gguf/g' "$ewf_ud"
-                echo "[INFO] NVFP4 workflow override enabled: switched ERNIE GGUF workflow filename to UD-Q5_K_M."
-            fi
+    local ewf_er="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
+    if [ -f "$ewf_er" ]; then
+        # Abiray Turbo: match workflow widget defaults to nvfp4 filenames when list was switched.
+        if grep -Fq "ernie-image-turbo-fp8.safetensors" "$ewf_er"; then
+            sed -i 's/ernie-image-turbo-fp8\.safetensors/ernie-image-turbo-nvfp4.safetensors/g' "$ewf_er"
+            echo "[INFO] NVFP4 workflow override enabled: ERNIE-Image-Turbo -> nvfp4 safetensors filenames."
         fi
     fi
 }

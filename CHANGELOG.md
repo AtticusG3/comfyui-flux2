@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.3] -- ERNIE Turbo: Abiray FP8/NVFP4 safetensors (NVFP4 like Klein)
+
+### Changed
+- `ernie-image` low VRAM tier uses Abiray [ERNIE-Image-Turbo-FP8-NVFP4](https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4) **safetensors** in `models/diffusion_models` and core `UNETLoader` (replacing Unsloth GGUF + city96).
+- When `NVFP4_SUPPORTED=true`, `apply_nvfp4_overrides` swaps the Turbo download to `ernie-image-turbo-nvfp4.safetensors` (same HF repo), matching Flux Klein NVFP4 policy.
+- Removed `scripts/packs/ernie-image/nodes.txt` (no longer require ComfyUI-GGUF for the default Turbo path).
+
+### Documentation
+- `LOCAL_SETUP.md`: expanded GGUF mmap / `ENODEV` troubleshooting for NFS, bind mounts, and Linux VMs (e.g. Proxmox).
+
 ## [1.3.2] -- Git safe.directory startup fix
 
 ### Fixed

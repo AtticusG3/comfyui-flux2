@@ -69,6 +69,7 @@ Open `http://localhost:8188`.
 - GPU not detected: verify Docker Desktop WSL integration and retry the NVIDIA sample command.
 - Out of VRAM: set `LOW_VRAM=true`, keep `AUTO_VRAM_ARGS=true`, or set `COMFYUI_VRAM_ARGS=--lowvram --reserve-vram 1.5 --cpu-vae`.
 - API clients timing out: wait for model downloads and ComfyUI startup to finish, then check `http://localhost:8188/object_info`.
+- **GGUF / `OSError: [Errno 19] No such device` in `numpy.memmap` / `ComfyUI-GGUF`**: GGUF loaders memory-map weights. **`mmap` can return `ENODEV`** when the **backing filesystem** does not support mapping that file normally, even if read/write works. That includes **Docker bind mounts backed by NFS/SMB**, **paths on Gluster/other FUSE**, and **Docker Desktop virtiofs binds from Windows**. On a **Linux VM** (e.g. **Debian on Proxmox**), common causes are **`./data/models` on a NAS or network mount**, **`/var/lib/docker`** on shared storage, or bind mounts onto those. **Mitigation:** keep `.gguf` files on **local VM disk** (ext4/xfs/ZFS block device, etc.), use a **named volume** on local disk, or copy weights off network mounts before load.
 - Trellis2 GGUF fails to import: treat it as experimental and check upstream wheel compatibility for your Python/Torch/CUDA combination.
 
 Runtime flag precedence (highest to lowest):

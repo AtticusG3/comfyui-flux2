@@ -164,7 +164,7 @@
         1024,
         1024,
         423299999918804,
-        "ernie-image-turbo-Q5_K_M.gguf",
+        "ernie-image-turbo-fp8.safetensors",
         "ministral-3-3b.safetensors",
         "ernie-image-prompt-enhancer.safetensors",
         "flux2-vae.safetensors"
@@ -194,7 +194,7 @@
         }
       },
       "widgets_values": [
-        "Guide: [Subgraph](https://docs.comfy.org/interface/features/subgraph)\n\n## Model Links (for Local Users)\n\n**unet (GGUF)**\n\n- [ernie-image-turbo-Q5_K_M.gguf](https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF/resolve/main/ernie-image-turbo-Q5_K_M.gguf)\n\nLoader: [city96/ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF) Unet Loader (GGUF).\n\n**text_encoders**\n\n- [ministral-3-3b.safetensors](https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ministral-3-3b.safetensors)\n- [ernie-image-prompt-enhancer.safetensors](https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ernie-image-prompt-enhancer.safetensors)\n\n**vae**\n\n- [flux2-vae.safetensors](https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/vae/flux2-vae.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 unet/\n│   │   └── ernie-image-turbo-Q5_K_M.gguf\n│   ├── 📂 text_encoders/\n│   │   ├── ministral-3-3b.safetensors\n│   │   └── ernie-image-prompt-enhancer.safetensors\n│   └── 📂 vae/\n│       └── flux2-vae.safetensors\n```\n\n## Report Issue\n\nNote: Please update ComfyUI first ([guide](https://docs.comfy.org/installation/update_comfyui)) and prepare required models. Desktop/Cloud updates follow stable releases, so some nightly-supported models may not be available yet.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/comfyanonymous/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)\n"
+        "Guide: [Subgraph](https://docs.comfy.org/interface/features/subgraph)\n\n## Model Links (for Local Users)\n\n**diffusion_models (Turbo, Abiray community pack)**\n\nWeights live in [Abiray/ERNIE-Image-Turbo-FP8-NVFP4](https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4): use the FP8 or NVFP4 Turbo file in `diffusion_models/` per your startup settings. When NVFP4_SUPPORTED=true, this image downloads the NVFP4 file and matches Flux Klein NVFP4 behavior (core UNETLoader).\n\n**text_encoders**\n\n- [ministral-3-3b.safetensors](https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ministral-3-3b.safetensors)\n- [ernie-image-prompt-enhancer.safetensors](https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/text_encoders/ernie-image-prompt-enhancer.safetensors)\n\n**vae**\n\n- [flux2-vae.safetensors](https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/vae/flux2-vae.safetensors)\n\n## Model storage (example)\n\n```\nComfyUI/\n  models/\n    diffusion_models/\n      (ernie Turbo weight: FP8 or NVFP4 filename from repo)\n    text_encoders/\n      ministral-3-3b.safetensors\n      ernie-image-prompt-enhancer.safetensors\n    vae/\n      flux2-vae.safetensors\n```\n\n## Report Issue\n\nNote: Please update ComfyUI first ([guide](https://docs.comfy.org/installation/update_comfyui)) and prepare required models. Desktop/Cloud updates follow stable releases, so some nightly-supported models may not be available yet.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/comfyanonymous/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)\n"
       ],
       "color": "#222",
       "bgcolor": "#000"
@@ -444,14 +444,14 @@
           },
           {
             "id": 66,
-            "type": "UnetLoaderGGUF",
+            "type": "UNETLoader",
             "pos": [
               -470,
               320
             ],
             "size": [
               270,
-              82
+              110
             ],
             "flags": {},
             "order": 3,
@@ -478,7 +478,9 @@
               }
             ],
             "properties": {
-              "Node name for S&R": "UnetLoaderGGUF",
+              "cnr_id": "comfy-core",
+              "ver": "0.3.73",
+              "Node name for S&R": "UNETLoader",
               "enableTabs": false,
               "tabWidth": 65,
               "tabXOffset": 10,
@@ -488,9 +490,9 @@
               "secondTabWidth": 65,
               "models": [
                 {
-                  "name": "ernie-image-turbo-Q5_K_M.gguf",
-                  "url": "https://huggingface.co/unsloth/ERNIE-Image-Turbo-GGUF/resolve/main/ernie-image-turbo-Q5_K_M.gguf",
-                  "directory": "unet"
+                  "name": "ernie-image-turbo-fp8.safetensors",
+                  "url": "https://huggingface.co/Abiray/ERNIE-Image-Turbo-FP8-NVFP4/resolve/main/ernie-image-turbo-fp8.safetensors",
+                  "directory": "diffusion_models"
                 }
               ],
               "ue_properties": {
@@ -500,7 +502,8 @@
               }
             },
             "widgets_values": [
-              "ernie-image-turbo-Q5_K_M.gguf"
+              "ernie-image-turbo-fp8.safetensors",
+              "default"
             ]
           },
           {
