@@ -1,0 +1,1 @@
+# Workflows bundled under /workflows/firered-image-edit/ in the image (see entrypoint).

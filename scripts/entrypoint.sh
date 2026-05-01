@@ -657,11 +657,11 @@ if [ "$NVFP4_MODE_LC" != "official-only" ] && [ "$NVFP4_MODE_LC" != "allow-commu
 fi
 echo "[INFO] NVFP4_MODE is '$NVFP4_MODE_LC'."
 
-# Parse MODELS_DOWNLOAD: comma-separated selectors, default klein-distilled
-SELECTORS_RAW="${MODELS_DOWNLOAD:-klein-distilled}"
+# Parse MODELS_DOWNLOAD: comma-separated selectors (default none). Add packs explicitly (e.g. klein-distilled).
+SELECTORS_RAW="${MODELS_DOWNLOAD:-none}"
 SELECTORS_LC=$(echo "$SELECTORS_RAW" | tr '[:upper:]' '[:lower:]' | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' || true)
 if [ -z "$SELECTORS_LC" ]; then
-    SELECTORS_LC="klein-distilled"
+    SELECTORS_LC="none"
 fi
 
 PACKS_DIR="/scripts/packs"
@@ -859,6 +859,13 @@ apply_nvfp4_overrides() {
             changed=1
         fi
 
+        # FireRed Image Edit 1.0 (cocorang fp8mixed -> Starnodes community NVFP4)
+        if grep -Fq "FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors" "$list_file"; then
+            sed -i 's#https://huggingface.co/cocorang/FireRed-Image-Edit-1.0-FP8_And_BF16/resolve/main/FireRed-Image-Edit-1.0_fp8mixed_comfy\.safetensors#https://huggingface.co/Starnodes/quants/resolve/main/FireRed-Image-Edit-1_NVFP4.safetensors#g' "$list_file"
+            sed -i 's#out=FireRed-Image-Edit-1.0_fp8mixed_comfy\.safetensors#out=FireRed-Image-Edit-1_NVFP4.safetensors#g' "$list_file"
+            changed=1
+        fi
+
         # flux1-krea currently has community NF4/other derivatives but no known
         # validated drop-in URL for this pack's current artifact.
         if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
@@ -915,6 +922,15 @@ apply_nvfp4_workflow_overrides() {
             echo "[INFO] NVFP4 workflow override enabled: ERNIE-Image-Turbo -> nvfp4 safetensors filenames."
         fi
     fi
+
+    # FireRed: Starnodes NVFP4 filename only when community NVFP4 policy is enabled.
+    if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
+        local frwf="$workflows_dir/FireRed Image Edit 1.0 - Image Edit.json"
+        if [ -f "$frwf" ] && grep -Fq "FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors" "$frwf"; then
+            sed -i 's/FireRed-Image-Edit-1.0_fp8mixed_comfy\.safetensors/FireRed-Image-Edit-1_NVFP4.safetensors/g' "$frwf"
+            echo "[INFO] NVFP4 workflow override enabled: FireRed Image Edit -> Starnodes NVFP4 filename."
+        fi
+    fi
 }
 
 # Validate HF_TOKEN requirement for a pack
@@ -957,7 +973,50 @@ echo ""
 # Remove previously managed workflow files so only current selected packs remain.
 cleanup_prev_managed_workflows
 
+# Base install: vram-utils custom nodes + bundled workflows (always, not tied to MODELS_DOWNLOAD).
+VR_PACK="${PACKS_DIR}/vram-utils"
+if [ -d "/workflows/vram-utils" ]; then
+    echo "[INFO] Installing base workflows from /workflows/vram-utils..."
+    shopt -s nullglob
+    for wf in /workflows/vram-utils/*.json; do
+        bn=$(basename "$wf")
+        dst="$WORKFLOWS_DIR/$bn"
+        cp -f "$wf" "$dst"
+        register_managed_workflow "$dst"
+        echo "  [OK] $bn"
+    done
+    shopt -u nullglob
+fi
+N_BASE="${VR_PACK}/nodes.txt"
+if [ -f "$N_BASE" ] && [ -s "$N_BASE" ]; then
+    echo "[INFO] Installing base custom nodes (vram-utils pack)..."
+    while IFS= read -r line || [ -n "$line" ]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "$line" ]] && continue
+        git_url=$(echo "$line" | awk '{print $1}')
+        if [[ "$git_url" =~ ^https://|^git:// ]]; then
+            repo_name=$(basename "$git_url" .git)
+            repo_branch=$(echo "$line" | awk '{print $2}')
+            target_dir="/app/ComfyUI/custom_nodes/$repo_name"
+            echo "  [SYNC] $repo_name (base)"
+            if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
+                install_reqs "$target_dir/requirements.txt"
+            else
+                echo "  [WARN] Failed to sync $repo_name"
+            fi
+        fi
+    done < "$N_BASE"
+fi
+
 for sel in $SELECTORS_LC; do
+    if [ "$sel" == "none" ] || [ "$sel" == "-" ] || [ "$sel" == "core" ]; then
+        continue
+    fi
+    if [ "$sel" == "vram-utils" ] || [ "$sel" == "vram" ] || [ "$sel" == "cleanup" ] || [ "$sel" == "offload" ]; then
+        echo "[WARN] vram-utils is installed by default; pack selector '$sel' is deprecated (skipped)."
+        continue
+    fi
+
     pack_dir=$(resolve_pack_dir "$sel")
     
     if [ -z "$pack_dir" ]; then

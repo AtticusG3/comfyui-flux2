@@ -22,7 +22,7 @@ services:
       - HF_TOKEN=${HF_TOKEN}
       - CIVITAI_API_KEY=${CIVITAI_API_KEY}
       - LOW_VRAM=${LOW_VRAM:-false}
-      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-klein-distilled}
+      - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-none}
     gpus: all
     deploy:
       resources:

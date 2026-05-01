@@ -1,0 +1,22 @@
+# FireRed Image Edit 1.0 BF16 (high / LOW_VRAM=false)
+# Same VAE and Lightning LoRA as low tier; larger diffusion + BF16 text encoder.
+
+# Diffusion (BF16)
+https://huggingface.co/cocorang/FireRed-Image-Edit-1.0-FP8_And_BF16/resolve/main/FireRed-Image-Edit-1.0_bf16.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=FireRed-Image-Edit-1.0_bf16.safetensors
+
+# Text encoder (Qwen 2.5 VL BF16)
+https://huggingface.co/FireRedTeam/FireRed-Image-Edit-1.0-ComfyUI/resolve/main/qwen2.5vl-7b-bf16.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=qwen2.5vl-7b-bf16.safetensors
+
+# VAE
+https://huggingface.co/FireRedTeam/FireRed-Image-Edit-1.1-ComfyUI/resolve/main/qwen_image_vae.safetensors
+  dir=ComfyUI/models/vae
+  out=qwen_image_vae.safetensors
+
+# Lightning LoRA
+https://huggingface.co/FireRedTeam/FireRed-Image-Edit-1.1-ComfyUI/resolve/main/FireRed-Image-Edit-1.0-Lightning-8steps-v1.2.safetensors
+  dir=ComfyUI/models/loras
+  out=FireRed-Image-Edit-1.0-Lightning-8steps-v1.2.safetensors

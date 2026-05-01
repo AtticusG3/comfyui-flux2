@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0] -- FireRed pack, base vram-utils, default MODELS_DOWNLOAD=none
+
+### Added
+- New `firered-image-edit` pack (`MODELS_DOWNLOAD=firered-image-edit`): FireRed Image Edit 1.0 diffusion from cocorang (FP8-mixed low, BF16 high), Qwen 2.5 VL text encoder (Comfy-Org FP8 low / FireRedTeam BF16 high), VAE and Lightning LoRA from FireRedTeam; bundled workflow `workflows/firered-image-edit/FireRed Image Edit 1.0 - Image Edit.json` with **ModelSamplingAuraFlow removed** (black-output fix per community guidance).
+- `docs/images/README.md` for optional screenshot assets.
+
+### Changed
+- `MODELS_DOWNLOAD` default is **`none`** (no implicit `klein-distilled`); set packs explicitly in `.env` / compose.
+- **vram-utils** custom nodes and `workflows/vram-utils/` are **always** installed before pack processing; selecting `vram-utils` in `MODELS_DOWNLOAD` is deprecated and skipped with a warning.
+- `apply_nvfp4_overrides`: when `NVFP4_SUPPORTED=true` and `NVFP4_MODE=allow-community`, swap FireRed cocorang FP8-mixed URL to Starnodes `FireRed-Image-Edit-1_NVFP4.safetensors`.
+- `apply_nvfp4_workflow_overrides`: same gating rewrites the bundled FireRed workflow default diffusion filename to the Starnodes NVFP4 name.
+- README: multi-model positioning, Eigen-style CUDA / stable vs nightly notes, consolidated **Blackwell and NVFP4** section (kitchen + converter links, SageAttention pointer), screenshots placeholders, `docker-compose.yml` default `MODELS_DOWNLOAD=none`.
+- `.env.example`, `LOCAL_SETUP.md`, `AGENTS.md`, AnythingLLM companion README updated for the above.
+
 ## [1.3.3] -- ERNIE Turbo: Abiray FP8/NVFP4 safetensors (NVFP4 like Klein)
 
 ### Changed

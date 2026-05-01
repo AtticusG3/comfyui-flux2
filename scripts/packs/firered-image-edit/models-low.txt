@@ -1,0 +1,23 @@
+# FireRed Image Edit 1.0 (low / LOW_VRAM=true)
+# Comfy workflow: https://www.comfy.org/workflows/image_firered_image_edit1_1-c0198b907108/
+# Low VRAM tips: https://aistudynow.com/how-to-fix-firered-image-edit-in-comfyui-my-custom-workflow-for-low-vram/
+
+# Diffusion (FP8-mixed Comfy repack; Starnodes NVFP4 swap when NVFP4_SUPPORTED=true and NVFP4_MODE=allow-community)
+https://huggingface.co/cocorang/FireRed-Image-Edit-1.0-FP8_And_BF16/resolve/main/FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors
+
+# Text encoder (Qwen 2.5 VL FP8)
+https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=qwen_2.5_vl_7b_fp8_scaled.safetensors
+
+# VAE
+https://huggingface.co/FireRedTeam/FireRed-Image-Edit-1.1-ComfyUI/resolve/main/qwen_image_vae.safetensors
+  dir=ComfyUI/models/vae
+  out=qwen_image_vae.safetensors
+
+# Lightning LoRA (optional 4-8 step path; enable in workflow switch)
+https://huggingface.co/FireRedTeam/FireRed-Image-Edit-1.1-ComfyUI/resolve/main/FireRed-Image-Edit-1.0-Lightning-8steps-v1.2.safetensors
+  dir=ComfyUI/models/loras
+  out=FireRed-Image-Edit-1.0-Lightning-8steps-v1.2.safetensors

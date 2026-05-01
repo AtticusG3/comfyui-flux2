@@ -1,7 +1,7 @@
 # AGENTS.md -- Project Guide for AI Coding Agents
 
-Dockerized ComfyUI with selectable model packs, startup sync/update logic, and
-persistent host-mounted data paths.
+Dockerized ComfyUI with selectable model packs (image, video, 3D, audio), startup
+sync/update logic, and persistent host-mounted data paths.
 
 ## Scope and Priorities
 
@@ -12,7 +12,8 @@ persistent host-mounted data paths.
 
 ## Key Paths
 
-- `scripts/entrypoint.sh`: startup orchestration, repo sync, model/workflow downloads.
+- `scripts/entrypoint.sh`: startup orchestration, repo sync, model/workflow downloads,
+  base install of `vram-utils` nodes/workflows on every start, optional `none` pack selection.
 - `scripts/packs/<pack>/`: pack metadata, models/workflows lists, optional `nodes.txt`.
 - `workflows/`: bundled JSON workflows copied into ComfyUI on startup.
 - `docker-compose.yml`, `.env.example`, `README.md`, `LOCAL_SETUP.md`: runtime docs/config.
@@ -42,7 +43,8 @@ persistent host-mounted data paths.
 - `NVFP4_SUPPORTED=true` enables URL override logic.
 - `NVFP4_MODE`:
   - `official-only` (default): official NVFP4 sources only.
-  - `allow-community`: allows configured community NVFP4 overrides (experimental).
+  - `allow-community`: allows configured community NVFP4 overrides (experimental),
+  including Wan I2V and **firered-image-edit** (cocorang FP8-mixed to Starnodes NVFP4).
 - Preserve original NVFP4 model filenames when swapping URLs.
 - Ensure workflows are switched/updated to the NVFP4-specific model filenames.
 

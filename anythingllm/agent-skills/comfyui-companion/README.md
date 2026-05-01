@@ -5,7 +5,7 @@ AnythingLLM custom agent skill for routing ComfyUI requests to the right model p
 ## What It Does
 
 - Knows all packs in this repo and routes by user intent.
-- Covers T2I and image editing where supported (`klein-distilled`, `flux1-krea`, `newbie-image`, `ovis-image`, `sdxl-lightning`, `sdxl-editing`).
+- Covers T2I and image editing where supported (`klein-distilled`, `firered-image-edit`, `flux1-krea`, `newbie-image`, `ovis-image`, `sdxl-lightning`, `sdxl-editing`).
 - Handles non-image intents gracefully (video/3D/audio packs).
 - Prefers inline image rendering instruction and includes download-link fallback.
 - Uses cached installed pack list when provided (`cachedInstalledPacks`), otherwise probes ComfyUI API and requests user confirmation.

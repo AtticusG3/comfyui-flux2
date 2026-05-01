@@ -26,7 +26,7 @@ Edit `.env`:
 
 ```text
 LOW_VRAM=true
-MODELS_DOWNLOAD=klein-distilled,vram-utils
+MODELS_DOWNLOAD=klein-distilled
 AUTO_VRAM_ARGS=true
 NVFP4_SUPPORTED=false
 NVFP4_MODE=official-only
@@ -44,7 +44,7 @@ Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected mod
 `NVFP4_MODE` controls source policy:
 
 - `official-only` (default): official NVFP4 URLs only (Klein 4B and 9B).
-- `allow-community`: also enables configured community NVFP4 overrides (currently Wan 2.2 I2V mixed checkpoints; experimental).
+- `allow-community`: also enables configured community NVFP4 overrides (Wan 2.2 I2V mixed checkpoints; FireRed Image Edit Starnodes quant; experimental).
 
 ## Build And Run
 

@@ -1,0 +1,18 @@
+{
+  "name": "firered-image-edit",
+  "selectors": ["firered-image-edit", "firered", "fireredimage"],
+  "tutorial_urls": [
+    "https://www.comfy.org/workflows/image_firered_image_edit1_1-c0198b907108/",
+    "https://aistudynow.com/how-to-fix-firered-image-edit-in-comfyui-my-custom-workflow-for-low-vram/"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/FireRedTeam/FireRed-Image-Edit-1.1-ComfyUI",
+    "https://huggingface.co/cocorang/FireRed-Image-Edit-1.0-FP8_And_BF16",
+    "https://huggingface.co/Starnodes/quants",
+    "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "FireRed Image Edit 1.0 FP8-mixed (~21GB) + Qwen 2.5 VL FP8 + VAE + optional Lightning LoRA. Do not enable ModelSamplingAuraFlow (black output). Community NVFP4 (~12GB) when NVFP4_SUPPORTED=true and NVFP4_MODE=allow-community.",
+  "notes_high": "FireRed 1.0 BF16 (~40GB disk) + Qwen 2.5 VL BF16 + VAE + Lightning LoRA. Heavy VRAM; use LOW_VRAM and CLI reserve flags if needed.",
+  "description": "FireRed Image Edit 1.0 region-aware editing with Qwen 2.5 VL and UNETLoader diffusion_models layout."
+}
