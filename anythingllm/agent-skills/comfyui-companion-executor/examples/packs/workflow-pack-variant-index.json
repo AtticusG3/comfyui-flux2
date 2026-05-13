@@ -30,9 +30,6 @@
   "hunyuan-3d": {
     "i2-3d-template": "workflow-hunyuan-3d-i23d-template.json"
   },
-  "trellis2-gguf": {
-    "i2-3d-template": "workflow-trellis2-gguf-i23d-template.json"
-  },
   "ace-step": {
     "t2a-template": "workflow-ace-step-t2a-template.json"
   },

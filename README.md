@@ -173,13 +173,15 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `ace-step` | Audio | Turbo AIO | XL SFT split | |
 | `ovis-image` | Image | Ovis pack | Ovis pack | |
 | `newbie-image` | Image | NewBie pack | NewBie pack | Requires NewBie nodes. |
-| `trellis2-gguf` | 3D | Q4 GGUF | Q8 GGUF | Experimental. |
 | `wan-2-2` | Video | 5B stack | 14B stack | |
 | `sdxl-lightning` | Image | 4-step | 8-step | |
 | `sdxl-editing` | Image | Inpaint base | + refiner / upscale | |
 | `ernie-image` | Image | Turbo FP8 path | SFT BF16 | See pack `pack.json`. |
+| `flux2` | Image | (workflows only) | (workflows only) | Optional Flux.2 Klein JSON bundle; pair with `klein-distilled` for weights. |
+| `z-image-anime` | Image | Z-Image NVFP4 + Z-Anime FP8 stack | Z-Image BF16 + Z-Anime BF16 stack | Large HF downloads; bundled Z workflows. |
+| `qwen-image-edit-2511` | Image | NVFP4 diffusion + Qwen TE/VAE | FP8 diffusion + Qwen TE/VAE | Weights only; build or import a 2511 edit graph in ComfyUI. |
 
-**`vram-utils`:** Installed for every run (KJNodes, rgthree, essentials, Easy-Use + `workflows/vram-utils`). The selector `vram-utils` (and aliases) is **deprecated** and skipped if listed.
+**`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed.
 
 Example:
 
@@ -249,6 +251,6 @@ Version in `VERSION` and history in `CHANGELOG.md`. Tag `v*` to publish versione
 
 ## Notes
 
-- Trellis2 GGUF support is experimental.
+- Image wheels include `av`, `sageattention`, and best-effort `flash-attn` (may skip if no compatible wheel for your torch+cuda build).
 - Custom node `requirements.txt` installs filter `torch`, `torchvision`, `torchaudio`, and `xformers` so they cannot downgrade the image stack.
 - ComfyUI, ComfyUI-Manager, Civicomfy, base VRAM nodes, and pack nodes sync on startup.

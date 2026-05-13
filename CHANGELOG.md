@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.5.0] -- Packs (flux2, Z-Image/Z-Anime, Qwen Edit 2511), deps, startup workflow policy
+
+### Added
+- Docker image: `av`, `sageattention`, best-effort `flash-attn`; builder libav dev headers; runtime `ffmpeg`.
+- ComfyUI-Manager: ensure `user/__manager/config.ini` sets `security_level = weak` after install.
+- ComfyUI: patch `comfy_api/latest/_input_impl/video_types.py` for PyAV rotation fallback (`rotation` vs `metadata["rotate"]`).
+- Packs: `flux2` (optional Klein workflow bundle; pair with `klein-distilled` for weights), `z-image-anime` (Comfy-Org Z-Image Turbo + SeeSee21 Z-Anime models; bundled Z workflows), `qwen-image-edit-2511` (1038lab FP8 + Bedovyy NVFP4 + shared Qwen Image TE/VAE; no bundled graph).
+- Base custom nodes: SeedVR2 Video Upscaler, LayerStyle, Detail Daemon, WAS Node Suite (with existing vram-utils set).
+
+### Changed
+- Startup: if `user/default/workflows` already contains any `*.json`, skip managed workflow cleanup, bundled workflow copies, workflow URL downloads, and manifest rewrite (models and custom nodes still apply).
+- `klein-distilled`: removed bundled Flux Klein workflow install (use `flux2` pack for those JSON files).
+- `vram-utils` `nodes.txt`: expanded default node list (see README).
+- `scripts/update_workflow_prompts.py`: Trellis scenes removed; scenes for `flux2/`, Z-Image, Z-Anime, ERNIE, FireRed, SDXL Lightning; `pack_name` updates.
+
+### Removed
+- `trellis2-gguf` pack and Trellis AnythingLLM routing/templates; `workflows/trellis2-gguf/` examples removed.
+
+### Fixed
+- NVFP4 Klein workflow override list aligned to `FLUX.2 Klein …` destination filenames only.
+
 ## [1.4.0] -- FireRed pack, base vram-utils, default MODELS_DOWNLOAD=none
 
 ### Added

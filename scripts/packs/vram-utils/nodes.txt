@@ -3,3 +3,7 @@ https://github.com/kijai/ComfyUI-KJNodes.git main
 https://github.com/rgthree/rgthree-comfy.git main
 https://github.com/cubiq/ComfyUI_essentials.git main
 https://github.com/yolain/ComfyUI-Easy-Use.git main
+https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git main
+https://github.com/chflame163/ComfyUI_LayerStyle.git main
+https://github.com/Jonseed/ComfyUI-Detail-Daemon.git main
+https://github.com/ltdrdata/was-node-suite-comfyui.git main

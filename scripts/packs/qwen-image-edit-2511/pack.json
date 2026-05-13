@@ -1,0 +1,16 @@
+{
+  "name": "qwen-image-edit-2511",
+  "selectors": ["qwen-image-edit-2511", "qwen-image-edit", "qwen2511"],
+  "tutorial_urls": [
+    "https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8",
+    "https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8",
+    "https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "NVFP4 diffusion (Bedovyy) + shared Qwen Image TE/VAE. RTX 50+ class GPUs.",
+  "notes_high": "FP8 e4m3fn diffusion (1038lab) + shared Qwen Image TE/VAE. Build a graph in ComfyUI or import an official Qwen Image Edit 2511 template.",
+  "description": "Qwen Image Edit 2511 image-to-image model weights (no bundled workflow JSON)."
+}

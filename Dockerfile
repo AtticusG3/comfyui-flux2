@@ -17,7 +17,14 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         gcc \
-        g++ && \
+        g++ \
+        ninja-build \
+        pkg-config \
+        ffmpeg \
+        libavcodec-dev \
+        libavformat-dev \
+        libavutil-dev \
+        libswscale-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -29,6 +36,12 @@ RUN uv pip install --no-cache \
     torchaudio \
     xformers \
     --index-url https://download.pytorch.org/whl/${CUDA_VERSION}
+
+# av (PyAV), flash-attn, sageattention (SeedVR2 / attention backends). flash-attn may
+# skip if no compatible prebuilt wheel exists for the torch+cuda matrix.
+RUN uv pip install --no-cache av sageattention && \
+    (uv pip install --no-cache flash-attn --no-build-isolation || \
+        echo "[WARN] flash-attn not installed (no wheel or build failed); optional.")
 
 # =============================================================================
 # Stage 2: runtime -- lean image with only what's needed at run time
@@ -51,6 +64,7 @@ RUN apt-get update && \
         git \
         aria2 \
         jq \
+        ffmpeg \
         libgl1 \
         libglib2.0-0 \
         fonts-dejavu-core \

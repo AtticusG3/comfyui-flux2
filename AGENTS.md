@@ -55,10 +55,9 @@ sync/update logic, and persistent host-mounted data paths.
   - high tier: `sdxl_lightning_8step.safetensors`
 - Do not default to LoRA-first Lightning pack behavior unless requested.
 
-## Trellis2 Node Expectations
+## Optional Python deps
 
-- `trellis2-gguf` must include required Trellis custom node repos in `nodes.txt`.
-- If users report missing Trellis nodes, verify pack node repo list first.
+- The Docker image installs `av`, `sageattention`, and attempts `flash-attn` for attention backends used by some custom nodes.
 
 ## Test and Release Checklist
 

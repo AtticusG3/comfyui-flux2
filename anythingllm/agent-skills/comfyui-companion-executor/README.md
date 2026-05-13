@@ -84,7 +84,6 @@ Starter templates included for non-image packs:
 - `workflow-hunyuan-video-t2v-template.json`
 - `workflow-wan-2-2-t2v-template.json`
 - `workflow-hunyuan-3d-i23d-template.json`
-- `workflow-trellis2-gguf-i23d-template.json`
 - `workflow-ace-step-t2a-template.json`
 - `workflow-vram-utils-template.json`
 

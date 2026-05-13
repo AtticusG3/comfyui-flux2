@@ -20,29 +20,14 @@ ANIME_NEG = (
 
 
 SCENES = {
-    "workflows/Flux 2 Klein 4B - Text to Image.json": (
-        "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, "
-        "Mount Fuji visible in the distant background dusted with cherry blossom petals, "
-        "neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, "
-        "cinematic depth of field",
+    "workflows/flux2/Flux 2 Klein T2I.json": (
+        "A Nissan Silvia S15 Spec-R in metallic pearl white parked in front of a closed Daikoku Futo "
+        "style warehouse, sodium vapor lights, light rain, wide-angle automotive photograph",
         "",
     ),
-    "workflows/Flux 2 Klein 9B - Text to Image.json": (
-        "Rei Ayanami standing at the entrance of a Shinto shrine at golden hour, wearing her "
-        "NERV plugsuit, cherry blossom petals falling, giant EVA Unit-00 silhouetted in the "
-        "background behind the shrine gate, dramatic backlight, photorealistic, 4K sharp detail, film grain",
-        "",
-    ),
-    "workflows/Flux 2 Klein 4B - Image Edit Distilled.json": (
-        "Transform the vehicle into a widebody Mazda RX-7 FD3S with rocket bunny kit, deep metallic "
-        "midnight blue paint, matching the original composition and lighting, Akihabara streetscape "
-        "background at night with neon billboards, keep the same road surface and reflections",
-        "",
-    ),
-    "workflows/Flux 2 Klein 9B - Image Edit Distilled.json": (
-        "Transform the foreground vehicle into a Nissan Fairlady 370Z Nismo in satin gunmetal with a "
-        "bosozoku-inspired aero setup, preserving original camera angle and lighting, Harajuku side street "
-        "with lit paper lantern signs and manga billboards in the background, maintain existing pavement texture and reflections",
+    "workflows/flux2/Flux 2 Klein I2I.json": (
+        "Turn the car into a midnight purple widebody build with carbon canards and a large rear wing, "
+        "keep license plate and stance, same environment and lighting",
         "",
     ),
     "workflows/sdxl-lightning/sdxl-lightning-workflow-low.json": (
@@ -137,29 +122,39 @@ SCENES = {
         "body kit, chrome RAYS VOLK TE37 wheels, clean topology suitable for a game asset pipeline",
         "",
     ),
-    "workflows/trellis2-gguf/lowpoly.json": (
-        "Low-poly 3D asset of a torii gate, shrine red lacquer paint, weathered wood texture, optimized mesh for real-time rendering",
+    "workflows/z-anime/Z-Anime T2I.json": (
+        "A young anime pilot girl in a crisp white JASDF-style flight suit standing on the deck of a fictional carrier at sunset, "
+        "F-2 inspired trainer behind her with kanji roundels, warm rim light, detailed anime illustration, cinematic vertical composition",
+        ANIME_NEG,
+    ),
+    "workflows/z-image-turbo/Z-Image turbo T2I.json": (
+        "Photorealistic night photograph of a Toyota GR Yaris Circuit Edition in Emotional Red II parked on a Hakone hairpin, "
+        "light rain, guardrail reflections, long exposure light trails from distant traffic, 35mm lens look",
         "",
     ),
-    "workflows/trellis2-gguf/high-quality.json": (
-        "High-detail 3D asset of a Japanese stone komainu statue, mossy surface detail, clean quad-dominant topology, PBR-ready",
+    "workflows/z-image-turbo/Z-Image base T2I.json": (
+        "Studio lit product shot of a carbon-kevlar racing helmet with subtle Mount Fuji line art, matte finish, neutral grey sweep, "
+        "sharp focus, commercial automotive photography",
         "",
     ),
-    "workflows/trellis2-gguf/simple.json": (
-        "Game-ready 3D model of a Bosozoku style motorcycle helmet with rising sun decals, efficient UVs and clean manifold geometry",
+    "workflows/ernie-image/ERNIE-Image - T2I.json": (
+        "Watercolor travel poster of Kanazawa Higashi Chaya district at dusk, paper grain, soft edges, muted indigo and ochre palette, "
+        "small silhouettes of tourists, vintage railway typography in corner",
         "",
     ),
-    "workflows/trellis2-gguf/only-mesh-simple.json": (
-        "Stylized 3D mesh of a Japanese paper lantern with metal frame and tassel, low-poly silhouette with clean edge flow",
+    "workflows/ernie-image/ERNIE-Image-Turbo T2I.json": (
+        "Bold vector travel sticker of a shinkansen nose cone in cobalt and white, thick white outline, flat colors, minimal shadows, "
+        "suitable for print on a laptop skin",
         "",
     ),
-    "workflows/trellis2-gguf/better-texture.json": (
-        "Textured 3D asset of a ramen shop noren curtain sign with brushed cotton fibers and bold kanji strokes, production-ready UV layout",
+    "workflows/firered-image-edit/FireRed I2I.json": (
+        "Change the jacket to a bright indigo technical shell with reflective piping, keep pose and background, realistic fabric folds",
         "",
     ),
-    "workflows/trellis2-gguf/multiviews-texturemesh.json": (
-        "Multi-view textured 3D model of a Wangan highway toll booth barrier arm with reflective Japanese hazard striping, clean bake-friendly topology",
-        "",
+    "workflows/sdxl-lightning/SDXL_Lightning T2I.json": (
+        "A classic Nissan Skyline GT-R R32 in gunmetal grey at Daikoku PA under yellow sodium lights, crowd of tuned cars in soft bokeh, "
+        "wide angle, gritty urban night photography",
+        SDXL_NEG,
     ),
 }
 
@@ -277,8 +272,8 @@ def update_file(path: Path, positive: str, negative: str):
 
 
 def pack_name(rel_path: str):
-    if "Flux 2 Klein" in rel_path:
-        return "klein-distilled"
+    if "workflow-flux2-klein" in rel_path or "flux2/" in rel_path:
+        return "flux2"
     if "sdxl-lightning/" in rel_path:
         return "sdxl-lightning"
     if "flux1-krea/" in rel_path:
@@ -293,8 +288,12 @@ def pack_name(rel_path: str):
         return "ace-step"
     if "hunyuan-3d/" in rel_path:
         return "hunyuan-3d"
-    if "trellis2-gguf/" in rel_path:
-        return "trellis2-gguf"
+    if "z-anime/" in rel_path or "z-image-turbo/" in rel_path:
+        return "z-image-anime"
+    if "ernie-image/" in rel_path:
+        return "ernie-image"
+    if "firered-image-edit/" in rel_path:
+        return "firered-image-edit"
     return "other"
 
 

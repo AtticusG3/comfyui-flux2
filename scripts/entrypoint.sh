@@ -525,45 +525,61 @@ install_all_custom_node_reqs() {
     done < <(find "$root" -mindepth 2 -maxdepth 2 -type f -name "requirements.txt" | sort)
 }
 
-# Trellis2-GGUF requires extra binary deps (cumesh/o_voxel/etc.) that are
-# not included in requirements.txt. Run the node installer when needed.
-install_trellis2_gguf_deps() {
-    local node_dir="$1"
-    if [ ! -d "$node_dir" ]; then
+# PyAV rotation: some builds expose rotation via metadata instead of frame.rotation.
+patch_comfyui_video_types_py() {
+    local f="${COMFYUI_DIR}/comfy_api/latest/_input_impl/video_types.py"
+    if [ ! -f "$f" ]; then
         return 0
     fi
-
-    if python3 -c "import cumesh" >/dev/null 2>&1; then
-        echo "[INFO] Trellis dependency check: cumesh already available."
+    if grep -q 'getattr(frame, "rotation", None)' "$f" 2>/dev/null; then
+        echo "[INFO] video_types.py rotation fallback already present."
         return 0
     fi
+    echo "[INFO] Patching ComfyUI video_types.py for rotation metadata fallback..."
+    export COMFYUI_DIR
+    python3 - <<'PY'
+from pathlib import Path
+import os
+path = Path(os.environ["COMFYUI_DIR"]) / "comfy_api" / "latest" / "_input_impl" / "video_types.py"
+text = path.read_text(encoding="utf-8")
+old = """                img = frame.to_ndarray(format=image_format) # shape: (H, W, 4)
+                if frame.rotation != 0:
+                    k = int(round(frame.rotation // 90))
+                    img = np.rot90(img, k=k, axes=(0, 1)).copy()"""
+new = """                img = frame.to_ndarray(format=image_format) # shape: (H, W, 4)
+                rotation = getattr(frame, "rotation", None)
+                if rotation is None:
+                    md = getattr(frame, "metadata", None)
+                    rotation = int(md.get("rotate", 0)) if isinstance(md, dict) else 0
+                if rotation != 0:
+                    k = int(round(float(rotation) / 90.0)) % 4
+                    if k:
+                        img = np.rot90(img, k=k, axes=(0, 1)).copy()"""
+if old not in text:
+    print("[WARN] video_types.py expected rotation block not found; skipping patch.")
+else:
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+PY
+}
 
-    # Linux-first path: install known binary deps directly.
-    # This avoids platform-mismatched wheel URLs in some upstream installers.
-    if [ "$(uname -s)" = "Linux" ]; then
-        echo "[INFO] Trellis dependency check: attempting Linux-safe direct deps (cumesh, flex-gemm)..."
-        if ! uv pip install cumesh flex-gemm; then
-            echo "[WARN] Direct Linux Trellis deps install reported errors."
-        fi
-        if python3 -c "import cumesh" >/dev/null 2>&1; then
-            echo "[INFO] Trellis dependency check: cumesh available after direct deps install."
-            return 0
-        fi
-    fi
-
-    if [ -f "$node_dir/install.py" ]; then
-        echo "[INFO] Trellis dependency check: cumesh missing. Running Trellis installer..."
-        if ! python3 "$node_dir/install.py"; then
-            echo "[WARN] Trellis installer reported errors."
-        fi
-    fi
-
-    if ! python3 -c "import cumesh" >/dev/null 2>&1; then
-        echo "[WARN] cumesh still missing after Trellis installer. Trying direct install..."
-        if ! uv pip install cumesh; then
-            echo "[WARN] Direct cumesh install failed. Trellis nodes may still fail to import."
-        fi
-    fi
+# ComfyUI-Manager: lower gatekeeper strictness for container/dev use.
+ensure_comfyui_manager_security_weak() {
+    local cfg="${COMFYUI_DIR}/user/__manager/config.ini"
+    mkdir -p "$(dirname "$cfg")"
+    CFG_INI="$cfg" python3 - <<'PY' || echo "[WARN] Failed to set ComfyUI-Manager security_level=weak"
+import configparser
+import os
+path = os.environ["CFG_INI"]
+parser = configparser.ConfigParser()
+if os.path.isfile(path):
+    parser.read(path)
+if "default" not in parser:
+    parser["default"] = {}
+parser["default"]["security_level"] = "weak"
+os.makedirs(os.path.dirname(path), exist_ok=True)
+with open(path, "w") as f:
+    parser.write(f)
+PY
 }
 
 cd /app
@@ -582,6 +598,7 @@ fi
 
 # ComfyUI
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
+patch_comfyui_video_types_py
 install_reqs "${COMFYUI_DIR}/requirements.txt"
 ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
 
@@ -589,6 +606,7 @@ ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
 mkdir -p "$CUSTOM_NODES_DIR"
 clone_or_update "${CUSTOM_NODES_DIR}/ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git" "main"
 install_reqs "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt"
+ensure_comfyui_manager_security_weak
 
 # Civicomfy (Civitai model downloader)
 clone_or_update "${CUSTOM_NODES_DIR}/Civicomfy" "https://github.com/MoonGoblinDev/Civicomfy.git" "main"
@@ -696,6 +714,16 @@ write_managed_workflow_manifest() {
     else
         : > "$MANAGED_WORKFLOWS_MANIFEST"
     fi
+}
+
+# If the target workflows directory already has JSON, treat as non-first start:
+# do not delete managed files, re-copy bundled seeds, or download pack workflow URLs.
+workflows_dir_has_json() {
+    local d="$1"
+    shopt -s nullglob
+    local a=( "$d"/*.json )
+    shopt -u nullglob
+    [ ${#a[@]} -gt 0 ]
 }
 
 # Function to resolve pack directory from selector
@@ -894,10 +922,6 @@ apply_nvfp4_workflow_overrides() {
     local changed=0
     local wf
     for wf in \
-        "$workflows_dir/Flux 2 Klein 4B - Text to Image.json" \
-        "$workflows_dir/Flux 2 Klein 4B - Image Edit Distilled.json" \
-        "$workflows_dir/Flux 2 Klein 9B - Text to Image.json" \
-        "$workflows_dir/Flux 2 Klein 9B - Image Edit Distilled.json" \
         "$workflows_dir/FLUX.2 Klein 4B Distilled - Text to Image.json" \
         "$workflows_dir/FLUX.2 Klein 4B Distilled - Image Edit.json" \
         "$workflows_dir/FLUX.2 Klein 9B Distilled - Text to Image.json" \
@@ -971,11 +995,19 @@ echo "########################################"
 echo ""
 
 # Remove previously managed workflow files so only current selected packs remain.
-cleanup_prev_managed_workflows
+SEED_WORKFLOWS=1
+if workflows_dir_has_json "$WORKFLOWS_DIR"; then
+    SEED_WORKFLOWS=0
+    echo "[INFO] Workflows directory is not empty (existing JSON). Skipping managed workflow cleanup, bundled workflow seeding, and workflow URL downloads."
+fi
+
+if [ "$SEED_WORKFLOWS" -eq 1 ]; then
+    cleanup_prev_managed_workflows
+fi
 
 # Base install: vram-utils custom nodes + bundled workflows (always, not tied to MODELS_DOWNLOAD).
 VR_PACK="${PACKS_DIR}/vram-utils"
-if [ -d "/workflows/vram-utils" ]; then
+if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -d "/workflows/vram-utils" ]; then
     echo "[INFO] Installing base workflows from /workflows/vram-utils..."
     shopt -s nullglob
     for wf in /workflows/vram-utils/*.json; do
@@ -1028,6 +1060,7 @@ for sel in $SELECTORS_LC; do
     # Print pack info
     print_pack_info "$pack_dir"
 
+    if [ "$SEED_WORKFLOWS" -eq 1 ]; then
     # Copy pack workflow JSON before HF gating (bundled files do not need HF)
     # Supported formats:
     # - workflows-bundled/ directory: copies each .json file with original filename
@@ -1084,7 +1117,8 @@ for sel in $SELECTORS_LC; do
             done < "$WBL"
         fi
     fi
-    
+    fi
+
     # Validate HF_TOKEN -- warn and skip pack if missing (don't kill the container)
     if ! validate_hf_token "$pack_dir"; then
         echo "[WARN] Skipping pack '$sel' due to missing HF_TOKEN."
@@ -1101,7 +1135,7 @@ for sel in $SELECTORS_LC; do
         cat "$M" >> "$TEMP_MODELS"
         echo "" >> "$TEMP_MODELS"
     fi
-    if [ -f "$W" ] && [ -s "$W" ] && grep -q '^https' "$W" 2>/dev/null; then
+    if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -f "$W" ] && [ -s "$W" ] && grep -q '^https' "$W" 2>/dev/null; then
         cat "$W" >> "$TEMP_WORKFLOWS"
         echo "" >> "$TEMP_WORKFLOWS"
     fi
@@ -1137,9 +1171,6 @@ for sel in $SELECTORS_LC; do
                 echo "  [SYNC] $repo_name"
                 if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
                     install_reqs "$target_dir/requirements.txt"
-                    if [ "$repo_name" == "ComfyUI-Trellis2-GGUF" ]; then
-                        install_trellis2_gguf_deps "$target_dir"
-                    fi
                 else
                     echo "  [WARN] Failed to sync $repo_name"
                 fi
@@ -1151,7 +1182,7 @@ done
 echo ""
 
 # Download workflows (idempotent: overwrite to refresh, conditional-get skips unchanged)
-if [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; then
+if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; then
     echo "########################################"
     echo "[INFO] Downloading workflows..."
     echo "########################################"
@@ -1215,7 +1246,9 @@ else
 fi
 
 rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"
-write_managed_workflow_manifest
+if [ "$SEED_WORKFLOWS" -eq 1 ]; then
+    write_managed_workflow_manifest
+fi
 
 echo ""
 echo "########################################"

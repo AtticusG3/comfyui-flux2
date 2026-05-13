@@ -129,9 +129,6 @@ function selectPack(normalized, requestType) {
     return { selector: "wan-2-2", family: "video", reason: "Default video route." };
   }
   if (requestType === "3d") {
-    if (/gguf|low vram|low-vram/.test(normalized)) {
-      return { selector: "trellis2-gguf", family: "3d", reason: "Low-memory 3D route." };
-    }
     return { selector: "hunyuan-3d", family: "3d", reason: "Default 3D route." };
   }
   if (requestType === "audio") {

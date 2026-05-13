@@ -1,0 +1,12 @@
+# Qwen Image Edit 2511 NVFP4 (low tier)
+https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4/resolve/main/qwen_image_edit_2511_nvfp4.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=qwen_image_edit_2511_nvfp4.safetensors
+
+https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors
+  dir=ComfyUI/models/text_encoders
+  out=qwen_2.5_vl_7b_fp8_scaled.safetensors
+
+https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors
+  dir=ComfyUI/models/vae
+  out=qwen_image_vae.safetensors

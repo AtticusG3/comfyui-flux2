@@ -84,13 +84,6 @@ module.exports.runtime = {
           family: "3d"
         },
         {
-          selector: "trellis2-gguf",
-          aliases: ["trellis2-gguf", "trellis2", "trellis"],
-          supports: ["3d"],
-          intentTags: ["3d", "gguf"],
-          family: "3d"
-        },
-        {
           selector: "ace-step",
           aliases: ["ace-step", "acestep"],
           supports: ["audio"],
@@ -262,13 +255,6 @@ function selectPack(packs, normalized, requestType) {
   }
 
   if (requestType === "3d") {
-    if (/gguf|low vram|low-vram/.test(normalized)) {
-      return {
-        selector: "trellis2-gguf",
-        family: "3d",
-        reason: "3D request with low-memory/gguf hint."
-      };
-    }
     return {
       selector: "hunyuan-3d",
       family: "3d",

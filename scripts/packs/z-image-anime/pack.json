@@ -1,0 +1,16 @@
+{
+  "name": "z-image-anime",
+  "selectors": ["z-image-anime", "z-anime", "z-image-turbo", "z-image"],
+  "tutorial_urls": [
+    "https://huggingface.co/Comfy-Org/z_image_turbo",
+    "https://huggingface.co/SeeSee21/Z-Anime"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Comfy-Org/z_image_turbo",
+    "https://huggingface.co/SeeSee21/Z-Anime"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Z-Image Turbo (NVFP4) + shared TE/VAE; Z-Anime distill 8-step FP8. Large downloads.",
+  "notes_high": "Z-Image Turbo BF16 + shared TE/VAE; Z-Anime distill 8-step BF16. Large downloads.",
+  "description": "Z-Image Turbo and Z-Anime workflows with Hugging Face model sources."
+}

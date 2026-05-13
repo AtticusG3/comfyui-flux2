@@ -1,0 +1,1 @@
+# No remote workflow URLs; import a Qwen Image Edit 2511 graph in ComfyUI after models finish downloading.
