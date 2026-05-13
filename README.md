@@ -249,6 +249,8 @@ docker compose logs -f comfyui
 
 Version in `VERSION` and history in `CHANGELOG.md`. Tag `v*` to publish versioned GHCR tags via CI.
 
+To push to a Gitea host without storing a token in `git remote`, set **`GITEA_TOKEN`** (and optionally **`GITEA_USER`**, **`GITEA_HOST`**, **`GITEA_REPO_PATH`**) in your environment, keep `origin` as a plain `https://…/owner/repo.git` URL, then run **`scripts/gitea-push.ps1`** (Windows) or **`scripts/gitea-push.sh`** (Linux/macOS). Pass ref names as arguments when not on a branch (for example `main` `v1.5.0`). If the server reports the repository is a read-only mirror, push from the non-mirror upstream instead.
+
 ## Notes
 
 - Image wheels include `av`, `sageattention`, and best-effort `flash-attn` (may skip if no compatible wheel for your torch+cuda build).
