@@ -1,0 +1,7 @@
+# source_path|destination_filename|tier
+wan-2-2/text-to-video-wan22-5b.json|Wan 2.2 - 5B Text to Video.json|low
+wan-2-2/image-to-video-wan22-5b.json|Wan 2.2 - 5B Image to Video.json|low
+wan-2-2/text-to-video-wan22-14b.json|Wan 2.2 - 14B Text to Video.json|high
+wan-2-2/image-to-video-wan22-14b.json|Wan 2.2 - 14B Image to Video.json|high
+wan-2-2/video-wan2-2-14b-fun-inpaint.json|Wan 2.2 - 14B Fun Inpaint.json|high
+wan-2-2/video-wan2-2-14b-fun-camera.json|Wan 2.2 - 14B Fun Camera Control.json|high

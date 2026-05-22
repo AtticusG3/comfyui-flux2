@@ -1,0 +1,2 @@
+# source_path|destination_filename|tier
+firered-image-edit/FireRed Image Edit 1.0 - Image Edit.json|FireRed Image Edit 1.0 - Image Edit.json|both

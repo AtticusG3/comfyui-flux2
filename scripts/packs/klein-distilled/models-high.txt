@@ -11,6 +11,11 @@ https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-va
   dir=ComfyUI/models/vae
   out=flux2-vae.safetensors
 
+# 9B image-edit workflows use the small decoder VAE (not flux2-vae)
+https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/resolve/main/full_encoder_small_decoder.safetensors
+  dir=ComfyUI/models/vae
+  out=full_encoder_small_decoder.safetensors
+
 # Flux.2 Klein 9B Distilled (FP8)
 # Requires HF_TOKEN
 https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors

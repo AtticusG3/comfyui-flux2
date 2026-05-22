@@ -3,7 +3,7 @@
 # Blog: https://ernie.baidu.com/blog/posts/ernie-image/
 # Uses the official Comfy-Org repackaged 8B SFT diffusion model (~16GB BF16, ~50 steps).
 
-# Diffusion model (ERNIE-Image SFT, BF16)
+# Diffusion model (ERNIE-Image SFT, BF16; Starnodes NVFP4 swap when NVFP4_SUPPORTED=true and NVFP4_MODE=allow-community)
 https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/diffusion_models/ernie-image.safetensors
   dir=ComfyUI/models/diffusion_models
   out=ernie-image.safetensors

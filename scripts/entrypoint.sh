@@ -476,6 +476,17 @@ install_reqs() {
     fi
 }
 
+ensure_pip_module() {
+    if python3 -m pip --version >/dev/null 2>&1; then
+        return 0
+    fi
+
+    echo "[INFO] Ensuring python -m pip is available for custom node installers..."
+    if ! uv pip install --upgrade pip; then
+        echo "[WARN] pip module install failed. Some custom node installers may warn at import time."
+    fi
+}
+
 # Ensure ComfyUI frontend package tracks the version required by ComfyUI.
 # ComfyUI now ships frontend separately via pip package.
 ensure_comfyui_frontend_package() {
@@ -562,6 +573,24 @@ else:
 PY
 }
 
+# HiDream O1 requires transformers with Qwen3-VL model code.
+ensure_hidream_transformers() {
+    local node_dir="${CUSTOM_NODES_DIR}/HiDream_O1-ComfyUI"
+    if [ ! -d "$node_dir" ]; then
+        return 0
+    fi
+
+    echo "[INFO] Ensuring transformers>=4.57.1,<5.4 for HiDream O1 (Qwen3-VL)..."
+    if ! uv pip install --upgrade "transformers>=4.57.1,<5.4"; then
+        echo "[WARN] transformers upgrade for HiDream reported errors."
+    fi
+    if python3 -c "from transformers.models.qwen3_vl.configuration_qwen3_vl import Qwen3VLConfig" 2>/dev/null; then
+        echo "[INFO] transformers Qwen3-VL support: OK"
+    else
+        echo "[WARN] transformers Qwen3-VL import still failing; HiDream O1 nodes may not load."
+    fi
+}
+
 # ComfyUI-Manager: lower gatekeeper strictness for container/dev use.
 ensure_comfyui_manager_security_weak() {
     local cfg="${COMFYUI_DIR}/user/__manager/config.ini"
@@ -600,6 +629,7 @@ fi
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
 patch_comfyui_video_types_py
 install_reqs "${COMFYUI_DIR}/requirements.txt"
+ensure_pip_module
 ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
 
 # ComfyUI-Manager
@@ -694,6 +724,142 @@ register_managed_workflow() {
     if [ -n "$wf" ]; then
         echo "$wf" >> "$TEMP_MANAGED_WORKFLOWS"
     fi
+}
+
+# workflows-bundled.txt optional 3rd field: low|high|both|all (default: both)
+workflow_bundled_entry_matches_tier() {
+    local line="$1"
+    local tier_field
+    tier_field=$(echo "$line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr '[:upper:]' '[:lower:]')
+    if [ -z "$tier_field" ] || [ "$tier_field" == "both" ] || [ "$tier_field" == "all" ]; then
+        return 0
+    fi
+    if [ "$tier_field" == "$VRAM_TARGET" ]; then
+        return 0
+    fi
+    return 1
+}
+
+resolve_workflow_source() {
+    local pack_dir="$1"
+    local src_rel="$2"
+    local src_abs="/workflows/$src_rel"
+    if [ -f "$src_abs" ]; then
+        echo "$src_abs"
+        return 0
+    fi
+    src_abs="${pack_dir}${src_rel}"
+    if [ -f "$src_abs" ]; then
+        echo "$src_abs"
+        return 0
+    fi
+    return 1
+}
+
+install_managed_workflow_copy() {
+    local src_abs="$1"
+    local dst_name="$2"
+    local dst="$WORKFLOWS_DIR/$dst_name"
+    cp -f "$src_abs" "$dst"
+    register_managed_workflow "$dst"
+    echo "  [OK] $dst_name"
+}
+
+install_pack_bundled_workflows() {
+    local pack_dir="$1"
+    local wbl="${pack_dir}workflows-bundled.txt"
+    local wb="${pack_dir}workflows-bundled"
+    local wbl_tier="${pack_dir}workflows-bundled-${VRAM_SUFFIX}.txt"
+
+    if [ -f "$wbl_tier" ]; then
+        wbl="$wbl_tier"
+    fi
+
+    if [ -f "$wbl" ]; then
+        echo "[INFO] Installing bundled workflows for pack (tier=$VRAM_TARGET)..."
+        while IFS= read -r line || [ -n "$line" ]; do
+            [[ "$line" =~ ^[[:space:]]*# ]] && continue
+            [[ -z "$line" ]] && continue
+            workflow_bundled_entry_matches_tier "$line" || continue
+            local src_rel dst_name src_abs
+            src_rel=$(echo "$line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            dst_name=$(echo "$line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            if [ -z "$src_rel" ]; then
+                echo "  [WARN] Invalid workflows-bundled entry: $line"
+                continue
+            fi
+            if [ -z "$dst_name" ]; then
+                dst_name=$(basename "$src_rel")
+            fi
+            if ! src_abs=$(resolve_workflow_source "$pack_dir" "$src_rel"); then
+                echo "  [WARN] Missing bundled workflow source: $src_rel"
+                continue
+            fi
+            install_managed_workflow_copy "$src_abs" "$dst_name"
+        done < "$wbl"
+        return 0
+    fi
+
+    if [ -d "$wb" ]; then
+        echo "[WARN] Pack uses workflows-bundled/ without workflows-bundled.txt; skipping unfiltered directory copy."
+        echo "       Add ${wb}.txt entries with optional |low or |high tier tags."
+    fi
+}
+
+register_downloaded_workflows_from_list() {
+    local list_file="$1"
+    if [ ! -s "$list_file" ]; then
+        return 0
+    fi
+
+    local found
+    found=$(mktemp)
+    python3 - "$list_file" "$WORKFLOWS_DIR" <<'PY' > "$found"
+from pathlib import Path
+from urllib.parse import urlparse, unquote
+import sys
+
+list_path = Path(sys.argv[1])
+workflows_dir = Path(sys.argv[2])
+
+current_url = None
+attrs = {}
+
+def flush():
+    if not current_url:
+        return
+    out_name = attrs.get("out")
+    target_dir = attrs.get("dir", "")
+    if not out_name:
+        out_name = Path(unquote(urlparse(current_url).path)).name
+    normalized = target_dir.strip().strip("/")
+    workflow_dirs = {
+        "ComfyUI/user/default/workflows",
+        "/app/ComfyUI/user/default/workflows",
+        str(workflows_dir).strip("/"),
+    }
+    if normalized in {item.strip("/") for item in workflow_dirs}:
+        print(workflows_dir / out_name)
+
+for raw in list_path.read_text(encoding="utf-8").splitlines():
+    line = raw.rstrip()
+    if line.startswith(("https://", "http://")):
+        flush()
+        current_url = line.strip()
+        attrs = {}
+        continue
+    if current_url and "=" in line:
+        key, value = line.strip().split("=", 1)
+        attrs[key.strip()] = value.strip()
+flush()
+PY
+    while IFS= read -r wf || [ -n "$wf" ]; do
+        if [ -f "$wf" ]; then
+            register_managed_workflow "$wf"
+            echo "  [OK] Registered downloaded workflow: $(basename "$wf")"
+        fi
+    done < "$found"
+    rm -f "$found"
 }
 
 cleanup_prev_managed_workflows() {
@@ -868,6 +1034,13 @@ apply_nvfp4_overrides() {
         changed=1
     fi
 
+    # Z-Image Turbo has an official Comfy-Org NVFP4 file.
+    if grep -Fq "z_image_turbo_bf16.safetensors" "$list_file"; then
+        sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16\.safetensors#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_nvfp4.safetensors#g' "$list_file"
+        sed -i 's#out=z_image_turbo_bf16\.safetensors#out=z_image_turbo_nvfp4.safetensors#g' "$list_file"
+        changed=1
+    fi
+
     # Official Comfy-Org flux2-dev/klein fp4 endpoints were probed and currently
     # return 404. Keep flux1-krea on FP8 unless a validated official NVFP4 URL is available.
     if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
@@ -894,10 +1067,25 @@ apply_nvfp4_overrides() {
             changed=1
         fi
 
-        # flux1-krea currently has community NF4/other derivatives but no known
-        # validated drop-in URL for this pack's current artifact.
+        # FLUX.1 Krea Dev (Comfy FP8 scaled -> elihung community NVFP4 single file)
         if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
-            echo "[WARN] NVFP4_MODE=allow-community: no validated drop-in NVFP4 URL configured for flux1-krea."
+            sed -i 's#https://huggingface.co/Comfy-Org/FLUX\.1-Krea-dev_ComfyUI/resolve/main/split_files/diffusion_models/flux1-krea-dev_fp8_scaled\.safetensors#https://huggingface.co/elihung/FLUX.1-Krea-dev-NVFP4/resolve/main/flux1-krea-dev-nvfp4.safetensors#g' "$list_file"
+            sed -i 's#out=flux1-krea-dev_fp8_scaled\.safetensors#out=flux1-krea-dev-nvfp4.safetensors#g' "$list_file"
+            changed=1
+        fi
+
+        # ERNIE-Image SFT high tier (Comfy BF16 -> Starnodes community NVFP4)
+        if grep -Fq "ernie-image.safetensors" "$list_file"; then
+            sed -i 's#https://huggingface.co/Comfy-Org/ERNIE-Image/resolve/main/diffusion_models/ernie-image\.safetensors#https://huggingface.co/Starnodes/quants/resolve/main/ernie-image-nvfp4.safetensors#g' "$list_file"
+            sed -i 's#out=ernie-image\.safetensors#out=ernie-image-nvfp4.safetensors#g' "$list_file"
+            changed=1
+        fi
+
+        # Z-Image Base community NVFP4 quality variant (best practical size/quality tradeoff).
+        if grep -Fq "z_image_bf16.safetensors" "$list_file"; then
+            sed -i 's#https://huggingface.co/Comfy-Org/z_image/resolve/main/split_files/diffusion_models/z_image_bf16\.safetensors#https://huggingface.co/marcorez8/Z-image-aka-Base-nvfp4/resolve/main/z-image-base-nvfp4_quality.safetensors#g' "$list_file"
+            sed -i 's#out=z_image_bf16\.safetensors#out=z-image-base-nvfp4_quality.safetensors#g' "$list_file"
+            changed=1
         fi
     fi
 
@@ -912,10 +1100,75 @@ apply_nvfp4_overrides() {
 # This keeps workflow defaults aligned with whichever model variant was selected.
 apply_nvfp4_workflow_overrides() {
     local workflows_dir="$1"
-    if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
+    if [ ! -d "$workflows_dir" ]; then
         return 0
     fi
-    if [ ! -d "$workflows_dir" ]; then
+
+    # Z-Anime uses the same core Z-Image/Lumina2 loader path, but its model
+    # filenames differ from the upstream Z-Image Turbo template.
+    local zaanime_low="$workflows_dir/Z Anime - Distill 4 Step NVFP4.json"
+    if [ -f "$zaanime_low" ]; then
+        sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_low"
+        sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_low"
+        sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step NVFP4)/g' "$zaanime_low"
+        sed -i 's/z-image-turbo/z-anime/g' "$zaanime_low"
+        echo "[INFO] Workflow override: Z-Anime low -> NVFP4 distill filenames."
+    fi
+
+    local zaanime_high="$workflows_dir/Z Anime - Distill 4 Step BF16.json"
+    if [ -f "$zaanime_high" ]; then
+        sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_high"
+        sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-bf16.safetensors/g' "$zaanime_high"
+        sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step BF16)/g' "$zaanime_high"
+        sed -i 's/z-image-turbo/z-anime/g' "$zaanime_high"
+        echo "[INFO] Workflow override: Z-Anime high -> BF16 distill filenames."
+    fi
+
+    local zaanime_origin="$workflows_dir/Z-Anime T2I.json"
+    if [ -f "$zaanime_origin" ]; then
+        if [ "$VRAM_TARGET" == "low" ]; then
+            sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-8step-fp8.safetensors/g' "$zaanime_origin"
+            echo "[INFO] Workflow override: Z-Anime low -> FP8 distill filename."
+        else
+            sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-8step-bf16.safetensors/g' "$zaanime_origin"
+            echo "[INFO] Workflow override: Z-Anime high -> BF16 distill filename."
+        fi
+    fi
+
+    if [ "$VRAM_TARGET" == "low" ]; then
+        local zturbo_low="$workflows_dir/Z Image Turbo - Text to Image.json"
+        if [ -f "$zturbo_low" ] && grep -Fq "qwen_3_4b.safetensors" "$zturbo_low"; then
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b_fp8_mixed.safetensors/g' "$zturbo_low"
+            echo "[INFO] Workflow override: Z-Image Turbo low -> Qwen FP8 text encoder."
+        fi
+
+        local zbase_low="$workflows_dir/Z Image Base - Text to Image.json"
+        if [ -f "$zbase_low" ] && grep -Fq "qwen_3_4b.safetensors" "$zbase_low"; then
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b_fp8_mixed.safetensors/g' "$zbase_low"
+            echo "[INFO] Workflow override: Z-Image Base low -> Qwen FP8 text encoder."
+        fi
+
+        local zturbo_origin_low="$workflows_dir/Z-Image turbo T2I.json"
+        if [ -f "$zturbo_origin_low" ] && grep -Fq "z_image_turbo_bf16.safetensors" "$zturbo_origin_low"; then
+            sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo_origin_low"
+            echo "[INFO] Workflow override: Z-Image Turbo low -> official NVFP4 filename."
+        fi
+    fi
+
+    local hidream="$workflows_dir/HiDream O1 - Example.json"
+    if [ -f "$hidream" ]; then
+        if [ "$VRAM_TARGET" == "low" ]; then
+            sed -i 's/HiDream-O1-Image-Dev-2604-BF16/HiDream-O1-Image-FP8/g' "$hidream"
+            sed -i 's/HiDream-O1-Image-BF16/HiDream-O1-Image-FP8/g' "$hidream"
+            echo "[INFO] Workflow override: HiDream O1 low -> FP8 model choice."
+        else
+            sed -i 's/HiDream-O1-Image-Dev-2604-BF16/HiDream-O1-Image-BF16/g' "$hidream"
+            sed -i 's/HiDream-O1-Image-FP8/HiDream-O1-Image-BF16/g' "$hidream"
+            echo "[INFO] Workflow override: HiDream O1 high -> BF16 model choice."
+        fi
+    fi
+
+    if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
         return 0
     fi
 
@@ -938,6 +1191,18 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] NVFP4 workflow override enabled: switched Klein workflows to NVFP4 model filenames."
     fi
 
+    local zturbo="$workflows_dir/Z Image Turbo - Text to Image.json"
+    if [ -f "$zturbo" ] && grep -Fq "z_image_turbo_bf16.safetensors" "$zturbo"; then
+        sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo"
+        echo "[INFO] NVFP4 workflow override enabled: Z-Image Turbo -> official NVFP4 filename."
+    fi
+
+    local zturbo_origin="$workflows_dir/Z-Image turbo T2I.json"
+    if [ -f "$zturbo_origin" ] && grep -Fq "z_image_turbo_bf16.safetensors" "$zturbo_origin"; then
+        sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo_origin"
+        echo "[INFO] NVFP4 workflow override enabled: Z-Image Turbo -> official NVFP4 filename."
+    fi
+
     local ewf_er="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
     if [ -f "$ewf_er" ]; then
         # Abiray Turbo: match workflow widget defaults to nvfp4 filenames when list was switched.
@@ -947,12 +1212,30 @@ apply_nvfp4_workflow_overrides() {
         fi
     fi
 
-    # FireRed: Starnodes NVFP4 filename only when community NVFP4 policy is enabled.
+    # Community NVFP4 workflow filename rewrites.
     if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
         local frwf="$workflows_dir/FireRed Image Edit 1.0 - Image Edit.json"
         if [ -f "$frwf" ] && grep -Fq "FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors" "$frwf"; then
             sed -i 's/FireRed-Image-Edit-1.0_fp8mixed_comfy\.safetensors/FireRed-Image-Edit-1_NVFP4.safetensors/g' "$frwf"
             echo "[INFO] NVFP4 workflow override enabled: FireRed Image Edit -> Starnodes NVFP4 filename."
+        fi
+
+        local kreawf="$workflows_dir/FLUX.1 Krea Dev - Text to Image.json"
+        if [ -f "$kreawf" ] && grep -Fq "flux1-krea-dev_fp8_scaled.safetensors" "$kreawf"; then
+            sed -i 's/flux1-krea-dev_fp8_scaled\.safetensors/flux1-krea-dev-nvfp4.safetensors/g' "$kreawf"
+            echo "[INFO] NVFP4 workflow override enabled: FLUX.1 Krea Dev -> elihung NVFP4 filename."
+        fi
+
+        local ewf_sft="$workflows_dir/ERNIE-Image - Text to Image.json"
+        if [ -f "$ewf_sft" ] && grep -Fq "ernie-image.safetensors" "$ewf_sft"; then
+            sed -i 's/ernie-image\.safetensors/ernie-image-nvfp4.safetensors/g' "$ewf_sft"
+            echo "[INFO] NVFP4 workflow override enabled: ERNIE-Image SFT -> Starnodes NVFP4 filename."
+        fi
+
+        local zbase="$workflows_dir/Z Image Base - Text to Image.json"
+        if [ -f "$zbase" ] && grep -Fq "z_image_bf16.safetensors" "$zbase"; then
+            sed -i 's/z_image_bf16\.safetensors/z-image-base-nvfp4_quality.safetensors/g' "$zbase"
+            echo "[INFO] NVFP4 workflow override enabled: Z-Image Base -> community quality NVFP4 filename."
         fi
     fi
 }
@@ -1060,65 +1343,6 @@ for sel in $SELECTORS_LC; do
     # Print pack info
     print_pack_info "$pack_dir"
 
-    if [ "$SEED_WORKFLOWS" -eq 1 ]; then
-    # Copy pack workflow JSON before HF gating (bundled files do not need HF)
-    # Supported formats:
-    # - workflows-bundled/ directory: copies each .json file with original filename
-    # - workflows-bundled.txt file: "source_path|destination_filename"
-    # - default fallback: /workflows/<pack-name>/*.json
-    WB="${pack_dir}workflows-bundled"
-    WBL="${pack_dir}workflows-bundled.txt"
-    PACK_WORKFLOW_DIR="/workflows/$(basename "$pack_dir")"
-    if [ -d "$PACK_WORKFLOW_DIR" ] && [ ! -f "$WBL" ]; then
-        echo "[INFO] Installing pack workflows from $PACK_WORKFLOW_DIR..."
-        shopt -s nullglob
-        for wf in "$PACK_WORKFLOW_DIR"/*.json; do
-            bn=$(basename "$wf")
-            dst="$WORKFLOWS_DIR/$bn"
-            cp -f "$wf" "$dst"
-            register_managed_workflow "$dst"
-            echo "  [OK] $bn"
-        done
-        shopt -u nullglob
-    fi
-    if [ -d "$WB" ] || [ -f "$WBL" ]; then
-        echo "[INFO] Installing bundled workflows for pack..."
-        mkdir -p "$WORKFLOWS_DIR"
-        if [ -d "$WB" ]; then
-            shopt -s nullglob
-            for wf in "$WB"/*.json; do
-                bn=$(basename "$wf")
-                dst="$WORKFLOWS_DIR/$bn"
-                cp -f "$wf" "$dst"
-                register_managed_workflow "$dst"
-                echo "  [OK] $bn"
-            done
-            shopt -u nullglob
-        fi
-        if [ -f "$WBL" ]; then
-            while IFS= read -r line || [ -n "$line" ]; do
-                [[ "$line" =~ ^[[:space:]]*# ]] && continue
-                [[ -z "$line" ]] && continue
-                src_rel=$(echo "$line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-                dst_name=$(echo "$line" | cut -d'|' -f2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-                if [ -z "$src_rel" ] || [ -z "$dst_name" ]; then
-                    echo "  [WARN] Invalid workflows-bundled entry: $line"
-                    continue
-                fi
-                src_abs="/workflows/$src_rel"
-                if [ -f "$src_abs" ]; then
-                    dst="$WORKFLOWS_DIR/$dst_name"
-                    cp -f "$src_abs" "$dst"
-                    register_managed_workflow "$dst"
-                    echo "  [OK] $dst_name"
-                else
-                    echo "  [WARN] Missing bundled workflow source: $src_abs"
-                fi
-            done < "$WBL"
-        fi
-    fi
-    fi
-
     # Validate HF_TOKEN -- warn and skip pack if missing (don't kill the container)
     if ! validate_hf_token "$pack_dir"; then
         echo "[WARN] Skipping pack '$sel' due to missing HF_TOKEN."
@@ -1171,11 +1395,19 @@ for sel in $SELECTORS_LC; do
                 echo "  [SYNC] $repo_name"
                 if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
                     install_reqs "$target_dir/requirements.txt"
+                    if [ "$repo_name" == "HiDream_O1-ComfyUI" ]; then
+                        ensure_hidream_transformers
+                    fi
                 else
                     echo "  [WARN] Failed to sync $repo_name"
                 fi
             fi
         done < "$N"
+    fi
+
+    # Copy tier-appropriate bundled workflows only after pack gating and node sync.
+    if [ "$SEED_WORKFLOWS" -eq 1 ]; then
+        install_pack_bundled_workflows "$pack_dir"
     fi
 done
 
@@ -1199,11 +1431,36 @@ if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "
         exit 1
     fi
     rm -f "$TEMP_WORKFLOWS_HF" "$TEMP_WORKFLOWS_GH" "$TEMP_WORKFLOWS_CV" "$TEMP_WORKFLOWS_OTHER"
+    register_downloaded_workflows_from_list "$TEMP_WORKFLOWS"
 else
     echo "[INFO] No workflow URLs for selected packs."
 fi
 
 apply_nvfp4_workflow_overrides "$WORKFLOWS_DIR"
+
+# Align the aggregated download list with NVFP4 before workflow/model sync reads it.
+if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
+    apply_nvfp4_overrides "$TEMP_MODELS"
+fi
+
+# Drop incompatible workflows and append missing model downloads referenced by kept workflows.
+write_managed_workflow_manifest
+if [ -s "$MANAGED_WORKFLOWS_MANIFEST" ]; then
+    echo "########################################"
+    echo "[INFO] Syncing workflow model dependencies..."
+    echo "########################################"
+    python3 /scripts/sync_workflow_models.py \
+        --manifest "$MANAGED_WORKFLOWS_MANIFEST" \
+        --models-root "$MODELS_DIR" \
+        --packs-dir "$PACKS_DIR" \
+        --download-list "$TEMP_MODELS" \
+        --vram-tier "$VRAM_TARGET" \
+        --nvfp4-supported "$NVFP4_SUPPORTED_LC" \
+        --nvfp4-mode "$NVFP4_MODE_LC" || echo "[WARN] Workflow/model sync reported issues."
+    if [ -f "$MANAGED_WORKFLOWS_MANIFEST" ]; then
+        cp "$MANAGED_WORKFLOWS_MANIFEST" "$TEMP_MANAGED_WORKFLOWS"
+    fi
+fi
 
 # Filter model list if HF_TOKEN not set (remove lines marked # Requires HF_TOKEN)
 if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
@@ -1249,6 +1506,9 @@ rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"
 if [ "$SEED_WORKFLOWS" -eq 1 ]; then
     write_managed_workflow_manifest
 fi
+
+patch_comfyui_video_types_py
+ensure_hidream_transformers
 
 echo ""
 echo "########################################"
