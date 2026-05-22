@@ -1,0 +1,2 @@
+# source_path|destination_filename|tier
+hidream-o1/HiDream O1 - Example.json|HiDream O1 - Example.json|both

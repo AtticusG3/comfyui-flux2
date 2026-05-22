@@ -1,0 +1,18 @@
+{
+  "name": "hidream-o1",
+  "selectors": ["hidream-o1", "hidream", "hidreamo1", "hidream-o1-image"],
+  "tutorial_urls": [
+    "https://github.com/Saganaki22/HiDream_O1-ComfyUI",
+    "https://huggingface.co/drbaph/HiDream-O1-Image-FP8"
+  ],
+  "upstream_urls": [
+    "https://github.com/Saganaki22/HiDream_O1-ComfyUI",
+    "https://github.com/HiDream-ai/HiDream-O1-Image",
+    "https://huggingface.co/drbaph/HiDream-O1-Image-FP8",
+    "https://huggingface.co/drbaph/HiDream-O1-Image-BF16"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Downloads drbaph HiDream-O1-Image-FP8 folder (~10-11 GB) plus HiDream_O1-ComfyUI nodes. Requires transformers>=4.57.1 (installed at startup).",
+  "notes_high": "Downloads drbaph HiDream-O1-Image-BF16 folder (~18-20 GB) plus HiDream_O1-ComfyUI nodes. Targets 24GB+ VRAM.",
+  "description": "HiDream O1 Image - local text/reference generation with optional LoRA training nodes."
+}
