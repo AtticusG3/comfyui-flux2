@@ -1,0 +1,16 @@
+{
+  "name": "z-image-turbo",
+  "selectors": ["z-image-turbo", "zimage-turbo", "z-image", "zimage"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/image/z-image/z-image-turbo",
+    "https://comfyanonymous.github.io/ComfyUI_examples/z_image/"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Comfy-Org/z_image_turbo",
+    "https://github.com/Comfy-Org/workflow_templates/blob/main/templates/image_z_image_turbo.json"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Focused Z-Image Turbo pack with Qwen 3 4B FP8 text encoder and BF16 diffusion. Set NVFP4_SUPPORTED=true to swap diffusion to official z_image_turbo_nvfp4.",
+  "notes_high": "Focused Z-Image Turbo pack with BF16 Qwen 3 4B text encoder, BF16 diffusion, and VAE.",
+  "description": "Z-Image Turbo fast distilled text-to-image workflow and model stack."
+}

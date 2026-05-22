@@ -1,4 +1,6 @@
-# Z-Image Turbo BF16 + TE/VAE; Z-Anime Distill 8-step BF16
+# Z-Image Turbo (high / LOW_VRAM=false)
+# NVFP4_SUPPORTED=true swaps z_image_turbo_bf16 to official z_image_turbo_nvfp4.
+
 https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors
   dir=ComfyUI/models/diffusion_models
   out=z_image_turbo_bf16.safetensors
@@ -10,11 +12,3 @@ https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_enc
 https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors
   dir=ComfyUI/models/vae
   out=ae.safetensors
-
-https://huggingface.co/Comfy-Org/z_image/resolve/main/split_files/diffusion_models/z_image_bf16.safetensors
-  dir=ComfyUI/models/diffusion_models
-  out=z_image_bf16.safetensors
-
-https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-8step-bf16.safetensors
-  dir=ComfyUI/models/diffusion_models
-  out=z-anime-distill-8step-bf16.safetensors

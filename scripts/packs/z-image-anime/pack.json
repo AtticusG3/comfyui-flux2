@@ -1,6 +1,6 @@
 {
   "name": "z-image-anime",
-  "selectors": ["z-image-anime", "z-anime", "z-image-turbo", "z-image"],
+  "selectors": ["z-image-anime", "z-anime", "zimage-anime", "zanime"],
   "tutorial_urls": [
     "https://huggingface.co/Comfy-Org/z_image_turbo",
     "https://huggingface.co/SeeSee21/Z-Anime"

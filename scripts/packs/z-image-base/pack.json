@@ -1,0 +1,15 @@
+{
+  "name": "z-image-base",
+  "selectors": ["z-image-base", "zimage-base", "z-base", "zbase"],
+  "tutorial_urls": [
+    "https://github.com/Comfy-Org/workflow_templates/blob/main/templates/image_z_image.json"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Comfy-Org/z_image",
+    "https://huggingface.co/marcorez8/Z-image-aka-Base-nvfp4"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "Focused Z-Image Base pack with Qwen 3 4B FP8 text encoder and BF16 diffusion. Set NVFP4_SUPPORTED=true and NVFP4_MODE=allow-community to swap diffusion to marcorez8 quality NVFP4.",
+  "notes_high": "Focused Z-Image Base pack with BF16 Qwen 3 4B text encoder, BF16 diffusion, and VAE.",
+  "description": "Z-Image Base non-distilled text-to-image workflow and model stack."
+}

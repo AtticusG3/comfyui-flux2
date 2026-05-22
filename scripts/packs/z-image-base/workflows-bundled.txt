@@ -1,0 +1,2 @@
+# source_path|destination_filename|tier
+z-image-turbo/Z-Image base T2I.json|Z Image Base - Text to Image.json|both

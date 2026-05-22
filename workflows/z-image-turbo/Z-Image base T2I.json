@@ -3722,8 +3722,8 @@
               "Node name for S&R": "UNETLoader",
               "models": [
                 {
-                  "name": "z_image_turbo_bf16.safetensors",
-                  "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors",
+                  "name": "z_image_bf16.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/z_image/resolve/main/split_files/diffusion_models/z_image_bf16.safetensors",
                   "directory": "diffusion_models"
                 }
               ],
@@ -3741,7 +3741,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "z_image_base-nvfp8-mixed_MAX.safetensors",
+              "z_image_bf16.safetensors",
               "default"
             ],
             "color": "#346434",
