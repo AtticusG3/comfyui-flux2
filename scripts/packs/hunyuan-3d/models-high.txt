@@ -2,6 +2,11 @@
 # Tutorial: https://www.comfy.org/workflows/3d_hunyuan3d-v2.1-bf82f1e42e83/
 # Texture generation can require 21GB+ VRAM.
 
+# Comfy repackaged all-in-one checkpoint (bundled workflow)
+https://huggingface.co/Comfy-Org/hunyuan3D_2.1_repackaged/resolve/main/hunyuan_3d_v2.1.safetensors
+  dir=ComfyUI/models/checkpoints
+  out=hunyuan_3d_v2.1.safetensors
+
 # Shape DiT
 https://huggingface.co/tencent/Hunyuan3D-2.1/resolve/main/hunyuan3d-dit-v2-1/model.fp16.ckpt
   dir=ComfyUI/models/checkpoints
