@@ -99,12 +99,14 @@ _git_sync_rsync_excludes_for_target() {
     name=$(basename "$target")
 
     # docker-compose bind-mounts under /app/ComfyUI; rsync --delete cannot replace mount points.
+    # custom_nodes are synced separately by the entrypoint, so the core ComfyUI sync should not prune them.
     if [ "$name" = "ComfyUI" ]; then
         printf '%s\n' \
             'models/' \
             'input/' \
             'output/' \
-            'user/default/workflows/'
+            'user/default/' \
+            'custom_nodes/'
     fi
 
     if [ -n "${GIT_SYNC_RSYNC_EXTRA_EXCLUDES:-}" ]; then
@@ -129,7 +131,7 @@ _git_sync_apply_staging() {
     fi
 
     if command -v rsync >/dev/null 2>&1; then
-        local -a rsync_args=(-a --no-group --no-owner --delete)
+        local -a rsync_args=(-a --no-times --omit-dir-times --no-perms --no-group --no-owner --delete)
         local exclude
         while IFS= read -r exclude; do
             [ -n "$exclude" ] && rsync_args+=(--exclude="$exclude")
