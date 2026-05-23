@@ -1,0 +1,16 @@
+{
+  "name": "realvisxl",
+  "selectors": ["realvisxl", "realvis", "realvis-xl", "photo-realvis"],
+  "tutorial_urls": [
+    "https://huggingface.co/SG161222/RealVisXL_V5.0",
+    "https://huggingface.co/SG161222/RealVisXL_V5.0_Lightning"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/SG161222/RealVisXL_V5.0",
+    "https://huggingface.co/SG161222/RealVisXL_V5.0_Lightning"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "RealVisXL V5.0 Lightning FP16 checkpoint with low-step DPM++ SDE Karras photoreal defaults.",
+  "notes_high": "RealVisXL V5.0 FP16 checkpoint with 32-step DPM++ SDE Karras first pass plus latent hires-fix for photoreal detail.",
+  "description": "Photoreal SDXL pack focused on RealVisXL V5.0 portrait, product, editorial, and cinematic photography workflows."
+}

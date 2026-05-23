@@ -1,0 +1,3 @@
+# source_path|destination_filename|tier
+realvisxl/RealVisXL Lightning - Fast Photoreal.json|RealVisXL Lightning - Fast Photoreal.json|low
+realvisxl/RealVisXL V5 - Photoreal Hires.json|RealVisXL V5 - Photoreal Hires.json|high
