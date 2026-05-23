@@ -16,6 +16,8 @@ sync/update logic, and persistent host-mounted data paths.
   base install of `vram-utils` nodes/workflows on every start, optional `none` pack selection.
 - `scripts/patch_video_types_rotation.py`: PyAV rotation fallback patch for ComfyUI
   `comfy_api/latest/_input_impl/video_types.py` (structural line matching, not sed literals).
+- `scripts/audit_workflow_assets.py`: maintainer audit for bundled workflows vs pack models/nodes
+  (subgraph-aware; mirrors `sync_workflow_models.py` extraction rules).
 - `scripts/lib/git_sync.sh`: staged clone-or-update helper used by entrypoint.
 - `scripts/packs/<pack>/`: pack metadata, models/workflows lists, optional `nodes.txt`.
 - `workflows/`: bundled JSON workflows copied into ComfyUI on startup.
@@ -83,6 +85,9 @@ sync/update logic, and persistent host-mounted data paths.
 ## Test and Release Checklist
 
 - Validate config: `docker-compose config`.
+- After workflow or pack list changes, run `python scripts/audit_workflow_assets.py` (also in CI via
+  `.github/workflows/workflow-assets-audit.yml`). Checks model refs against pack catalogs,
+  custom-node coverage, and `workflows-bundled.txt` source paths.
 - After meaningful startup/pack changes, run smoke startup checks when feasible.
 - For releases:
   - bump `VERSION` semver
@@ -110,3 +115,8 @@ sync/update logic, and persistent host-mounted data paths.
 - Runtime image has no compilers; source-only pip deps after managed node updates need image rebuild or Manager **Try fix**.
 - ComfyUI `video_types.py` PyAV rotation patch lives in `scripts/patch_video_types_rotation.py`;
   use structural line matching (not sed literal replace) so upstream indentation changes do not break it.
+- Startup always runs the aria2 model download pass; existing models should skip/resume from
+  persisted `./data/models`, while repeated full downloads usually mean incomplete files,
+  NVFP4 filename changes, or a missing/wiped bind mount.
+- Z-Image Turbo uses the shared Comfy-Org VAE `ae.safetensors`; do not require the old
+  community filename `zImageTurboVAE_v10.safetensors`, which the pack does not download.

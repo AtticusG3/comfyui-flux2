@@ -245,6 +245,8 @@ ComfyUI code may live in a named volume depending on compose; see your `docker-c
 
 Staged ComfyUI git sync skips `models/`, `input/`, `output/`, and `user/default/workflows/` during rsync so bind mounts are not deleted (`Device or resource busy`). Pack bundled workflows copy into `./data/workflows` on first start (empty folder). With `RESEED_PACK_WORKFLOWS=true`, changing `MODELS_DOWNLOAD` and restarting adds or overwrites pack workflow files without clearing your folder.
 
+**Maintainers:** validate bundled workflows against pack model and node lists with `python scripts/audit_workflow_assets.py` (runs on PRs that touch `scripts/` or `workflows/`).
+
 ## Development
 
 `scripts/` (entrypoint, packs, `scripts/lib/git_sync.sh`, patches) are **baked into the image**, not bind-mounted. After changing startup scripts, rebuild before testing:
