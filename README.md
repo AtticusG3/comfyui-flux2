@@ -242,6 +242,8 @@ Typical bind mounts:
 
 ComfyUI code may live in a named volume depending on compose; see your `docker-compose.yml`.
 
+Staged ComfyUI git sync skips `models/`, `input/`, `output/`, and `user/default/workflows/` during rsync so bind mounts are not deleted (`Device or resource busy`). Pack bundled workflows are copied into `./data/workflows` only when that folder has no `.json` yet on startup; after the first seed, add packs by copying from the repo `workflows/` tree or clearing `*.json` and restarting with an updated `MODELS_DOWNLOAD`.
+
 ## Development
 
 `scripts/` (entrypoint, packs, `scripts/lib/git_sync.sh`, patches) are **baked into the image**, not bind-mounted. After changing startup scripts, rebuild before testing:

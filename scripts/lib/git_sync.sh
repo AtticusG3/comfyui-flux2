@@ -93,6 +93,30 @@ _git_sync_update_staging() {
     return 0
 }
 
+_git_sync_rsync_excludes_for_target() {
+    local target="$1"
+    local name
+    name=$(basename "$target")
+
+    # docker-compose bind-mounts under /app/ComfyUI; rsync --delete cannot replace mount points.
+    if [ "$name" = "ComfyUI" ]; then
+        printf '%s\n' \
+            'models/' \
+            'input/' \
+            'output/' \
+            'user/default/workflows/'
+    fi
+
+    if [ -n "${GIT_SYNC_RSYNC_EXTRA_EXCLUDES:-}" ]; then
+        local item
+        IFS=',' read -ra _extra <<< "${GIT_SYNC_RSYNC_EXTRA_EXCLUDES}"
+        for item in "${_extra[@]}"; do
+            item=$(echo "$item" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            [ -n "$item" ] && printf '%s\n' "$item"
+        done
+    fi
+}
+
 _git_sync_apply_staging() {
     local staging="$1"
     local target="$2"
@@ -105,7 +129,14 @@ _git_sync_apply_staging() {
     fi
 
     if command -v rsync >/dev/null 2>&1; then
-        rsync -a --delete "$staging/" "$target/"
+        local -a rsync_args=(-a --no-group --no-owner --delete)
+        local exclude
+        while IFS= read -r exclude; do
+            [ -n "$exclude" ] && rsync_args+=(--exclude="$exclude")
+        done < <(_git_sync_rsync_excludes_for_target "$target")
+        if ! rsync "${rsync_args[@]}" "$staging/" "$target/"; then
+            echo "[WARN] rsync reported errors applying staged ${name} (bind mounts or permissions may be expected on some hosts)."
+        fi
     else
         find "$target" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} + 2>/dev/null || true
         cp -a "$staging"/. "$target/"
