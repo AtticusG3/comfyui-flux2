@@ -1,0 +1,28 @@
+name: Workflow assets audit
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "scripts/**"
+      - "workflows/**"
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/**"
+      - "workflows/**"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run workflow asset audit
+        run: python scripts/audit_workflow_assets.py
