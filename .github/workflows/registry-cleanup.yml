@@ -33,7 +33,8 @@ jobs:
 
       - name: Prune GHCR and releases
         env:
-          GH_TOKEN: ${{ secrets.GIT_TOKEN }}
+          # gh reads GH_TOKEN; optional repo secret GIT_TOKEN overrides default Actions token.
+          GH_TOKEN: ${{ secrets.GIT_TOKEN || github.token }}
         run: |
           set -euo pipefail
           args=(python3 scripts/registry_cleanup.py --min-downloads "${{ inputs.min_downloads }}")
