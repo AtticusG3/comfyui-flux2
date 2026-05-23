@@ -100,13 +100,15 @@ _git_sync_rsync_excludes_for_target() {
 
     # docker-compose bind-mounts under /app/ComfyUI; rsync --delete cannot replace mount points.
     # custom_nodes are synced separately by the entrypoint, so the core ComfyUI sync should not prune them.
+    # Leading slash anchors to the ComfyUI root only. Unanchored "models/" also matched comfy/ldm/models/
+    # and dropped autoencoder.py, breaking "from comfy.ldm.models.autoencoder import ...".
     if [ "$name" = "ComfyUI" ]; then
         printf '%s\n' \
-            'models/' \
-            'input/' \
-            'output/' \
-            'user/default/' \
-            'custom_nodes/'
+            '/models/' \
+            '/input/' \
+            '/output/' \
+            '/user/' \
+            '/custom_nodes/'
     fi
 
     if [ -n "${GIT_SYNC_RSYNC_EXTRA_EXCLUDES:-}" ]; then
@@ -116,6 +118,23 @@ _git_sync_rsync_excludes_for_target() {
             item=$(echo "$item" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
             [ -n "$item" ] && printf '%s\n' "$item"
         done
+    fi
+}
+
+_git_sync_ensure_comfy_ldm_models() {
+    local staging="$1"
+    local target="$2"
+    local src="${staging}/comfy/ldm/models"
+    local dst="${target}/comfy/ldm/models"
+
+    if [ ! -d "$src" ]; then
+        return 0
+    fi
+    mkdir -p "$dst"
+    if command -v rsync >/dev/null 2>&1; then
+        rsync -a --no-times --omit-dir-times --no-perms --no-group --no-owner "$src/" "$dst/" || true
+    else
+        cp -a "$src"/. "$dst/" 2>/dev/null || true
     fi
 }
 
@@ -142,6 +161,10 @@ _git_sync_apply_staging() {
     else
         find "$target" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} + 2>/dev/null || true
         cp -a "$staging"/. "$target/"
+    fi
+
+    if [ "$name" = "ComfyUI" ]; then
+        _git_sync_ensure_comfy_ldm_models "$staging" "$target"
     fi
     echo "[OK] Applied staged sync to ${name}."
 }

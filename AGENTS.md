@@ -35,8 +35,13 @@ sync/update logic, and persistent host-mounted data paths.
 - Manual/orphan `custom_nodes/*/requirements.txt` installs require
   `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager Try fix for manual nodes.
 - Git sync uses staged clone-or-update (`scripts/lib/git_sync.sh`) for atomic apply.
-  ComfyUI rsync excludes bind-mounted `models/`, `input/`, `output/`, and
-  `user/default/workflows/`; use `--no-group --no-owner` for Docker Desktop volumes.
+  ComfyUI rsync excludes bind-mounted `/models/`, `/input/`, `/output/`, `/user/`,
+  and `/custom_nodes/` (leading slash = ComfyUI root only; unanchored `models/` would
+  also skip `comfy/ldm/models/`). After apply, `_git_sync_ensure_comfy_ldm_models()`
+  re-syncs `comfy/ldm/models` from staging. Use `--no-group --no-owner` for Docker Desktop volumes.
+- `verify_comfyui_core_tree()` in `scripts/entrypoint.sh` runs after ComfyUI sync and
+  requires `comfy/ldm/models/autoencoder.py`; on failure prints `[ERROR]` and exits (rebuild
+  image, restart, or remove the persisted ComfyUI volume).
 - `RESEED_PACK_WORKFLOWS=true` installs bundled/URL pack workflows when
   `./data/workflows` already has JSON; full managed cleanup only on first empty seed.
 - `patch_comfyui_video_types_py()` runs after ComfyUI sync and again immediately before
@@ -109,6 +114,8 @@ sync/update logic, and persistent host-mounted data paths.
 - Do not re-add connectivity doctor probes or Civicomfy; both were intentionally removed.
 - `hidream-o1` is nodes + bundled workflow only; user downloads FP8/BF16 weights via Manager or Hugging Face after startup.
 - Keep `z-image-base`, `z-image-turbo`, and `z-image-anime` as distinct selectable packs; do not collapse them.
+- Bundled workflows use core `SaveImage`, not `LayerUtility: SaveImagePlus` (LayerStyle not required for saves).
+- After editing `workflows/**/*.json`, run `validate-comfyui-workflow` / `scripts/validate_workflow_json.py` before merge.
 
 ## Learned Workspace Facts
 
@@ -124,3 +131,9 @@ sync/update logic, and persistent host-mounted data paths.
   NVFP4 filename changes, or a missing/wiped bind mount.
 - Z-Image Turbo uses the shared Comfy-Org VAE `ae.safetensors`; do not require the old
   community filename `zImageTurboVAE_v10.safetensors`, which the pack does not download.
+- ComfyUI 0.22+ needs `comfy-aimdo` aligned with ComfyUI `requirements.txt` (HostBuffer API);
+  entrypoint `ensure_comfy_aimdo_package()` reconciles the pin on startup (rebuild image after script changes).
+- Pack selector `flux2` is deprecated; Klein workflows ship via `klein-distilled` (`workflows/flux2/` sources).
+- GitHub Actions cannot name secrets with a `GITHUB_` prefix; use `GH_TOKEN: ${{ github.token }}` for `gh` in workflows.
+- Nested UUID subgraphs in bundled workflows should be embedded via `scripts/embed_workflow_subgraphs.py`
+  before release so `audit_workflow_assets.py` does not warn on missing definitions.

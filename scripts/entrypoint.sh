@@ -706,6 +706,17 @@ log_or_install_orphan_node_reqs() {
 }
 
 # PyAV rotation: some builds expose rotation via metadata instead of frame.rotation.
+verify_comfyui_core_tree() {
+    local marker="${COMFYUI_DIR}/comfy/ldm/models/autoencoder.py"
+    if [ -f "$marker" ]; then
+        return 0
+    fi
+    echo "[ERROR] ComfyUI core incomplete: missing comfy/ldm/models/autoencoder.py"
+    echo "[ERROR] Usually caused by a bad rsync exclude on the persisted ComfyUI volume."
+    echo "[ERROR] Rebuild the image, restart the container, or remove the comfyui_data volume."
+    return 1
+}
+
 patch_comfyui_video_types_py() {
     export COMFYUI_DIR="${COMFYUI_DIR:-/app/ComfyUI}"
     local f="${COMFYUI_DIR}/comfy_api/latest/_input_impl/video_types.py"
@@ -798,6 +809,7 @@ fi
 
 # ComfyUI
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
+verify_comfyui_core_tree || exit 1
 patch_comfyui_video_types_py
 ensure_pip_module
 

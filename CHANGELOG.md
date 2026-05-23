@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- ComfyUI staged git rsync now uses root-anchored excludes (`/models/`, `/input/`, `/output/`, `/user/`, `/custom_nodes/`) so unanchored `models/` no longer deletes `comfy/ldm/models/autoencoder.py`. Startup re-syncs `comfy/ldm/models` from staging after apply and aborts with `[ERROR]` if `autoencoder.py` is still missing.
+
 ## [1.7.0] -- Bundled workflow refresh, short names, Klein and Qwen edit packs
 
 ### Added
