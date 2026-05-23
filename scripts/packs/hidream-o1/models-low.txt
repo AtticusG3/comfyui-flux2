@@ -1,39 +1,4 @@
 # HiDream O1 Image FP8 (low / LOW_VRAM=true)
 # Tutorial: https://github.com/Saganaki22/HiDream_O1-ComfyUI
-# Full HF support folder under diffusion_models/HiDream-O1-Image-fp8/
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/config.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=config.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/chat_template.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=chat_template.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/generation_config.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=generation_config.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/preprocessor_config.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=preprocessor_config.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/tokenizer.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=tokenizer.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/tokenizer_config.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=tokenizer_config.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/vocab.json
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=vocab.json
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/merges.txt
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=merges.txt
-
-https://huggingface.co/drbaph/HiDream-O1-Image-FP8/resolve/main/model.safetensors
-  dir=ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8
-  out=model.safetensors
+# Model weights are not downloaded at startup. Install via ComfyUI Manager or HF after startup.
+# Expected path: ComfyUI/models/diffusion_models/HiDream-O1-Image-fp8/

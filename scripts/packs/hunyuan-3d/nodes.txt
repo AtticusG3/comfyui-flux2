@@ -1,4 +1,3 @@
-# Hunyuan3D 2.1 integration and VRAM cleanup helpers.
+# Hunyuan3D 2.1 integration plus base helpers.
+# KJNodes + rgthree provided by vram-utils base.
 https://github.com/Yuan-ManX/ComfyUI-Hunyuan3D-2.1.git main
-https://github.com/kijai/ComfyUI-KJNodes.git main
-https://github.com/rgthree/rgthree-comfy.git main

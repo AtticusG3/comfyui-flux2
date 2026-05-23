@@ -1,89 +1,115 @@
 #!/bin/bash
 
-echo "########################################"
-echo "[INFO] Installing ComfyUI & extensions..."
-echo "########################################"
-
 set -euo pipefail
 
-COMFYUI_DIR="/app/ComfyUI"
-CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
-COMFYUI_BRANCH="master"
+COMFYUI_DIR="${COMFYUI_DIR:-/app/ComfyUI}"
+CUSTOM_NODES_DIR="${CUSTOM_NODES_DIR:-${COMFYUI_DIR}/custom_nodes}"
+COMFYUI_BRANCH="${COMFYUI_BRANCH:-master}"
+PACKS_DIR="${PACKS_DIR:-/scripts/packs}"
+INSTALL_VRAM_UTILS="${INSTALL_VRAM_UTILS:-false}"
+COPY_BUNDLED_WORKFLOWS="${COPY_BUNDLED_WORKFLOWS:-true}"
+GIT_STAGING_ROOT="${GIT_STAGING_ROOT:-/tmp/git-staging}"
 
-clone_or_update() {
-    local dir="$1"
-    local url="$2"
-    local branch="$3"
-    local name
-    name=$(basename "$dir")
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/git_sync.sh
+source "${SCRIPT_DIR}/lib/git_sync.sh"
 
-    if [ -d "${dir}/.git" ]; then
-        echo "[INFO] Updating ${name}..."
-        cd "$dir"
-        if git remote get-url origin >/dev/null 2>&1; then
-            git remote set-url origin "$url"
-        else
-            git remote add origin "$url"
+install_filtered_reqs() {
+    local req="$1"
+    local label="$2"
+    if [ ! -f "$req" ]; then
+        return 0
+    fi
+
+    local filtered_req
+    filtered_req=$(mktemp)
+    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "$req" > "$filtered_req" || true
+    if [ ! -s "$filtered_req" ]; then
+        echo "[OK] No installable requirements for $label."
+        rm -f "$filtered_req"
+        return 0
+    fi
+
+    echo "[INFO] Installing $label requirements..."
+    uv pip install -r "$filtered_req" || echo "[WARN] Some deps from $req may have failed"
+    rm -f "$filtered_req"
+}
+
+install_comfyui_core() {
+    mkdir -p "$CUSTOM_NODES_DIR"
+
+    if ! clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "$COMFYUI_BRANCH"; then
+        echo "[ERROR] ComfyUI bootstrap sync failed."
+        return 1
+    fi
+    install_filtered_reqs "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
+
+    if ! clone_or_update "${CUSTOM_NODES_DIR}/ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git" "main"; then
+        echo "[ERROR] ComfyUI-Manager bootstrap sync failed."
+        return 1
+    fi
+    install_filtered_reqs "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt" "ComfyUI-Manager"
+}
+
+install_vram_utils_nodes() {
+    local nodes_file="${PACKS_DIR}/vram-utils/nodes.txt"
+    if [ ! -s "$nodes_file" ]; then
+        echo "[WARN] vram-utils nodes list not found: $nodes_file"
+        return 0
+    fi
+
+    echo "[INFO] Installing vram-utils bootstrap custom nodes..."
+    local line git_url repo_name repo_branch target_dir
+    while IFS= read -r line || [ -n "$line" ]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "$line" ]] && continue
+        git_url=$(echo "$line" | awk '{print $1}')
+        if [[ "$git_url" =~ ^https://|^git:// ]]; then
+            repo_name=$(basename "$git_url" .git)
+            repo_branch=$(echo "$line" | awk '{print $2}')
+            target_dir="${CUSTOM_NODES_DIR}/${repo_name}"
+            if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
+                install_filtered_reqs "${target_dir}/requirements.txt" "$repo_name"
+            else
+                echo "[ERROR] Failed to sync $repo_name during bootstrap; continuing."
+            fi
         fi
-        git fetch origin "$branch"
-        git reset --hard "origin/${branch}"
-        git submodule update --init --recursive
-    elif [ -d "$dir" ]; then
-        echo "[INFO] Initializing ${name} in existing directory..."
-        cd "$dir"
-        git init -b "$branch"
-        git remote add origin "$url"
-        git fetch origin "$branch"
-        git reset --hard "origin/${branch}"
-        git submodule update --init --recursive
+    done < "$nodes_file"
+}
+
+copy_bundled_workflows() {
+    if [ "$COPY_BUNDLED_WORKFLOWS" != "true" ]; then
+        return 0
+    fi
+
+    local workflows_dir="${COMFYUI_DIR}/user/default/workflows"
+    mkdir -p "$workflows_dir"
+    if [ -d "/workflows" ] && [ -n "$(ls -A /workflows/ 2>/dev/null)" ]; then
+        cp -R /workflows/* "$workflows_dir/"
+        echo "[INFO] Bundled workflows copied."
     else
-        echo "[INFO] Cloning ${name}..."
-        git clone --recurse-submodules -b "$branch" "$url" "$dir"
+        echo "[INFO] No bundled workflows to copy."
     fi
 }
 
-# Clone or init ComfyUI into potentially pre-existing directory (volume mount).
-# The directory may already exist as an empty named-volume mount point with
-# bind-mount subdirectories (models/, input/, output/, etc.) inside it.
-# git clone would fail on a non-empty directory, so we use git init instead.
-clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "$COMFYUI_BRANCH"
+main() {
+    echo "########################################"
+    echo "[INFO] Installing ComfyUI & extensions..."
+    echo "########################################"
 
-if [ -f "${COMFYUI_DIR}/requirements.txt" ]; then
-    echo "[INFO] Installing ComfyUI requirements..."
-    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "${COMFYUI_DIR}/requirements.txt" > /tmp/comfyui-requirements.filtered || true
-    uv pip install -r /tmp/comfyui-requirements.filtered || echo "[WARN] Some ComfyUI deps may have failed"
-    rm -f /tmp/comfyui-requirements.filtered
+    uv pip install --upgrade pip
+    install_comfyui_core
+    if [ "$INSTALL_VRAM_UTILS" == "true" ]; then
+        install_vram_utils_nodes
+    fi
+    copy_bundled_workflows
+
+    if [ -d /app ]; then
+        touch /app/.download-complete 2>/dev/null || true
+    fi
+    echo "[INFO] Installation complete."
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
 fi
-
-# ComfyUI-Manager (sub-path of volume, not a mount point itself)
-mkdir -p "$CUSTOM_NODES_DIR"
-clone_or_update "${CUSTOM_NODES_DIR}/ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git" "main"
-if [ -f "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt" ]; then
-    echo "[INFO] Installing ComfyUI-Manager requirements..."
-    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt" > /tmp/manager-requirements.filtered || true
-    uv pip install -r /tmp/manager-requirements.filtered || echo "[WARN] Some Manager deps may have failed"
-    rm -f /tmp/manager-requirements.filtered
-fi
-
-# Civicomfy (Civitai model downloader)
-clone_or_update "${CUSTOM_NODES_DIR}/Civicomfy" "https://github.com/MoonGoblinDev/Civicomfy.git" "main"
-if [ -f "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt" ]; then
-    echo "[INFO] Installing Civicomfy requirements..."
-    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt" > /tmp/civicomfy-requirements.filtered || true
-    uv pip install -r /tmp/civicomfy-requirements.filtered || echo "[WARN] Some Civicomfy deps may have failed"
-    rm -f /tmp/civicomfy-requirements.filtered
-fi
-
-# Copy bundled workflows
-WORKFLOWS_DIR="${COMFYUI_DIR}/user/default/workflows"
-mkdir -p "$WORKFLOWS_DIR"
-
-if [ -d "/workflows" ] && [ -n "$(ls -A /workflows/ 2>/dev/null)" ]; then
-    cp -R /workflows/* "$WORKFLOWS_DIR/"
-    echo "[INFO] Bundled workflows copied."
-else
-    echo "[INFO] No bundled workflows to copy."
-fi
-
-touch /app/.download-complete
-echo "[INFO] Installation complete."

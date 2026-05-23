@@ -20,12 +20,16 @@ sync/update logic, and persistent host-mounted data paths.
 
 ## Startup Behavior (Critical)
 
-- Use clone-or-update semantics for mounted directories:
-  - existing git repo -> fetch/reset
-  - existing non-git dir -> init/fetch/reset
-  - missing dir -> clone
+- Use clone-or-update semantics via staged git sync for mounted directories:
+  - fetch into staging dir, rsync to target on success
+  - on failure, leave existing target untouched
 - Install node requirements with the shared `install_reqs` helper.
-- Also scan all existing `custom_nodes/*/requirements.txt` and install them.
+- Install requirements for managed nodes only by default: ComfyUI, Manager,
+  vram-utils (including comfyui-openai-api), and selected pack nodes.
+- Managed custom-node requirements are collated and installed in one pip pass.
+- Manual/orphan `custom_nodes/*/requirements.txt` installs require
+  `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager Try fix for manual nodes.
+- Git sync uses staged clone-or-update (`scripts/lib/git_sync.sh`) for atomic apply.
 - Do not allow custom-node requirements to downgrade torch stack pins:
   - filter: `torch`, `torchvision`, `torchaudio`, `xformers`.
 

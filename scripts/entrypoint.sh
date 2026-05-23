@@ -147,117 +147,6 @@ print_connectivity_summary() {
     echo "----------------------------------------"
 }
 
-doctor_probe_provider() {
-    local provider="$1"
-    local url="$2"
-    local mode
-    mode=$(resolve_route_mode "$provider")
-    local proxy
-    proxy=$(resolve_proxy_url "$provider")
-    local dns
-    dns=$(resolve_dns_servers "$provider")
-
-    local curl_args=(-I --silent --show-error --location --max-time 12)
-    case "$mode" in
-        proxy)
-            if [ -n "$proxy" ]; then
-                curl_args+=(-x "$proxy")
-            else
-                echo "[WARN] Connectivity doctor: $provider route=proxy but no proxy URL set."
-            fi
-            ;;
-        smart-dns)
-            # curl cannot set DNS resolver directly in a portable way; this is a hint only.
-            if [ -n "$dns" ]; then
-                echo "[INFO] Connectivity doctor: $provider smart-dns configured ($dns). Probe uses container resolver."
-            fi
-            ;;
-        vpn)
-            echo "[INFO] Connectivity doctor: $provider route=vpn (expects host/container VPN path)."
-            ;;
-    esac
-
-    # Prefer curl when available. If missing or inconclusive, fallback to Python.
-    # Host reachability is considered OK even when HTTP status is denied
-    # (401/403/404/405), because that still proves DNS/TCP/TLS path works.
-    if command -v curl >/dev/null 2>&1; then
-        local http_code
-        if http_code=$(curl "${curl_args[@]}" --output /dev/null --write-out '%{http_code}' "$url" 2>/dev/null); then
-            if [ -n "$http_code" ] && [ "$http_code" != "000" ]; then
-                echo "[OK] Connectivity doctor: $provider reachable ($mode), http=$http_code."
-                return 0
-            fi
-        fi
-    fi
-
-    local py_proxy=""
-    if [ "$mode" == "proxy" ] && [ -n "$proxy" ]; then
-        py_proxy="$proxy"
-    fi
-    if PROVIDER="$provider" PROBE_URL="$url" PROBE_PROXY="$py_proxy" python3 - <<'PY'
-import os
-import sys
-import urllib.request
-import urllib.error
-
-url = os.environ.get("PROBE_URL", "")
-proxy = os.environ.get("PROBE_PROXY", "")
-
-opener = urllib.request.build_opener()
-if proxy:
-    opener = urllib.request.build_opener(
-        urllib.request.ProxyHandler({"http": proxy, "https": proxy})
-    )
-
-req = urllib.request.Request(url, method="HEAD")
-try:
-    with opener.open(req, timeout=12) as resp:
-        code = getattr(resp, "status", 200)
-        print(code)
-        sys.exit(0)
-except urllib.error.HTTPError as e:
-    # HTTP error still confirms network path to provider.
-    print(e.code)
-    sys.exit(0)
-except Exception:
-    # Retry with GET in case HEAD is blocked.
-    try:
-        req = urllib.request.Request(url, method="GET")
-        with opener.open(req, timeout=12) as resp:
-            code = getattr(resp, "status", 200)
-            print(code)
-            sys.exit(0)
-    except urllib.error.HTTPError as e:
-        print(e.code)
-        sys.exit(0)
-    except Exception:
-        sys.exit(1)
-PY
-    then
-        echo "[OK] Connectivity doctor: $provider reachable ($mode)."
-    else
-        echo "[WARN] Connectivity doctor: $provider network probe failed ($mode) -> $url"
-    fi
-}
-
-connectivity_doctor() {
-    local enabled_lc
-    enabled_lc=$(echo "${CONNECTIVITY_DOCTOR_ENABLED:-true}" | tr '[:upper:]' '[:lower:]')
-    if [ "$enabled_lc" != "true" ]; then
-        echo "[INFO] Connectivity doctor disabled (CONNECTIVITY_DOCTOR_ENABLED=false)."
-        return 0
-    fi
-
-    echo ""
-    echo "########################################"
-    echo "[INFO] Connectivity doctor preflight"
-    echo "########################################"
-    doctor_probe_provider "huggingface" "https://huggingface.co/"
-    doctor_probe_provider "github" "https://github.com/"
-    doctor_probe_provider "civitai" "https://civitai.com/"
-    echo "----------------------------------------"
-}
-
 # =============================================================================
 # Permission Fixes for Docker Volumes
 # =============================================================================
@@ -291,73 +180,16 @@ fix_permissions "/app/ComfyUI"
 # Main Entrypoint Logic
 # =============================================================================
 
-# Idempotent clone-or-update helper.
-# Handles three cases: existing git repo, pre-existing directory without
-# .git (e.g. Docker volume mount point), or directory does not exist.
-clone_or_update() {
-    local dir="$1"
-    local url="$2"
-    local branch="${3:-}"
-    local name
-    name=$(basename "$dir")
+GIT_STAGING_ROOT="${GIT_STAGING_ROOT:-/app/.cache/git-staging}"
 
-    # Fix permissions if .git exists but is not accessible
-    if [ -e "${dir}/.git" ] && [ ! -r "${dir}/.git" ]; then
-        echo "[INFO] Fixing permissions on ${dir}/.git..."
-        sudo chown -R "$(id -u):$(id -g)" "${dir}/.git"
-    fi
-
-    local provider
-    provider=$(provider_for_url "$url")
-
-    if [ -d "${dir}/.git" ]; then
-        echo "[INFO] Updating ${name}..."
-        cd "$dir"
-        # Ensure remote is configured (handles partially initialized repos)
-        if git_with_connectivity "$provider" remote get-url origin >/dev/null 2>&1; then
-            git_with_connectivity "$provider" remote set-url origin "$url"
-        else
-            git_with_connectivity "$provider" remote add origin "$url"
-        fi
-        if [ -n "$branch" ]; then
-            git_with_connectivity "$provider" fetch origin "$branch"
-            git_with_connectivity "$provider" reset --hard "origin/${branch}"
-        else
-            git_with_connectivity "$provider" fetch origin
-            default_branch=$(git_with_connectivity "$provider" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
-            default_branch=${default_branch:-main}
-            git_with_connectivity "$provider" reset --hard "origin/${default_branch}"
-        fi
-        git_with_connectivity "$provider" submodule update --init --recursive
-    elif [ -d "$dir" ]; then
-        echo "[INFO] Initializing ${name} in existing directory..."
-        cd "$dir"
-        if [ -n "$branch" ]; then
-            git_with_connectivity "$provider" init -b "$branch"
-        else
-            git_with_connectivity "$provider" init
-        fi
-        git_with_connectivity "$provider" remote add origin "$url"
-        if [ -n "$branch" ]; then
-            git_with_connectivity "$provider" fetch origin "$branch"
-            git_with_connectivity "$provider" reset --hard "origin/${branch}"
-        else
-            git_with_connectivity "$provider" fetch origin
-            default_branch=$(git_with_connectivity "$provider" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##' || true)
-            default_branch=${default_branch:-main}
-            git_with_connectivity "$provider" reset --hard "origin/${default_branch}"
-        fi
-        git_with_connectivity "$provider" submodule update --init --recursive
-    else
-        echo "[INFO] Cloning ${name}..."
-        if [ -n "$branch" ]; then
-            git_with_connectivity "$provider" clone --recurse-submodules -b "$branch" "$url" "$dir"
-        else
-            git_with_connectivity "$provider" clone --recurse-submodules "$url" "$dir"
-        fi
-    fi
-    cd /app
+git_sync_run() {
+    local provider="$1"
+    shift
+    git_with_connectivity "$provider" "$@"
 }
+
+# shellcheck source=lib/git_sync.sh
+source "/scripts/lib/git_sync.sh"
 
 split_download_list_by_provider() {
     local input_file="$1"
@@ -464,16 +296,110 @@ download_with_connectivity() {
     aria2c "${aria_args[@]}"
 }
 
-# Install requirements if present
+# Install requirements if present. Runtime installs are stamp-aware so warm
+# restarts do not re-resolve unchanged custom node dependencies.
+REQ_STAMP_DIR="${REQ_STAMP_DIR:-/app/.cache/req-stamps}"
+
+filter_requirements() {
+    local req="$1"
+    local filtered_req="$2"
+    grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "$req" > "$filtered_req" || true
+}
+
+requirements_stamp() {
+    local req="$1"
+    local filtered_req="$2"
+    local parent_dir
+    parent_dir=$(dirname "$req")
+    local head="nogit"
+    if [ -d "${parent_dir}/.git" ]; then
+        head=$(git -C "$parent_dir" rev-parse HEAD 2>/dev/null || echo "nogit")
+    fi
+    {
+        echo "path=$req"
+        echo "head=$head"
+        (sha256sum "$filtered_req" 2>/dev/null || shasum -a 256 "$filtered_req") | awk '{print $1}'
+    } | sha256sum | awk '{print $1}'
+}
+
+requirements_stamp_file() {
+    local req="$1"
+    local parent_dir
+    parent_dir=$(dirname "$req")
+    local name
+    name=$(basename "$parent_dir" | tr -c 'A-Za-z0-9._-' '_')
+    local path_hash
+    path_hash=$(printf '%s' "$req" | sha256sum | awk '{print substr($1, 1, 12)}')
+    echo "${REQ_STAMP_DIR}/${name}-${path_hash}.sha256"
+}
+
+install_reqs_if_changed() {
+    local req="$1"
+    local label="${2:-$(basename "$(dirname "$req")")}"
+    if [ ! -f "$req" ]; then
+        return 0
+    fi
+
+    mkdir -p "$REQ_STAMP_DIR"
+    local filtered_req
+    filtered_req=$(mktemp)
+    filter_requirements "$req" "$filtered_req"
+
+    if [ ! -s "$filtered_req" ]; then
+        echo "[OK] Requirements file has no installable dependencies for $label; skipping."
+        rm -f "$filtered_req"
+        return 0
+    fi
+
+    local stamp_file stamp
+    stamp_file=$(requirements_stamp_file "$req")
+    stamp=$(requirements_stamp "$req" "$filtered_req")
+
+    if [ -f "$stamp_file" ] && [ "$(cat "$stamp_file")" = "$stamp" ]; then
+        echo "[OK] Requirements unchanged for $label; skipping."
+        rm -f "$filtered_req"
+        return 0
+    fi
+
+    echo "[INFO] Installing requirements for $label..."
+    if uv pip install -r "$filtered_req"; then
+        echo "$stamp" > "$stamp_file"
+    else
+        echo "[WARN] Some deps from $req may have failed"
+    fi
+    rm -f "$filtered_req"
+}
+
 install_reqs() {
     local req="$1"
-    if [ -f "$req" ]; then
-        local filtered_req
-        filtered_req=$(mktemp)
-        grep -Ev '^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$)' "$req" > "$filtered_req" || true
-        uv pip install -r "$filtered_req" || echo "[WARN] Some deps from $req may have failed"
-        rm -f "$filtered_req"
+    local label="${2:-$(basename "$(dirname "$req")")}"
+    install_reqs_if_changed "$req" "$label"
+}
+
+install_reqs_force() {
+    local req="$1"
+    local label="${2:-$(basename "$(dirname "$req")")}"
+    if [ ! -f "$req" ]; then
+        return 0
     fi
+
+    local filtered_req
+    filtered_req=$(mktemp)
+    filter_requirements "$req" "$filtered_req"
+    if [ ! -s "$filtered_req" ]; then
+        echo "[OK] Requirements file has no installable dependencies for $label; skipping."
+        rm -f "$filtered_req"
+        return 0
+    fi
+
+    echo "[INFO] Reconciling requirements for $label..."
+    if uv pip install -r "$filtered_req"; then
+        mkdir -p "$REQ_STAMP_DIR"
+        requirements_stamp "$req" "$filtered_req" > "$(requirements_stamp_file "$req")"
+    else
+        echo "[WARN] Some deps from $req may have failed"
+    fi
+    rm -f "$filtered_req"
 }
 
 ensure_pip_module() {
@@ -512,17 +438,29 @@ ensure_comfyui_frontend_package() {
         return 0
     fi
 
+    mkdir -p "$REQ_STAMP_DIR"
+    local stamp_file="${REQ_STAMP_DIR}/comfyui-frontend-package.sha256"
+    local stamp
+    stamp=$(printf '%s\n' "$frontend_req" | sha256sum | awk '{print $1}')
+    if [ -f "$stamp_file" ] && [ "$(cat "$stamp_file")" = "$stamp" ]; then
+        echo "[OK] ComfyUI frontend package unchanged; skipping."
+        return 0
+    fi
+
     echo "[INFO] Ensuring ComfyUI frontend package is up to date: $frontend_req"
     if ! uv pip install --upgrade "$frontend_req"; then
         echo "[WARN] uv frontend package upgrade failed; trying pip fallback..."
         if ! python3 -m pip install --upgrade "$frontend_req"; then
             echo "[WARN] Frontend package upgrade failed. ComfyUI may warn about frontend version mismatch."
+            return 0
         fi
     fi
+    echo "$stamp" > "$stamp_file"
 }
 
 # Install requirements for every existing custom node directory.
-# This covers nodes added outside pack metadata (e.g. manually installed repos).
+# This is opt-in for manual/orphan nodes; managed pack nodes are installed
+# separately after sync to avoid dependency churn from stale volume content.
 install_all_custom_node_reqs() {
     local root="$1"
     if [ ! -d "$root" ]; then
@@ -534,6 +472,162 @@ install_all_custom_node_reqs() {
     while IFS= read -r req; do
         install_reqs "$req"
     done < <(find "$root" -mindepth 2 -maxdepth 2 -type f -name "requirements.txt" | sort)
+}
+
+declare -A SYNCED_NODE_DIRS=()
+declare -a MANAGED_NODE_DIRS=()
+
+record_managed_node() {
+    local target_dir="$1"
+    if [ -n "${SYNCED_NODE_DIRS[$target_dir]:-}" ]; then
+        return 0
+    fi
+    SYNCED_NODE_DIRS["$target_dir"]=1
+    MANAGED_NODE_DIRS+=("$target_dir")
+}
+
+sync_custom_node() {
+    local git_url="$1"
+    local repo_branch="$2"
+    local target_dir="$3"
+    local label="${4:-$(basename "$target_dir")}"
+
+    if [ -n "${SYNCED_NODE_DIRS[$target_dir]:-}" ]; then
+        echo "  [OK] $label already synced this startup; skipping duplicate."
+        return 0
+    fi
+
+    echo "  [SYNC] $label"
+    if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
+        record_managed_node "$target_dir"
+        return 0
+    fi
+
+    echo "  [WARN] Failed to sync $label"
+    return 1
+}
+
+install_managed_node_reqs() {
+    if [ "${#MANAGED_NODE_DIRS[@]}" -eq 0 ]; then
+        return 0
+    fi
+
+    echo "[INFO] Installing requirements for managed custom nodes (collated)..."
+    local collated_req
+    collated_req=$(mktemp)
+    collate_managed_requirements "$collated_req"
+
+    if [ ! -s "$collated_req" ]; then
+        echo "[OK] No installable managed custom-node requirements; skipping."
+        rm -f "$collated_req"
+        return 0
+    fi
+
+    mkdir -p "$REQ_STAMP_DIR"
+    local stamp_file="${REQ_STAMP_DIR}/managed-custom-nodes.sha256"
+    local stamp
+    stamp=$(managed_nodes_requirements_stamp "$collated_req")
+
+    if [ -f "$stamp_file" ] && [ "$(cat "$stamp_file")" = "$stamp" ]; then
+        echo "[OK] Managed custom-node requirements unchanged; skipping."
+        rm -f "$collated_req"
+        return 0
+    fi
+
+    echo "[INFO] Installing collated managed custom-node requirements..."
+    if uv pip install -r "$collated_req"; then
+        echo "$stamp" > "$stamp_file"
+    else
+        echo "[WARN] Some managed custom-node requirements may have failed"
+    fi
+    rm -f "$collated_req"
+}
+
+collate_managed_requirements() {
+    local out="$1"
+    : > "$out"
+    local target_dir req line
+    for target_dir in "${MANAGED_NODE_DIRS[@]}"; do
+        req="${target_dir}/requirements.txt"
+        [ -f "$req" ] || continue
+        while IFS= read -r line || [ -n "$line" ]; do
+            [[ "$line" =~ ^[[:space:]]*# ]] && continue
+            [[ -z "${line//[[:space:]]/}" ]] && continue
+            [[ "$line" =~ ^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$) ]] && continue
+            echo "$line"
+        done < "$req" >> "$out"
+    done
+    if [ -s "$out" ]; then
+        sort -u -o "$out" "$out"
+    fi
+}
+
+managed_nodes_requirements_stamp() {
+    local collated_req="$1"
+    {
+        local target_dir
+        for target_dir in "${MANAGED_NODE_DIRS[@]}"; do
+            echo "dir=$target_dir"
+            if [ -d "${target_dir}/.git" ]; then
+                git -C "$target_dir" rev-parse HEAD 2>/dev/null || echo "nogit"
+            else
+                echo "nogit"
+            fi
+        done
+        (sha256sum "$collated_req" 2>/dev/null || shasum -a 256 "$collated_req") | awk '{print $1}'
+    } | sha256sum | awk '{print $1}'
+}
+
+LEGACY_ORPHAN_NODES=(
+    "ComfyUI-Trellis2-GGUF"
+    "inference-gpu"
+    "openai-api"
+    "ComfyUI-NewBie"
+)
+
+cleanup_legacy_custom_nodes() {
+    local root="$1"
+    local name legacy_dir
+    for name in "${LEGACY_ORPHAN_NODES[@]}"; do
+        legacy_dir="${root}/${name}"
+        if [ ! -d "$legacy_dir" ]; then
+            continue
+        fi
+        if [ -n "${SYNCED_NODE_DIRS[$legacy_dir]:-}" ]; then
+            continue
+        fi
+        if [ "$name" == "ComfyUI-NewBie" ] && [ -f "${legacy_dir}/__init__.py" ]; then
+            continue
+        fi
+        echo "[INFO] Removing unmanaged legacy custom node: $name"
+        rm -rf "$legacy_dir"
+    done
+}
+
+log_or_install_orphan_node_reqs() {
+    local root="$1"
+    if [ ! -d "$root" ]; then
+        return 0
+    fi
+
+    local orphan_mode_lc
+    orphan_mode_lc=$(echo "${INSTALL_ORPHAN_NODE_REQS:-false}" | tr '[:upper:]' '[:lower:]')
+    if [ "$orphan_mode_lc" == "true" ]; then
+        install_all_custom_node_reqs "$root"
+        return 0
+    fi
+
+    local skipped=()
+    local node_dir
+    while IFS= read -r node_dir; do
+        if [ -z "${SYNCED_NODE_DIRS[$node_dir]:-}" ]; then
+            skipped+=("$(basename "$node_dir")")
+        fi
+    done < <(find "$root" -mindepth 1 -maxdepth 1 -type d | sort)
+
+    if [ "${#skipped[@]}" -gt 0 ]; then
+        echo "[INFO] Skipping requirements for unmanaged custom nodes (INSTALL_ORPHAN_NODE_REQS=false): ${skipped[*]}"
+    fi
 }
 
 # PyAV rotation: some builds expose rotation via metadata instead of frame.rotation.
@@ -551,37 +645,54 @@ patch_comfyui_video_types_py() {
     python3 - <<'PY'
 from pathlib import Path
 import os
+import re
+import sys
+
 path = Path(os.environ["COMFYUI_DIR"]) / "comfy_api" / "latest" / "_input_impl" / "video_types.py"
 text = path.read_text(encoding="utf-8")
-old = """                img = frame.to_ndarray(format=image_format) # shape: (H, W, 4)
-                if frame.rotation != 0:
-                    k = int(round(frame.rotation // 90))
-                    img = np.rot90(img, k=k, axes=(0, 1)).copy()"""
-new = """                img = frame.to_ndarray(format=image_format) # shape: (H, W, 4)
-                rotation = getattr(frame, "rotation", None)
-                if rotation is None:
-                    md = getattr(frame, "metadata", None)
-                    rotation = int(md.get("rotate", 0)) if isinstance(md, dict) else 0
-                if rotation != 0:
-                    k = int(round(float(rotation) / 90.0)) % 4
-                    if k:
-                        img = np.rot90(img, k=k, axes=(0, 1)).copy()"""
-if old not in text:
+
+pattern = re.compile(
+    r"^(\s*)img = frame\.to_ndarray\(format=image_format\)\s+# shape: \(H, W, 4\)\n"
+    r"\1if frame\.rotation != 0:\n"
+    r"\1\s+k = int\(round\(frame\.rotation // 90\)\)\n"
+    r"\1\s+img = np\.rot90\(img, k=k, axes=\(0, 1\)\)\.copy\(\)",
+    re.MULTILINE,
+)
+
+def repl(match: re.Match[str]) -> str:
+    indent = match.group(1)
+    inner = indent + "    "
+    return (
+        f"{indent}img = frame.to_ndarray(format=image_format)  # shape: (H, W, 4)\n"
+        f"{indent}rotation = getattr(frame, \"rotation\", None)\n"
+        f"{indent}if rotation is None:\n"
+        f"{inner}md = getattr(frame, \"metadata\", None)\n"
+        f"{inner}rotation = int(md.get(\"rotate\", 0)) if isinstance(md, dict) else 0\n"
+        f"{indent}if rotation != 0:\n"
+        f"{inner}k = int(round(float(rotation) / 90.0)) % 4\n"
+        f"{inner}if k:\n"
+        f"{inner}    img = np.rot90(img, k=k, axes=(0, 1)).copy()"
+    )
+
+patched, count = pattern.subn(repl, text, count=1)
+if count != 1:
     print("[WARN] video_types.py expected rotation block not found; skipping patch.")
-else:
-    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+    sys.exit(0)
+
+path.write_text(patched, encoding="utf-8")
+print("[OK] Patched video_types.py rotation fallback.")
 PY
 }
 
 # HiDream O1 requires transformers with Qwen3-VL model code.
 ensure_hidream_transformers() {
     local node_dir="${CUSTOM_NODES_DIR}/HiDream_O1-ComfyUI"
-    if [ ! -d "$node_dir" ]; then
+    if [ -z "${SYNCED_NODE_DIRS[$node_dir]:-}" ]; then
         return 0
     fi
 
-    echo "[INFO] Ensuring transformers>=4.57.1,<5.4 for HiDream O1 (Qwen3-VL)..."
-    if ! uv pip install --upgrade "transformers>=4.57.1,<5.4"; then
+    echo "[INFO] Ensuring transformers>=4.57.1 for HiDream O1 (Qwen3-VL)..."
+    if ! uv pip install --upgrade "transformers>=4.57.1"; then
         echo "[WARN] transformers upgrade for HiDream reported errors."
     fi
     if python3 -c "from transformers.models.qwen3_vl.configuration_qwen3_vl import Qwen3VLConfig" 2>/dev/null; then
@@ -589,6 +700,31 @@ ensure_hidream_transformers() {
     else
         echo "[WARN] transformers Qwen3-VL import still failing; HiDream O1 nodes may not load."
     fi
+}
+
+ensure_layerstyle_opencv() {
+    local node_dir="${CUSTOM_NODES_DIR}/ComfyUI_LayerStyle"
+    if [ -z "${SYNCED_NODE_DIRS[$node_dir]:-}" ]; then
+        return 0
+    fi
+
+    if python3 -c "import cv2; assert hasattr(cv2, 'ximgproc') and hasattr(cv2.ximgproc, 'guidedFilter')" 2>/dev/null; then
+        echo "[INFO] OpenCV ximgproc guidedFilter support: OK"
+        return 0
+    fi
+
+    echo "[INFO] Ensuring opencv-contrib-python>=4.10 for LayerStyle guidedFilter support..."
+    if ! uv pip install --upgrade "opencv-contrib-python>=4.10"; then
+        echo "[WARN] opencv-contrib-python upgrade for LayerStyle reported errors."
+    fi
+}
+
+reconcile_managed_deps() {
+    echo "[INFO] Reconciling managed dependency pins..."
+    ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
+    install_reqs_force "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
+    ensure_hidream_transformers
+    ensure_layerstyle_opencv
 }
 
 # ComfyUI-Manager: lower gatekeeper strictness for container/dev use.
@@ -613,7 +749,6 @@ PY
 
 cd /app
 print_connectivity_summary
-connectivity_doctor
 
 COMFYUI_DIR="/app/ComfyUI"
 CUSTOM_NODES_DIR="${COMFYUI_DIR}/custom_nodes"
@@ -628,22 +763,13 @@ fi
 # ComfyUI
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
 patch_comfyui_video_types_py
-install_reqs "${COMFYUI_DIR}/requirements.txt"
 ensure_pip_module
-ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
 
 # ComfyUI-Manager
 mkdir -p "$CUSTOM_NODES_DIR"
 clone_or_update "${CUSTOM_NODES_DIR}/ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git" "main"
-install_reqs "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt"
+record_managed_node "${CUSTOM_NODES_DIR}/ComfyUI-Manager"
 ensure_comfyui_manager_security_weak
-
-# Civicomfy (Civitai model downloader)
-clone_or_update "${CUSTOM_NODES_DIR}/Civicomfy" "https://github.com/MoonGoblinDev/Civicomfy.git" "main"
-install_reqs "${CUSTOM_NODES_DIR}/Civicomfy/requirements.txt"
-
-# Install requirements for any custom node already present in custom_nodes/.
-install_all_custom_node_reqs "$CUSTOM_NODES_DIR"
 
 # =============================================================================
 # Directory Initialization and Mount Detection
@@ -1313,12 +1439,7 @@ if [ -f "$N_BASE" ] && [ -s "$N_BASE" ]; then
             repo_name=$(basename "$git_url" .git)
             repo_branch=$(echo "$line" | awk '{print $2}')
             target_dir="/app/ComfyUI/custom_nodes/$repo_name"
-            echo "  [SYNC] $repo_name (base)"
-            if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
-                install_reqs "$target_dir/requirements.txt"
-            else
-                echo "  [WARN] Failed to sync $repo_name"
-            fi
+            sync_custom_node "$git_url" "$repo_branch" "$target_dir" "$repo_name (base)"
         fi
     done < "$N_BASE"
 fi
@@ -1392,15 +1513,7 @@ for sel in $SELECTORS_LC; do
                     fi
                 fi
 
-                echo "  [SYNC] $repo_name"
-                if clone_or_update "$target_dir" "$git_url" "$repo_branch"; then
-                    install_reqs "$target_dir/requirements.txt"
-                    if [ "$repo_name" == "HiDream_O1-ComfyUI" ]; then
-                        ensure_hidream_transformers
-                    fi
-                else
-                    echo "  [WARN] Failed to sync $repo_name"
-                fi
+                sync_custom_node "$git_url" "$repo_branch" "$target_dir" "$repo_name"
             fi
         done < "$N"
     fi
@@ -1412,6 +1525,12 @@ for sel in $SELECTORS_LC; do
 done
 
 echo ""
+
+cleanup_legacy_custom_nodes "$CUSTOM_NODES_DIR"
+install_reqs "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
+install_managed_node_reqs
+log_or_install_orphan_node_reqs "$CUSTOM_NODES_DIR"
+reconcile_managed_deps
 
 # Download workflows (idempotent: overwrite to refresh, conditional-get skips unchanged)
 if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; then
@@ -1507,9 +1626,6 @@ if [ "$SEED_WORKFLOWS" -eq 1 ]; then
     write_managed_workflow_manifest
 fi
 
-patch_comfyui_video_types_py
-ensure_hidream_transformers
-
 echo ""
 echo "########################################"
 echo "[INFO] Starting ComfyUI..."
@@ -1536,8 +1652,7 @@ elif [ "$LOW_VRAM_LC" == "true" ]; then
     VRAM_RUNTIME_ARGS="--lowvram --reserve-vram ${RESERVE_VRAM_GB:-1.2}"
     echo "[INFO] Auto VRAM args for LOW_VRAM=true: $VRAM_RUNTIME_ARGS"
 else
-    VRAM_RUNTIME_ARGS="--normalvram"
-    echo "[INFO] Auto VRAM args for LOW_VRAM=false: $VRAM_RUNTIME_ARGS"
+    echo "[INFO] LOW_VRAM=false; no automatic VRAM args added."
 fi
 
 python3 ./ComfyUI/main.py --listen --port 8188 ${VRAM_RUNTIME_ARGS} ${CLI_ARGS}

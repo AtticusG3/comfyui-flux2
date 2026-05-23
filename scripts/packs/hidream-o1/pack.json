@@ -12,7 +12,7 @@
     "https://huggingface.co/drbaph/HiDream-O1-Image-BF16"
   ],
   "requires_hf_token": false,
-  "notes_low": "Downloads drbaph HiDream-O1-Image-FP8 folder (~10-11 GB) plus HiDream_O1-ComfyUI nodes. Requires transformers>=4.57.1 (installed at startup).",
-  "notes_high": "Downloads drbaph HiDream-O1-Image-BF16 folder (~18-20 GB) plus HiDream_O1-ComfyUI nodes. Targets 24GB+ VRAM.",
+  "notes_low": "Installs HiDream_O1-ComfyUI nodes and bundled example workflow only. Download FP8 weights (~10-11 GB) via ComfyUI Manager or Hugging Face after startup. Requires transformers>=4.57.1 (installed at startup).",
+  "notes_high": "Installs HiDream_O1-ComfyUI nodes and bundled example workflow only. Download BF16 weights (~18-20 GB) via ComfyUI Manager or Hugging Face after startup. Targets 24GB+ VRAM.",
   "description": "HiDream O1 Image - local text/reference generation with optional LoRA training nodes."
 }

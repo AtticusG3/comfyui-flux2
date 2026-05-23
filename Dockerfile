@@ -18,8 +18,10 @@ RUN apt-get update && \
         build-essential \
         gcc \
         g++ \
+        git \
         ninja-build \
         pkg-config \
+        ca-certificates \
         ffmpeg \
         libavcodec-dev \
         libavformat-dev \
@@ -30,6 +32,8 @@ RUN apt-get update && \
 
 RUN uv venv /opt/venv
 
+RUN uv pip install --no-cache pip
+
 RUN uv pip install --no-cache \
     torch \
     torchvision \
@@ -39,9 +43,23 @@ RUN uv pip install --no-cache \
 
 # av (PyAV), flash-attn, sageattention (SeedVR2 / attention backends). flash-attn may
 # skip if no compatible prebuilt wheel exists for the torch+cuda matrix.
-RUN uv pip install --no-cache av sageattention && \
-    (uv pip install --no-cache flash-attn --no-build-isolation || \
+RUN uv pip install --no-cache packaging wheel setuptools && \
+    uv pip install --no-cache av sageattention && \
+    (uv pip install --no-cache flash-attn --no-build-isolation && \
+        python -c "import flash_attn; print('[OK] flash-attn available')" || \
         echo "[WARN] flash-attn not installed (no wheel or build failed); optional.")
+
+COPY scripts/lib/. /scripts/lib/
+COPY scripts/install_comfyui.sh /scripts/install_comfyui.sh
+COPY scripts/packs/. /scripts/packs/
+
+RUN mkdir -p /opt/comfyui-bootstrap && \
+    COMFYUI_DIR=/opt/comfyui-bootstrap/ComfyUI \
+    CUSTOM_NODES_DIR=/opt/comfyui-bootstrap/ComfyUI/custom_nodes \
+    PACKS_DIR=/scripts/packs \
+    INSTALL_VRAM_UTILS=true \
+    COPY_BUNDLED_WORKFLOWS=false \
+    bash /scripts/install_comfyui.sh
 
 # =============================================================================
 # Stage 2: runtime -- lean image with only what's needed at run time
@@ -62,10 +80,12 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         git \
+        rsync \
         aria2 \
         jq \
         ffmpeg \
         libgl1 \
+        libopengl0 \
         libglib2.0-0 \
         fonts-dejavu-core \
         sudo \

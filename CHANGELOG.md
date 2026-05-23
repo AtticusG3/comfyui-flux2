@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.6.2] -- Startup hygiene and dependency hardening
+
+### Added
+- Base vram-utils: [comfyui-openai-api](https://github.com/hekmon/comfyui-openai-api) for bundled LLM prompt workflows (Ollama, OpenRouter, OpenAI-compatible APIs).
+- Staged git sync helper (`scripts/lib/git_sync.sh`) with retries and atomic apply via rsync.
+- Collated managed custom-node requirements install (single pip pass with shared stamp).
+- Startup cleanup of known legacy orphan custom-node folders (Trellis2-GGUF, inference-gpu, openai-api, bad ComfyUI-NewBie clone).
+
+### Changed
+- Removed connectivity doctor startup probes (routing summary and download/git routing unchanged).
+- Removed Civicomfy from bootstrap and startup sync.
+- Docker flash-attn bake installs `packaging`, `wheel`, and `setuptools` before optional build.
+- `hidream-o1` pack syncs nodes and bundled workflow only; model weights via Manager/HF after startup.
+
+### Removed
+- `CIVITAI_API_KEY` and `CONNECTIVITY_DOCTOR_ENABLED` environment variables.
+
+## [1.6.1] -- Startup dependency and image build optimization
+
+### Changed
+- Startup now installs requirements for managed nodes only by default and skips manual/orphan node requirements unless `INSTALL_ORPHAN_NODE_REQS=true`.
+- Runtime requirement installs are stamp-aware, so unchanged ComfyUI and managed custom-node requirements are skipped on warm restarts.
+- Custom-node git sync is deduplicated across vram-utils and selected packs.
+- Docker builds now pre-bake ComfyUI, Manager, and vram-utils Python dependencies into the image venv.
+
+### Fixed
+- Reduced dependency churn that could downgrade `transformers` and OpenCV after ComfyUI startup requirements were installed.
+- Added `pip` and `libopengl0` to reduce custom-node import warnings in the container.
+
 ## [1.6.0] -- RealVisXL, HiDream O1, workflow dependency gating
 
 ### Added

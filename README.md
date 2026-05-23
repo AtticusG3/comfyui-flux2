@@ -94,7 +94,6 @@ services:
       TZ: ${TZ:-UTC}
       MODELS_DOWNLOAD: ${MODELS_DOWNLOAD:-klein-distilled,sdxl-lightning}
       HF_TOKEN: ${HF_TOKEN:-}
-      CIVITAI_API_KEY: ${CIVITAI_API_KEY:-}
       LOW_VRAM: ${LOW_VRAM:-true}
       NVFP4_SUPPORTED: ${NVFP4_SUPPORTED:-false}
     volumes:
@@ -155,10 +154,10 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `NVFP4_MODE` | `official-only` or `allow-community` (community NVFP4 for Wan, FireRed, etc.). |
 | `CLI_ARGS` | Extra ComfyUI args; disables auto VRAM derivation when set. |
 | `HF_TOKEN` | Required when a selected pack marks gated Hugging Face models. |
-| `CIVITAI_API_KEY` | Optional Civitai token for Civicomfy. |
 | `CONNECTIVITY_ROUTE_*` | `direct`, `proxy`, `smart-dns`, `vpn` for downloads/git. |
 | `PROXY_URL`, `*_PROXY_URL`, `DNS_SERVERS`, `*_DNS_SERVERS` | Connectivity overrides. |
-| `CONNECTIVITY_DOCTOR_ENABLED` | Startup probes. Default `true`. |
+| `COMFYUI_GIT_UPDATE` | `true` fetches/resets managed repos on startup. Set `false` for faster restarts when local refs are already current. |
+| `INSTALL_ORPHAN_NODE_REQS` | `false` installs requirements only for managed nodes. Set `true` to also install manual/orphan custom-node requirements from the persisted volume. |
 | `TZ` | Timezone. |
 
 ## Available Packs
@@ -183,9 +182,11 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `z-image-base` | Image | Z-Image Base + Qwen FP8 text encoder | Z-Image Base + Qwen BF16 text encoder | Focused non-distilled Base workflow. `NVFP4_SUPPORTED=true` + `NVFP4_MODE=allow-community` can swap diffusion to marcorez8 quality NVFP4. |
 | `z-image-anime` | Image | Z-Image NVFP4 + Z-Anime FP8 stack | Z-Image BF16 + Z-Anime BF16 stack | Large HF downloads; bundled Z workflows. |
 | `qwen-image-edit-2511` | Image | NVFP4 diffusion + Qwen TE/VAE | FP8 diffusion + Qwen TE/VAE | Weights only; build or import a 2511 edit graph in ComfyUI. |
-| `hidream-o1` | Image | FP8 folder (~10-11 GB) | BF16 folder (~18-20 GB) | HiDream O1 nodes + bundled example workflow. |
+| `hidream-o1` | Image | nodes + workflow only | nodes + workflow only | HiDream O1 custom nodes + example workflow. Download FP8/BF16 weights via Manager or HF after startup. |
 
-**`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed.
+**`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, [comfyui-openai-api](https://github.com/hekmon/comfyui-openai-api) (Ollama/OpenRouter/OpenAI-compatible LLM nodes for bundled prompt workflows), plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed.
+
+Startup installs requirements for managed nodes only by default (collated into one pip pass). Custom nodes left on the persisted volume from old packs or manual installs are still importable by ComfyUI, but their requirements are skipped unless `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager **Try fix** after startup for manual nodes, or remove stale folders. Known legacy orphans (Trellis2-GGUF, inference-gpu, old openai-api) are removed automatically when not managed.
 
 Example:
 
@@ -257,6 +258,7 @@ To push to a Gitea host without storing a token in `git remote`, set **`GITEA_TO
 
 ## Notes
 
-- Image wheels include `av`, `sageattention`, and best-effort `flash-attn` (may skip if no compatible wheel for your torch+cuda build).
+- Image wheels include `av`, `sageattention`, and best-effort `flash-attn` (build installs `packaging`/`wheel` first; may still skip if no compatible wheel for your torch+cuda build).
 - Custom node `requirements.txt` installs filter `torch`, `torchvision`, `torchaudio`, and `xformers` so they cannot downgrade the image stack.
-- ComfyUI, ComfyUI-Manager, Civicomfy, base VRAM nodes, and pack nodes sync on startup.
+- ComfyUI, ComfyUI-Manager, base VRAM nodes, and pack nodes sync on startup via staged git (atomic apply on fetch success).
+- The runtime image has no compilers. If a managed node update adds a source-only Python dependency, rebuild the image or use ComfyUI Manager **Try fix**; optional future `build-deps` compose profile can add `build-essential` when needed.
