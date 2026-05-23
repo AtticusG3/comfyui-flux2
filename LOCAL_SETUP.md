@@ -87,3 +87,15 @@ Runtime flag precedence (highest to lowest):
 3. non-empty `CLI_ARGS` (disable automatic flags)
 4. `LOW_VRAM=true` + auto mode -> `--lowvram --reserve-vram <RESERVE_VRAM_GB>`
 5. `LOW_VRAM=false` + auto mode -> no extra VRAM flags
+
+## Workflow validation (dev)
+
+Validate bundled workflow JSON before editing pack workflows (Python 3.10+):
+
+```powershell
+pip install jsonschema==4.26.0
+py -3.12 scripts/validate_workflow_json.py workflows/
+py -3.12 scripts/validate_workflow_json.py --pack-audit workflows/
+```
+
+See `.cursor/skills/validate-comfyui-workflow/SKILL.md` and `schemas/comfy/.provenance.md`.

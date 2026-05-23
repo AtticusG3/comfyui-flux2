@@ -1,4 +1,4 @@
-# ComfyUI (Docker, multi-pack)
+﻿# ComfyUI (Docker, multi-pack)
 
 Dockerized [ComfyUI](https://github.com/comfyanonymous/ComfyUI) with **selectable model packs**, persistent mounts, API-friendly defaults, and startup sync for models and workflows. Image tags remain `ghcr.io/atticusg3/comfyui-flux2` for compatibility.
 
@@ -39,7 +39,7 @@ Published images install **stable** `torch`, `torchvision`, `torchaudio`, and `x
 
 CI publishes **cu130 only** (no `-cu126` / `-cu128` matrix tags). For other CUDA indexes, build locally with `docker build --build-arg CUDA_VERSION=cu128`.
 
-**Nightly / RTX 50 note:** Some Blackwell setups require **PyTorch nightly** builds from `https://download.pytorch.org/whl/nightly/cu130` or `nightly/cu128` (see [EigenFunction32/ComfyUI-docker](https://github.com/EigenFunction32/ComfyUI-docker) README table pattern). This repository’s **published** images do not switch to nightly automatically; advanced users can build locally with a different index if needed.
+**Nightly / RTX 50 note:** Some Blackwell setups require **PyTorch nightly** builds from `https://download.pytorch.org/whl/nightly/cu130` or `nightly/cu128` (see [EigenFunction32/ComfyUI-docker](https://github.com/EigenFunction32/ComfyUI-docker) README table pattern). This repository's **published** images do not switch to nightly automatically; advanced users can build locally with a different index if needed.
 
 **CUDA 13.1 / 13.2:** A **nightly** `cu132` directory exists on the PyTorch download host. **Stable** `cu131` / `cu132` plus matching **xformers** for our Dockerfile layout was not verified at release time; do not assume `-cu131` / `-cu132` tags until `docker build` is confirmed for all four wheels.
 
@@ -122,11 +122,11 @@ Notes:
 
 The container exposes ComfyUI on port `8188`.
 
-- `POST /prompt` — submit API-format workflows.
-- `GET /object_info` — list nodes.
-- `GET /history/{prompt_id}` — poll outputs.
-- WebSocket `/ws` — progress.
-- `POST /free` — free VRAM between jobs when supported.
+- `POST /prompt` -- submit API-format workflows.
+- `GET /object_info` -- list nodes.
+- `GET /history/{prompt_id}` -- poll outputs.
+- WebSocket `/ws` -- progress.
+- `POST /free` -- free VRAM between jobs when supported.
 
 Do not expose `8188` to untrusted networks without a reverse proxy or auth.
 
@@ -245,7 +245,15 @@ ComfyUI code may live in a named volume depending on compose; see your `docker-c
 
 Staged ComfyUI git sync skips `models/`, `input/`, `output/`, and `user/default/workflows/` during rsync so bind mounts are not deleted (`Device or resource busy`). Pack bundled workflows copy into `./data/workflows` on first start (empty folder). With `RESEED_PACK_WORKFLOWS=true`, changing `MODELS_DOWNLOAD` and restarting adds or overwrites pack workflow files without clearing your folder.
 
-**Maintainers:** validate bundled workflows against pack model and node lists with `python scripts/audit_workflow_assets.py` (runs on PRs that touch `scripts/` or `workflows/`).
+**Maintainers:** validate workflow JSON and pack coverage before PRs:
+
+```bash
+pip install jsonschema==4.26.0   # Python 3.10+
+python scripts/validate_workflow_json.py workflows/
+python scripts/validate_workflow_json.py --pack-audit workflows/
+```
+
+Structural checks use vendored [ComfyWorkflow 0.4/1.0](https://docs.comfy.org/specs/workflow_json) schemas under `schemas/comfy/`. Model/node lists: `python scripts/audit_workflow_assets.py` (CI on `scripts/` or `workflows/` changes). Agent skill: `.cursor/skills/validate-comfyui-workflow/`.
 
 ## Development
 
@@ -272,7 +280,7 @@ Version in `VERSION` and history in `CHANGELOG.md`. Tag `v*` to publish cu130 im
 
 Run a dry run first: `python scripts/registry_cleanup.py` or Actions -> Registry cleanup (leave **Apply** unchecked). Requires `gh` auth with `read:packages` and `delete:packages`.
 
-To push to a Gitea host without storing a token in `git remote`, set **`GITEA_TOKEN`** (and optionally **`GITEA_USER`**, **`GITEA_HOST`**, **`GITEA_REPO_PATH`**) in your environment, keep `origin` as a plain `https://…/owner/repo.git` URL, then run **`scripts/gitea-push.ps1`** (Windows) or **`scripts/gitea-push.sh`** (Linux/macOS). Pass ref names as arguments when not on a branch (for example `main` `v1.5.0`). If the server reports the repository is a read-only mirror, push from the non-mirror upstream instead.
+To push to a Gitea host without storing a token in `git remote`, set **`GITEA_TOKEN`** (and optionally **`GITEA_USER`**, **`GITEA_HOST`**, **`GITEA_REPO_PATH`**) in your environment, keep `origin` as a plain `https://.../owner/repo.git` URL, then run **`scripts/gitea-push.ps1`** (Windows) or **`scripts/gitea-push.sh`** (Linux/macOS). Pass ref names as arguments when not on a branch (for example `main` `v1.5.0`). If the server reports the repository is a read-only mirror, push from the non-mirror upstream instead.
 
 ## Notes
 

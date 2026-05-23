@@ -1210,21 +1210,34 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] Workflow override: Z-Anime high -> BF16 distill filenames."
     fi
 
+    # Bundled Z-Anime T2I.json ships with 4step NVFP4 + FP8 TE; sed aligns to
+    # VRAM_TARGET and normalizes legacy 8-step names.
     local zaanime_origin="$workflows_dir/Z-Anime T2I.json"
     if [ -f "$zaanime_origin" ]; then
         if [ "$VRAM_TARGET" == "low" ]; then
             sed -i 's/z-anime-distill-4step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
             sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
             sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
-            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
             sed -i 's/qwen_3_4b-bf16\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
-            echo "[INFO] Workflow override: Z-Anime low -> NVFP4 distill + FP8 TE filenames."
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
+            if grep -Fq "z-anime-distill-4step-nvfp4.safetensors" "$zaanime_origin" \
+                && grep -Fq "qwen_3_4b-fp8.safetensors" "$zaanime_origin"; then
+                echo "[INFO] Workflow override: Z-Anime T2I low -> NVFP4 distill + FP8 TE filenames."
+            else
+                echo "[WARN] Workflow override: Z-Anime T2I low filenames not verified after sed."
+            fi
         else
             sed -i 's/z-anime-distill-4step-nvfp4\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"
             sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"
             sed -i 's/qwen_3_4b-fp8\.safetensors/qwen_3_4b-bf16.safetensors/g' "$zaanime_origin"
             sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-bf16.safetensors/g' "$zaanime_origin"
-            echo "[INFO] Workflow override: Z-Anime high -> BF16 distill + TE filenames."
+            if grep -Fq "z-anime-distill-4step-bf16.safetensors" "$zaanime_origin" \
+                && grep -Fq "qwen_3_4b-bf16.safetensors" "$zaanime_origin"; then
+                echo "[INFO] Workflow override: Z-Anime T2I high -> BF16 distill + TE filenames."
+            else
+                echo "[WARN] Workflow override: Z-Anime T2I high filenames not verified after sed."
+            fi
         fi
     fi
 

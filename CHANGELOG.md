@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.5] -- Workflow JSON validation and Z-Anime VRAM overrides
+
+### Added
+- `scripts/validate_workflow_json.py`: validate bundled workflows against vendored ComfyWorkflow 0.4/1.0 schemas, dangling links, optional `--pack-audit`.
+- Vendored schemas under `schemas/comfy/` (from [docs.comfy.org](https://docs.comfy.org/specs/workflow_json) specs).
+- Cursor skill `.cursor/skills/validate-comfyui-workflow/` for maintainer lint workflow.
+
+### Changed
+- `apply_nvfp4_workflow_overrides()`: Z-Anime `Z-Anime T2I.json` high tier maps legacy `8step-bf16` to `4step-bf16`; post-sed grep verifies distill/TE filenames per `VRAM_TARGET`.
+- README and LOCAL_SETUP document dev validation commands (`jsonschema`, Python 3.10+).
+
 ## [1.6.4] -- cu130-only publishes and registry cleanup
 
 ### Added
