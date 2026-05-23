@@ -35,6 +35,8 @@ sync/update logic, and persistent host-mounted data paths.
 - Git sync uses staged clone-or-update (`scripts/lib/git_sync.sh`) for atomic apply.
   ComfyUI rsync excludes bind-mounted `models/`, `input/`, `output/`, and
   `user/default/workflows/`; use `--no-group --no-owner` for Docker Desktop volumes.
+- `RESEED_PACK_WORKFLOWS=true` installs bundled/URL pack workflows when
+  `./data/workflows` already has JSON; full managed cleanup only on first empty seed.
 - `patch_comfyui_video_types_py()` runs after ComfyUI sync and again immediately before
   ComfyUI start (`|| exit 1` on the final run). Implementation: `scripts/patch_video_types_rotation.py`.
 - When `hidream-o1` nodes are synced, `ensure_hidream_transformers()` upgrades

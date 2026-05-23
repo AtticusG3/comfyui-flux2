@@ -23,6 +23,7 @@ services:
       - LOW_VRAM=${LOW_VRAM:-false}
       - MODELS_DOWNLOAD=${MODELS_DOWNLOAD:-none}
       - COMFYUI_GIT_UPDATE=${COMFYUI_GIT_UPDATE:-true}
+      - RESEED_PACK_WORKFLOWS=${RESEED_PACK_WORKFLOWS:-true}
       - INSTALL_ORPHAN_NODE_REQS=${INSTALL_ORPHAN_NODE_REQS:-false}
     gpus: all
     deploy:

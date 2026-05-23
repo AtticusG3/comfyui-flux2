@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.3] -- Pack workflow reseed and ComfyUI git sync on bind mounts
+
+### Added
+- `RESEED_PACK_WORKFLOWS` (default `true` in `docker-compose.yml`): install or refresh bundled and URL workflows for selected packs when `./data/workflows` already contains JSON, without wiping the folder.
+
+### Changed
+- ComfyUI staged git rsync excludes bind-mounted `models/`, `input/`, `output/`, and `user/default/workflows/` and uses `--no-group --no-owner` to avoid Docker Desktop `chgrp` / `Device or resource busy` noise.
+
 ## [1.6.2] -- Startup hygiene and dependency hardening
 
 ### Added

@@ -1363,20 +1363,30 @@ echo "[INFO] Processing selected packs..."
 echo "########################################"
 echo ""
 
-# Remove previously managed workflow files so only current selected packs remain.
-SEED_WORKFLOWS=1
+# Workflow seeding: full seed on empty workflows dir; optional pack reseed when JSON already exists.
+WORKFLOW_FULL_SEED=0
+WORKFLOW_PACK_SEED=0
+RESEED_PACK_WORKFLOWS_LC=$(echo "${RESEED_PACK_WORKFLOWS:-false}" | tr '[:upper:]' '[:lower:]')
 if workflows_dir_has_json "$WORKFLOWS_DIR"; then
-    SEED_WORKFLOWS=0
-    echo "[INFO] Workflows directory is not empty (existing JSON). Skipping managed workflow cleanup, bundled workflow seeding, and workflow URL downloads."
+    if [ "$RESEED_PACK_WORKFLOWS_LC" = "true" ] || [ "$RESEED_PACK_WORKFLOWS_LC" = "1" ] || [ "$RESEED_PACK_WORKFLOWS_LC" = "yes" ]; then
+        WORKFLOW_PACK_SEED=1
+        echo "[INFO] Workflows directory has existing JSON; RESEED_PACK_WORKFLOWS enabled - installing/updating workflows for selected packs."
+    else
+        echo "[INFO] Workflows directory is not empty (existing JSON). Skipping managed workflow cleanup, bundled workflow seeding, and workflow URL downloads."
+        echo "       Set RESEED_PACK_WORKFLOWS=true to add or refresh pack workflows without clearing the folder."
+    fi
+else
+    WORKFLOW_FULL_SEED=1
+    WORKFLOW_PACK_SEED=1
 fi
 
-if [ "$SEED_WORKFLOWS" -eq 1 ]; then
+if [ "$WORKFLOW_FULL_SEED" -eq 1 ]; then
     cleanup_prev_managed_workflows
 fi
 
 # Base install: vram-utils custom nodes + bundled workflows (always, not tied to MODELS_DOWNLOAD).
 VR_PACK="${PACKS_DIR}/vram-utils"
-if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -d "/workflows/vram-utils" ]; then
+if [ "$WORKFLOW_FULL_SEED" -eq 1 ] && [ -d "/workflows/vram-utils" ]; then
     echo "[INFO] Installing base workflows from /workflows/vram-utils..."
     shopt -s nullglob
     for wf in /workflows/vram-utils/*.json; do
@@ -1440,7 +1450,7 @@ for sel in $SELECTORS_LC; do
         cat "$M" >> "$TEMP_MODELS"
         echo "" >> "$TEMP_MODELS"
     fi
-    if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -f "$W" ] && [ -s "$W" ] && grep -q '^https' "$W" 2>/dev/null; then
+    if [ "$WORKFLOW_PACK_SEED" -eq 1 ] && [ -f "$W" ] && [ -s "$W" ] && grep -q '^https' "$W" 2>/dev/null; then
         cat "$W" >> "$TEMP_WORKFLOWS"
         echo "" >> "$TEMP_WORKFLOWS"
     fi
@@ -1479,7 +1489,7 @@ for sel in $SELECTORS_LC; do
     fi
 
     # Copy tier-appropriate bundled workflows only after pack gating and node sync.
-    if [ "$SEED_WORKFLOWS" -eq 1 ]; then
+    if [ "$WORKFLOW_PACK_SEED" -eq 1 ]; then
         install_pack_bundled_workflows "$pack_dir"
     fi
 done
@@ -1493,7 +1503,7 @@ log_or_install_orphan_node_reqs "$CUSTOM_NODES_DIR"
 reconcile_managed_deps
 
 # Download workflows (idempotent: overwrite to refresh, conditional-get skips unchanged)
-if [ "$SEED_WORKFLOWS" -eq 1 ] && [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; then
+if [ "$WORKFLOW_PACK_SEED" -eq 1 ] && [ -s "$TEMP_WORKFLOWS" ] && grep -q '^https' "$TEMP_WORKFLOWS" 2>/dev/null; then
     echo "########################################"
     echo "[INFO] Downloading workflows..."
     echo "########################################"
@@ -1582,7 +1592,7 @@ else
 fi
 
 rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"
-if [ "$SEED_WORKFLOWS" -eq 1 ]; then
+if [ "$WORKFLOW_PACK_SEED" -eq 1 ]; then
     write_managed_workflow_manifest
 fi
 

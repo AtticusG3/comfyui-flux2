@@ -157,6 +157,7 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `CONNECTIVITY_ROUTE_*` | `direct`, `proxy`, `smart-dns`, `vpn` for downloads/git. |
 | `PROXY_URL`, `*_PROXY_URL`, `DNS_SERVERS`, `*_DNS_SERVERS` | Connectivity overrides. |
 | `COMFYUI_GIT_UPDATE` | `true` fetches/resets managed repos on startup. Set `false` for faster restarts when local refs are already current. |
+| `RESEED_PACK_WORKFLOWS` | `true` (compose default) installs or refreshes bundled and URL workflows for selected packs even when `./data/workflows` already has JSON. `false` keeps first-start-only seeding. |
 | `INSTALL_ORPHAN_NODE_REQS` | `false` installs requirements only for managed nodes. Set `true` to also install manual/orphan custom-node requirements from the persisted volume. |
 | `TZ` | Timezone. |
 
@@ -242,7 +243,7 @@ Typical bind mounts:
 
 ComfyUI code may live in a named volume depending on compose; see your `docker-compose.yml`.
 
-Staged ComfyUI git sync skips `models/`, `input/`, `output/`, and `user/default/workflows/` during rsync so bind mounts are not deleted (`Device or resource busy`). Pack bundled workflows are copied into `./data/workflows` only when that folder has no `.json` yet on startup; after the first seed, add packs by copying from the repo `workflows/` tree or clearing `*.json` and restarting with an updated `MODELS_DOWNLOAD`.
+Staged ComfyUI git sync skips `models/`, `input/`, `output/`, and `user/default/workflows/` during rsync so bind mounts are not deleted (`Device or resource busy`). Pack bundled workflows copy into `./data/workflows` on first start (empty folder). With `RESEED_PACK_WORKFLOWS=true`, changing `MODELS_DOWNLOAD` and restarting adds or overwrites pack workflow files without clearing your folder.
 
 ## Development
 
