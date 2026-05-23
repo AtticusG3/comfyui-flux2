@@ -458,6 +458,51 @@ ensure_comfyui_frontend_package() {
     echo "$stamp" > "$stamp_file"
 }
 
+# ComfyUI 0.22+ ModelPatcher uses HostBuffer(size, prewarm, max_grow_size).
+# Older comfy-aimdo wheels only accept HostBuffer(size) and break VAELoader.
+ensure_comfy_aimdo_package() {
+    local req="$1"
+    if [ ! -f "$req" ]; then
+        return 0
+    fi
+
+    local aimdo_req
+    aimdo_req=$(awk '
+        {
+            line=$0
+            sub(/[[:space:]]*#.*/, "", line)
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", line)
+            if (tolower(line) ~ /^comfy-aimdo([<>=!~].*)?$/) {
+                print line
+                exit
+            }
+        }
+    ' "$req")
+
+    if [ -z "$aimdo_req" ]; then
+        return 0
+    fi
+
+    mkdir -p "$REQ_STAMP_DIR"
+    local stamp_file="${REQ_STAMP_DIR}/comfy-aimdo.sha256"
+    local stamp
+    stamp=$(printf '%s\n' "$aimdo_req" | sha256sum | awk '{print $1}')
+    if [ -f "$stamp_file" ] && [ "$(cat "$stamp_file")" = "$stamp" ]; then
+        echo "[OK] comfy-aimdo package unchanged; skipping."
+        return 0
+    fi
+
+    echo "[INFO] Ensuring comfy-aimdo package is up to date: $aimdo_req"
+    if ! uv pip install --upgrade "$aimdo_req"; then
+        echo "[WARN] uv comfy-aimdo upgrade failed; trying pip fallback..."
+        if ! python3 -m pip install --upgrade "$aimdo_req"; then
+            echo "[WARN] comfy-aimdo upgrade failed. VAELoader may fail with HostBuffer arity errors."
+            return 0
+        fi
+    fi
+    echo "$stamp" > "$stamp_file"
+}
+
 # Install requirements for every existing custom node directory.
 # This is opt-in for manual/orphan nodes; managed pack nodes are installed
 # separately after sync to avoid dependency churn from stale volume content.
@@ -541,6 +586,36 @@ install_managed_node_reqs() {
         echo "[WARN] Some managed custom-node requirements may have failed"
     fi
     rm -f "$collated_req"
+}
+
+# Impact Pack/Subpack are synced for sdxl-lightning; verify imports because collated
+# pip can be skipped by stamp while git-based deps (e.g. sam2) failed on a prior run.
+ensure_impact_pack_python_deps() {
+    local impact="${CUSTOM_NODES_DIR}/ComfyUI-Impact-Pack"
+    local subpack="${CUSTOM_NODES_DIR}/ComfyUI-Impact-Subpack"
+    local missing=0
+
+    if [ ! -d "$impact" ] && [ ! -d "$subpack" ]; then
+        return 0
+    fi
+
+    if [ -d "$impact" ] && ! python3 -c "import piexif" 2>/dev/null; then
+        missing=1
+        echo "[WARN] piexif missing for ComfyUI-Impact-Pack; installing..."
+        uv pip install piexif || echo "[WARN] piexif install failed"
+    fi
+
+    if [ -d "$subpack" ] && ! python3 -c "import ultralytics" 2>/dev/null; then
+        missing=1
+        echo "[WARN] ultralytics missing for ComfyUI-Impact-Subpack; installing..."
+        uv pip install "ultralytics>=8.3.162" || echo "[WARN] ultralytics install failed"
+    fi
+
+    if [ "$missing" -eq 1 ]; then
+        local stamp_file="${REQ_STAMP_DIR}/managed-custom-nodes.sha256"
+        rm -f "$stamp_file"
+        echo "[INFO] Cleared managed custom-node requirements stamp (Impact Pack deps were incomplete)."
+    fi
 }
 
 collate_managed_requirements() {
@@ -682,6 +757,7 @@ ensure_layerstyle_opencv() {
 reconcile_managed_deps() {
     echo "[INFO] Reconciling managed dependency pins..."
     ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
+    ensure_comfy_aimdo_package "${COMFYUI_DIR}/requirements.txt"
     install_reqs_force "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
     ensure_hidream_transformers
     ensure_layerstyle_opencv
@@ -1532,6 +1608,7 @@ echo ""
 cleanup_legacy_custom_nodes "$CUSTOM_NODES_DIR"
 install_reqs "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
 install_managed_node_reqs
+ensure_impact_pack_python_deps
 log_or_install_orphan_node_reqs "$CUSTOM_NODES_DIR"
 reconcile_managed_deps
 
