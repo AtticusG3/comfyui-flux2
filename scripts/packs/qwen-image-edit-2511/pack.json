@@ -3,14 +3,16 @@
   "selectors": ["qwen-image-edit-2511", "qwen-image-edit", "qwen2511"],
   "tutorial_urls": [
     "https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8",
-    "https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4"
+    "https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4",
+    "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning"
   ],
   "upstream_urls": [
     "https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8",
-    "https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4"
+    "https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4",
+    "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning"
   ],
   "requires_hf_token": false,
-  "notes_low": "NVFP4 diffusion (Bedovyy) + shared Qwen Image TE/VAE. Bundled image-edit workflow. RTX 50+ class GPUs.",
-  "notes_high": "FP8 e4m3fn diffusion (1038lab) + shared Qwen Image TE/VAE. Bundled workflow UNET defaults rewritten to FP8 on startup.",
-  "description": "Qwen Image Edit 2511 image-to-image weights and bundled ComfyUI edit workflow."
+  "notes_low": "NVFP4 diffusion (Bedovyy) + shared Qwen Image TE/VAE + Lightning 4-step LoRA. Bundled Comfy-Org image-edit workflow. RTX 50+ class GPUs.",
+  "notes_high": "FP8 e4m3fn diffusion (1038lab) + shared Qwen Image TE/VAE + Lightning 4-step LoRA. Bundled workflow UNET defaults rewritten to FP8 on startup.",
+  "description": "Qwen Image Edit 2511 image-to-image weights and bundled ComfyUI Lightning edit workflow."
 }

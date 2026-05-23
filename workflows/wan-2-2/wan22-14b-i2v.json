@@ -40,7 +40,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "Animate this scene: the driver of the Supra raises his helmet visor and gives a thumbs up to the camera, steam rises from the car's hood post-race, mechanics run toward it, confetti begins falling from above, natural crowd movement in background, broadcast-quality video motion"
+        "blurry, low quality, watermark, text, distorted motion, flickering, inconsistent lighting, morphing faces, extra limbs"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -653,7 +653,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "Animate this scene: the driver of the Supra raises his helmet visor and gives a thumbs up to the camera, steam rises from the car's hood post-race, mechanics run toward it, confetti begins falling from above, natural crowd movement in background, broadcast-quality video motion"
+        "Animate: female driver in white helmet beside a Toyota Supra MK4 at Fuji Speedway raises visor and waves, steam from hood, mechanics approach, confetti falls, natural crowd motion"
       ],
       "color": "#232",
       "bgcolor": "#353"

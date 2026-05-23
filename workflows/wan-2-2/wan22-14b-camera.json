@@ -400,7 +400,7 @@
         }
       },
       "widgets_values": [
-        "An Initial D style downhill chase through Hakone at night, an RX-7 Spirit R and a Lan-Evo IX weave through switchbacks while the camera transitions from roof-mounted POV to roadside tracking and then aerial reveal, roadside vending machines glow in the mist, authentic touge atmosphere, smooth coherent motion"
+        "blurry, low quality, watermark, text, distorted motion, flickering, inconsistent lighting, morphing faces, extra limbs"
       ],
       "color": "#223",
       "bgcolor": "#335"
@@ -957,7 +957,7 @@
         }
       },
       "widgets_values": [
-        "An Initial D style downhill chase through Hakone at night, an RX-7 Spirit R and a Lan-Evo IX weave through switchbacks while the camera transitions from roof-mounted POV to roadside tracking and then aerial reveal, roadside vending machines glow in the mist, authentic touge atmosphere, smooth coherent motion"
+        "blurry, low quality, watermark, text, distorted motion, flickering, inconsistent lighting, morphing faces, extra limbs"
       ],
       "color": "#223",
       "bgcolor": "#335"
@@ -1398,7 +1398,7 @@
         }
       },
       "widgets_values": [
-        "An Initial D style downhill chase through Hakone at night, an RX-7 Spirit R and a Lan-Evo IX weave through switchbacks while the camera transitions from roof-mounted POV to roadside tracking and then aerial reveal, roadside vending machines glow in the mist, authentic touge atmosphere, smooth coherent motion"
+        "Initial D style chase on Hakone touge at night, RX-7 Spirit R and Lancer Evo IX, camera moves from roof POV to roadside tracking to aerial reveal, vending machine glow, coherent motion"
       ],
       "color": "#232",
       "bgcolor": "#353"
@@ -1597,7 +1597,7 @@
         }
       },
       "widgets_values": [
-        "An Initial D style downhill chase through Hakone at night, an RX-7 Spirit R and a Lan-Evo IX weave through switchbacks while the camera transitions from roof-mounted POV to roadside tracking and then aerial reveal, roadside vending machines glow in the mist, authentic touge atmosphere, smooth coherent motion"
+        "Initial D style chase on Hakone touge at night, RX-7 Spirit R and Lancer Evo IX, camera moves from roof POV to roadside tracking to aerial reveal, vending machine glow, coherent motion"
       ],
       "color": "#232",
       "bgcolor": "#353"
@@ -1621,7 +1621,7 @@
       "title": "VRAM Usage",
       "properties": {},
       "widgets_values": [
-        "## GPU:RTX4090D 24GB\n\n| Model            | Size |VRAM Usage | 1st Generation | 2nd Generation |\n|---------------------|-------|-----------|---------------|-----------------|\n| fp8_scaled               |640*640| 84%               | \u2248  536s              | \u2248 513s                   |\n| fp8_scaled +  4steps LoRA  | 640*640  | 89%                | \u2248 108s               | \u2248 71s                   |"
+        "## GPU:RTX4090D 24GB\n\n| Model            | Size |VRAM Usage | 1st Generation | 2nd Generation |\n|---------------------|-------|-----------|---------------|-----------------|\n| fp8_scaled               |640*640| 84%               | ≈  536s              | ≈ 513s                   |\n| fp8_scaled +  4steps LoRA  | 640*640  | 89%                | ≈ 108s               | ≈ 71s                   |"
       ],
       "color": "#432",
       "bgcolor": "#000"
@@ -1644,7 +1644,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-camera\n) \n\n**Diffusion Model**\n- [wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\n```\nComfyUI/\n\u251c\u2500\u2500\u2500\ud83d\udcc2 models/\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 diffusion_models/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 loras/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 text_encoders/\n\u2502   \u2502   \u2514\u2500\u2500\u2500 umt5_xxl_fp8_e4m3fn_scaled.safetensors \n\u2502   \u2514\u2500\u2500\u2500\ud83d\udcc2 vae/\n\u2502       \u2514\u2500\u2500 wan_2.1_vae.safetensors\n```\n"
+        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-camera\n) \n\n**Diffusion Model**\n- [wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\n```\nComfyUI/\n├───📂 models/\n│   ├───📂 diffusion_models/\n│   │   ├─── wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors\n│   │   └─── wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors\n│   ├───📂 loras/\n│   │   ├─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   │   └─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   ├───📂 text_encoders/\n│   │   └─── umt5_xxl_fp8_e4m3fn_scaled.safetensors \n│   └───📂 vae/\n│       └── wan_2.1_vae.safetensors\n```\n"
       ],
       "color": "#432",
       "bgcolor": "#000"
@@ -2635,7 +2635,7 @@
     },
     {
       "id": 8,
-      "title": "High noise\uff08first steps\uff09",
+      "title": "High noise（first steps）",
       "bounding": [
         -230,
         1770,
@@ -2713,7 +2713,7 @@
     },
     {
       "id": 14,
-      "title": "LightX2V 4 Steps LoRA \uff08Can Speed up the workflow but will sacrifice some quality\uff09",
+      "title": "LightX2V 4 Steps LoRA （Can Speed up the workflow but will sacrifice some quality）",
       "bounding": [
         2800,
         1660,

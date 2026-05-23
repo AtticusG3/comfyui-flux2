@@ -1,6 +1,16 @@
+#!/usr/bin/env python3
+"""Apply pack example prompts from SCENES registry into bundled workflow JSON."""
+from __future__ import annotations
+
 import json
+import sys
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+
+from lib.workflow_prompts import apply_prompts
 
 SDXL_NEG = (
     "worst quality, low quality, normal quality, jpeg artifacts, blurry, "
@@ -18,156 +28,153 @@ ANIME_NEG = (
     "artifacts, signature, watermark, username, blurry, artist name"
 )
 
-
-SCENES = {
+# Portrait + specific car + famous location; anime packs name notable female characters.
+SCENES: dict[str, tuple[str, str]] = {
     "workflows/flux2/klein-9b-t2i.json": (
-        "A Nissan Silvia S15 Spec-R in metallic pearl white parked in front of a closed Daikoku Futo "
-        "style warehouse, sodium vapor lights, light rain, wide-angle automotive photograph",
+        "Portrait of Asuka Langley in red plugsuit cosplay leaning on a Nissan Skyline GT-R R34 "
+        "V-Spec II at Shibuya Scramble Crossing at night, neon reflections on wet asphalt, "
+        "cinematic automotive photography, 85mm lens",
         "",
     ),
     "workflows/flux2/klein-9b-edit.json": (
-        "Turn the car into a midnight purple widebody build with carbon canards and a large rear wing, "
-        "keep license plate and stance, same environment and lighting",
+        "Change the Skyline to a midnight purple widebody R34 with Varis aero and larger rear wing, "
+        "keep Asuka cosplay pose and Shibuya night background unchanged",
+        "",
+    ),
+    "workflows/flux2/klein-4b-t2i.json": (
+        "Portrait of Rei Ayanami in pale blue pilot suit beside a Toyota Supra MK4 A80 at "
+        "Daikoku Parking Area, sodium vapor lights, light rain, wide-angle automotive photograph",
+        "",
+    ),
+    "workflows/flux2/klein-4b-edit.json": (
+        "Change the Supra to a Veilside Fortune widebody in vibrant orange, keep Rei pose and "
+        "Daikoku PA lighting and environment",
         "",
     ),
     "workflows/sdxl-lightning/sdxl-lightning-t2i.json": (
-        "A Toyota Supra MK4 A80 drifting through a hairpin on the Nurburgring dressed in Japanese livery, "
-        "twin-turbo exhaust flames, Rising Sun flag hood wrap, motion blur on tyres, race marshal in background, "
-        "overcast dramatic sky, professional motorsport photography, telephoto lens compression, ultra sharp",
+        "Portrait of a woman styled as Zero Two in white and red racing suit beside a Honda NSX-R "
+        "at the Nurburgring Nordschleife carousel, overcast sky, telephoto motorsport photography, "
+        "motion blur on background crowd",
         SDXL_NEG,
     ),
     "workflows/sdxl-lightning/sdxl-lightning-hires.json": (
-        "Shibuya crossing at 3am during a typhoon, a heavily modified Honda NSX-R C30 with Kanjo style livery "
-        "rolling through standing water, reflections of red and white traffic lights on the flooded road surface, "
-        "background figures with umbrellas, cinematic anamorphic bokeh, Hasselblad medium-format texture, photorealistic",
+        "Portrait of a woman styled as Makima in elegant black coat beside a Lamborghini Huracan STO "
+        "on the Amalfi Coast cliff road at golden hour, Mediterranean sea below, photorealistic hires "
+        "detail, medium-format texture",
         SDXL_NEG,
     ),
     "workflows/flux1-krea/flux-krea-t2i.json": (
-        "A Kawasaki Z900RS Cafe Racer in candy green standing on the forecourt of a 1970s Showa-era petrol station "
-        "in rural Hokkaido, analogue pump with hiragana labels, elderly station attendant in company uniform bowing, "
-        "late autumn maples surrounding the scene, Kodak Portra 400 film emulation, slight halation on highlights",
+        "Portrait of Saber in casual summer dress beside a Kawasaki Z900RS cafe racer at Senso-ji Temple "
+        "Asakusa main gate, late autumn maples, Kodak Portra 400 film look, soft halation",
         "",
     ),
-    "workflows/newbie-image/newbie-image-t2i-low.json": (
-        "<subject>Miku Hatsune wearing a racing queen uniform in black and gold, holding a chequered flag</subject> "
-        "<background>paddock of a Super GT race at Fuji Speedway, rows of GT500 cars with Kanji liveries, Mount Fuji visible</background> "
-        "<style>high-detail anime illustration, vibrant cel-shading, dynamic composition</style> "
-        "<quality>masterpiece, best quality, 8k, sharp</quality>",
+    "workflows/newbie-image/newbie-t2i-low.json": (
+        "<subject>Hatsune Miku in black and gold racing queen outfit beside a Nissan Silvia S15 Spec-R</subject> "
+        "<background>Fuji Speedway paddock, Mount Fuji in distance, Super GT atmosphere</background> "
+        "<style>high-detail anime illustration, vibrant cel-shading</style> "
+        "<quality>masterpiece, best quality, sharp</quality>",
         ANIME_NEG,
     ),
-    "workflows/newbie-image/newbie-image-t2i-high.json": (
-        "<subject>Motoko Kusanagi in Section 9 tactical suit crouching on the roof of a neon-lit Cyberpunk Osaka skyscraper, "
-        "Seburo C-26A in hand, rain-soaked</subject> <background>neo-Tokyo megacity sprawl below, holographic advertisements "
-        "in Japanese floating in mid-air, flying vehicles</background> <pose>dynamic action crouch, looking over shoulder, "
-        "wind catching hair</pose> <style>Ghost in the Shell anime aesthetic, Mamoru Oshii colour palette</style> "
+    "workflows/newbie-image/newbie-t2i-high.json": (
+        "<subject>Rem from Re:Zero in maid outfit beside a Subaru WRX STI WRB at Akihabara night street</subject> "
+        "<background>neon signs, light rain, crowded sidewalk</background> "
+        "<style>detailed anime illustration, cinematic rim light</style> "
         "<quality>masterpiece, best quality</quality>",
         ANIME_NEG,
     ),
     "workflows/ovis-image/ovis-t2i.json": (
-        "A bold Japanese drift event poster, foreground shows a widebody Mazda RX-7 FD in aggressive stance mid-drift with tyre smoke, "
-        "background is a night race circuit with stadium lights, large text reads DRIFT MATSURI 2025 in stylised English and below it "
-        "走り屋の祭り in bold gothic kanji, event details text Ebisu Circuit • Fukushima • August at the bottom, clean graphic design, "
-        "high contrast, professional print quality",
+        "Event poster: Saber in armor beside a Mazda RX-7 FD at Ebisu Circuit drift stadium, bold title "
+        "DRIFT MATSURI 2025, Japanese subtitle, high contrast print design",
         ANIME_NEG,
     ),
     "workflows/wan-2-2/wan22-5b-t2v.json": (
-        "A Toyota AE86 Trueno being driven up a mountain touge road in Gunma at dawn, drifting through tight S-curves surrounded by "
-        "cryptomeria cedar forest, dramatic tyre smoke catching the first rays of sunrise, cinematic wide tracking shot, camera mounted "
-        "low at road level, smooth consistent motion",
+        "Toyota AE86 Trueno driven by a young woman with teal twin-tails on Gunma mountain touge at dawn, "
+        "cedar forest, tyre smoke in sunrise, low tracking shot, smooth cinematic motion",
         VIDEO_NEG,
     ),
     "workflows/wan-2-2/wan22-5b-i2v.json": (
-        "The driver's hands grip the D-shaped steering wheel of an AE86, gearstick shifts, revs visible on the analogue tachometer "
-        "climbing to 8000rpm, dashboard shaking, Gunma mountain road hairpin visible through the windscreen, handheld camera feel, "
-        "consistent interior detail throughout",
+        "Animate: driver hands on AE86 steering wheel, tachometer climbing, Gunma hairpin visible through "
+        "windscreen, subtle camera shake, consistent interior detail",
         VIDEO_NEG,
     ),
     "workflows/wan-2-2/wan22-14b-t2v.json": (
-        "A JGTC 2001 grid start at Suzuka Circuit, Castrol Tom's Supra and Xanavi Nismo GT-R lined up alongside GT300 cars, dramatic "
-        "wide establishing shot looking down the main straight, team crews watching, crowd packed grandstands, Fuji Bank logo visible "
-        "on bridges, cinematic broadcast quality, consistent motion throughout all vehicles and people",
+        "JGTC grid start at Suzuka Circuit, Castrol Tom's Supra and Nismo GT-R, female race engineer in "
+        "foreground, packed grandstands, broadcast camera pan, consistent vehicle motion",
         VIDEO_NEG,
     ),
     "workflows/wan-2-2/wan22-14b-i2v.json": (
-        "Animate this scene: the driver of the Supra raises his helmet visor and gives a thumbs up to the camera, steam rises from the "
-        "car's hood post-race, mechanics run toward it, confetti begins falling from above, natural crowd movement in background, "
-        "broadcast-quality video motion",
+        "Animate: female driver in white helmet beside a Toyota Supra MK4 at Fuji Speedway raises visor and "
+        "waves, steam from hood, mechanics approach, confetti falls, natural crowd motion",
         VIDEO_NEG,
     ),
     "workflows/wan-2-2/wan22-14b-inpaint.json": (
-        "The car in the foreground transforms, its paint fades from white to the iconic black-and-gold Keiichi Tsuchiya Levin livery, "
-        "土屋圭市 kanji on the door appears, the transformation is smooth and cinematic, all other scene elements remain unchanged, "
-        "consistent motion",
+        "Transform the foreground car paint to black-and-gold Keiichi Tsuchiya Levin livery, kanji door text "
+        "appears smoothly, all other scene elements unchanged, cinematic motion",
         VIDEO_NEG,
     ),
     "workflows/wan-2-2/wan22-14b-camera.json": (
-        "An Initial D style downhill chase through Hakone at night, an RX-7 Spirit R and a Lan-Evo IX weave through switchbacks while the "
-        "camera transitions from roof-mounted POV to roadside tracking and then aerial reveal, roadside vending machines glow in the mist, "
-        "authentic touge atmosphere, smooth coherent motion",
+        "Initial D style chase on Hakone touge at night, RX-7 Spirit R and Lancer Evo IX, camera moves from "
+        "roof POV to roadside tracking to aerial reveal, vending machine glow, coherent motion",
         VIDEO_NEG,
     ),
     "workflows/ace-step/ace-step-t2m.json": (
-        "Japanese city pop, 1980s Shibuya-kei style, driving synth bass, Rhodes electric piano, brushed jazz drumkit, warm tape saturation, "
-        "female Japanese vocal hooks, late-night cruise vibes, 108 BPM, key of F major",
+        "Japanese city pop, 1980s Shibuya-kei, driving synth bass, Rhodes piano, brushed drums, female vocal "
+        "hooks, coastal night drive mood, 108 BPM, F major",
         "",
     ),
     "workflows/hunyuan-3d/hunyuan3d-i2-3d.json": (
-        "Highly detailed 3D model of a Nissan Silvia S15 Spec-R, clean studio three-quarter front view, Brilliant Blue pearl paint, stock "
-        "body kit, chrome RAYS VOLK TE37 wheels, clean topology suitable for a game asset pipeline",
+        "Highly detailed 3D model of a Nissan Silvia S15 Spec-R, Brilliant Blue pearl paint, TE37 wheels, "
+        "clean game-ready topology, studio three-quarter view",
         "",
     ),
     "workflows/z-anime/z-anime-t2i.json": (
-        "A young anime pilot girl in a crisp white JASDF-style flight suit standing on the deck of a fictional carrier at sunset, "
-        "F-2 inspired trainer behind her with kanji roundels, warm rim light, detailed anime illustration, cinematic vertical composition",
+        "Saber from Fate in armor beside a Mazda RX-7 FD at Chureito Pagoda with Mount Fuji behind, "
+        "sunset sky, detailed anime illustration, cinematic composition",
         ANIME_NEG,
     ),
     "workflows/z-image-turbo/z-turbo-t2i.json": (
-        "Photorealistic night photograph of a Toyota GR Yaris Circuit Edition in Emotional Red II parked on a Hakone hairpin, "
-        "light rain, guardrail reflections, long exposure light trails from distant traffic, 35mm lens look",
+        "Portrait of a woman styled as Faye Valentine beside a Toyota GR Yaris Circuit Edition on a Hakone "
+        "hairpin at night, light rain, guardrail reflections, 35mm photoreal",
         "",
     ),
     "workflows/z-image-turbo/z-base-t2i.json": (
-        "Studio lit product shot of a carbon-kevlar racing helmet with subtle Mount Fuji line art, matte finish, neutral grey sweep, "
-        "sharp focus, commercial automotive photography",
+        "Studio portrait of an Asuka Langley figure beside a Porsche 911 GT3 RS model on grey sweep, "
+        "commercial product photography, sharp focus",
         "",
     ),
     "workflows/ernie-image/ernie-sft-t2i.json": (
-        "Watercolor travel poster of Kanazawa Higashi Chaya district at dusk, paper grain, soft edges, muted indigo and ochre palette, "
-        "small silhouettes of tourists, vintage railway typography in corner",
+        "Watercolor illustration of Rem in maid outfit beside a Nissan Fairlady Z at Kyoto Fushimi Inari "
+        "torii tunnel, soft edges, muted indigo and vermillion palette",
         "",
     ),
     "workflows/ernie-image/ernie-turbo-t2i.json": (
-        "Bold vector travel sticker of a shinkansen nose cone in cobalt and white, thick white outline, flat colors, minimal shadows, "
-        "suitable for print on a laptop skin",
+        "Bold vector sticker of Hatsune Miku beside a Nissan GT-R R35 at Tokyo Tower base, flat colors, "
+        "thick white outline, print-ready",
         "",
     ),
     "workflows/firered-image-edit/firered-edit.json": (
-        "Change the jacket to a bright indigo technical shell with reflective piping, keep pose and background, realistic fabric folds",
-        "",
-    ),
-    "workflows/flux2/klein-4b-t2i.json": (
-        "A Nissan Silvia S15 Spec-R in metallic pearl white, low VRAM 4B Klein path, "
-        "sodium vapor lights, light rain, wide-angle automotive photograph",
-        "",
-    ),
-    "workflows/flux2/klein-4b-edit.json": (
-        "Turn the car into a midnight purple widebody build, keep environment and lighting, 4B Klein edit",
+        "Change the jacket to a bright indigo technical shell with reflective piping, keep portrait pose "
+        "and Monaco harbor background with Ferrari 488 in frame",
         "",
     ),
     "workflows/qwen-image-edit-2511/qwen-edit-2511.json": (
-        "Change the jacket to a bright indigo technical shell with reflective piping, keep pose and background",
+        "Change the outfit to a red racing suit with white stripes, keep portrait pose beside the BMW M3 "
+        "at Monaco harbor background unchanged",
         "",
     ),
     "workflows/realvisxl/realvisxl-lightning-t2i.json": (
-        "A classic Nissan Skyline GT-R R32 in gunmetal grey at Daikoku PA, gritty urban night photography",
+        "Portrait of Misato Katsuragi-inspired woman in red coat beside a Nissan Skyline GT-R R32 at "
+        "Tokyo Rainbow Bridge at night, gritty urban photoreal",
         SDXL_NEG,
     ),
     "workflows/realvisxl/realvisxl-v5-hires.json": (
-        "Shibuya crossing at 3am, modified Honda NSX-R, photorealistic hires pass",
+        "Portrait styled as Yor Forger in black dress beside an Aston Martin DB5 at Lake Como waterfront, "
+        "villa terraces behind, photorealistic hires pass",
         SDXL_NEG,
     ),
     "workflows/hidream-o1/hidream-o1-example.json": (
-        "A cinematic portrait of a woman in a red coat standing in neon rain, editorial photography",
+        "Portrait of Saber in red coat beside a Mercedes-AMG GT at Piazza San Marco Venice at blue hour, "
+        "editorial fashion photography",
         "",
     ),
     "workflows/hunyuan-video/hunyuan-video-guide.json": (
@@ -175,133 +182,34 @@ SCENES = {
         VIDEO_NEG,
     ),
     "workflows/sdxl-editing/sdxl-img2img.json": (
-        "Replace the car with a Mitsubishi Lancer Evolution VIII in Evo Blue Pearl, same lighting",
+        "Replace the car with a Mitsubishi Lancer Evolution VIII in Evo Blue Pearl at the same lighting "
+        "and camera angle",
         SDXL_NEG,
     ),
     "workflows/sdxl-editing/sdxl-inpaint.json": (
-        "Fill the masked region with matching asphalt texture and lane markings",
+        "Fill the masked region with matching asphalt texture and lane markings, keep surrounding scene",
         SDXL_NEG,
     ),
     "workflows/sdxl-editing/sdxl-outpaint.json": (
-        "Extend the scene with more city street and neon signs, consistent perspective",
+        "Extend the scene with more Monaco harbor waterfront and yachts, consistent perspective and lighting",
         SDXL_NEG,
     ),
 }
 
 
-def get_graphs(doc: dict):
-    graphs = [{"nodes": doc.get("nodes", []), "links": doc.get("links", [])}]
-    definitions = doc.get("definitions", {})
-    for subgraph in definitions.get("subgraphs", []):
-        graphs.append({"nodes": subgraph.get("nodes", []), "links": subgraph.get("links", [])})
-    return graphs
-
-
-def set_widget_text(node: dict, text: str):
-    values = node.get("widgets_values")
-    if isinstance(values, list) and values:
-        values[0] = text
-        return True
-    return False
-
-
-def link_index(links):
-    by_src = {}
-    for link in links:
-        if not isinstance(link, list) or len(link) < 5:
-            continue
-        src_id = link[1]
-        src_slot = link[2]
-        by_src.setdefault((src_id, src_slot), []).append(link)
-    return by_src
-
-
-def update_file(path: Path, positive: str, negative: str):
-    with path.open("r", encoding="utf-8") as f:
-        doc = json.load(f)
-
-    changed = False
-    pos_count = 0
-    neg_count = 0
-    fallback_count = 0
-
-    rel = path.as_posix()
-    is_flux = "flux" in rel.lower() and "sdxl" not in rel.lower()
-    is_ace = "ace-step" in rel
-
-    for graph in get_graphs(doc):
-        nodes = graph["nodes"]
-        links = graph["links"]
-        nodes_by_id = {n.get("id"): n for n in nodes}
-        by_src = link_index(links)
-
-        for node in nodes:
-            node_type = node.get("type", "")
-
-            if node_type == "CLIPTextEncode":
-                outgoing = by_src.get((node.get("id"), 0), [])
-                role = None
-                for link in outgoing:
-                    dst_node = nodes_by_id.get(link[3], {})
-                    dst_type = dst_node.get("type", "")
-                    dst_slot = link[4]
-                    if dst_type in ("KSampler", "KSamplerAdvanced"):
-                        if dst_slot == 1:
-                            role = "positive"
-                            break
-                        if dst_slot == 2:
-                            role = "negative"
-                            break
-
-                if role == "positive":
-                    if set_widget_text(node, positive):
-                        changed = True
-                        pos_count += 1
-                elif role == "negative":
-                    neg_value = "" if is_flux else negative
-                    if set_widget_text(node, neg_value):
-                        changed = True
-                        neg_count += 1
-                else:
-                    # Fallback for wrapped/subgraph flows where role can't be inferred.
-                    if set_widget_text(node, positive):
-                        changed = True
-                        fallback_count += 1
-
-            elif node_type == "PrimitiveStringMultiline":
-                if set_widget_text(node, positive):
-                    changed = True
-                    pos_count += 1
-            elif node_type == "TextEncodeAceStepAudio1.5":
-                if set_widget_text(node, positive):
-                    changed = True
-                    pos_count += 1
-            else:
-                # Wrapper/subgraph nodes with proxied "text" widget in widgets_values[0].
-                proxy = node.get("properties", {}).get("proxyWidgets")
-                values = node.get("widgets_values")
-                has_text_proxy = isinstance(proxy, list) and any(
-                    isinstance(p, list) and len(p) >= 2 and p[1] == "text" for p in proxy
-                )
-                if has_text_proxy and isinstance(values, list) and values and isinstance(values[0], str):
-                    if set_widget_text(node, positive):
-                        changed = True
-                        pos_count += 1
-
+def update_file(path: Path, positive: str, negative: str) -> tuple[bool, int, int, int]:
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    changed, pos_count, neg_count, fallback_count = apply_prompts(
+        doc, positive, negative, repo_root=REPO_ROOT, embed_subgraphs=True
+    )
     if changed:
-        with path.open("w", encoding="utf-8", newline="\n") as f:
-            json.dump(doc, f, indent=2, ensure_ascii=False)
-            f.write("\n")
-
-    if is_ace:
-        print(f"[OK] {rel}: positive prompt set ({len(positive)} chars), negative prompt set (n/a)")
-    else:
-        print(f"[OK] {rel}: positive prompt set ({len(positive)} chars), negative prompt set")
-
+        path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    rel = path.as_posix()
+    print(f"[OK] {rel}: positive prompt set ({len(positive)} chars), negative prompt set")
     return changed, pos_count, neg_count, fallback_count
 
 
-def pack_name(rel_path: str):
+def pack_name(rel_path: str) -> str:
     if "workflow-flux2-klein" in rel_path or "flux2/" in rel_path:
         return "flux2"
     if "sdxl-lightning/" in rel_path:
@@ -324,25 +232,29 @@ def pack_name(rel_path: str):
         return "ernie-image"
     if "firered-image-edit/" in rel_path:
         return "firered-image-edit"
+    if "qwen-image-edit" in rel_path:
+        return "qwen-image-edit-2511"
     return "other"
 
 
-def safe_console(text: str):
+def safe_console(text: str) -> str:
     return text.encode("cp1252", errors="replace").decode("cp1252")
 
 
-def main():
+def main() -> None:
     root = Path("workflows")
     files = sorted(
         p.as_posix()
         for p in root.rglob("*.json")
         if "/_templates/" not in p.as_posix()
+        and p.name.endswith(".json")
+        and p.name[0].islower()
     )
     missing = [f for f in files if f not in SCENES]
     if missing:
         raise RuntimeError(f"Scene mapping missing for files: {missing}")
 
-    verification = {}
+    verification: dict[str, dict] = {}
     for rel in files:
         pos, neg = SCENES[rel]
         changed, pos_count, neg_count, fallback_count = update_file(Path(rel), pos, neg)

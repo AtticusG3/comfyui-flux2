@@ -4,7 +4,7 @@
 
 ### Added
 - `klein-distilled` ships four bundled Klein workflows (`klein-4b-t2i.json`, `klein-4b-edit.json`, `klein-9b-t2i.json`, `klein-9b-edit.json`) from `workflows/flux2/`; NVFP4 filename sed unchanged.
-- `qwen-image-edit-2511` bundled image-edit workflow (`qwen-edit-2511.json`); high tier rewrites UNET to FP8 at startup.
+- `qwen-image-edit-2511` bundled Comfy-Org image-edit workflow (`qwen-edit-2511.json`) with Lightning 4-step LoRA; high tier rewrites UNET to FP8 at startup.
 - `sdxl-lightning` photoreal hires workflow (`sdxl-lightning-hires.json`) and `sdxl-editing` img2img/inpaint/outpaint workflows.
 - `hunyuan-video` import guide stub (`hunyuan-video-guide.json`).
 - Shared enhancement subgraph templates under `workflows/_templates/` (SeedVR2, Detail Daemon, Upscaler, LLM prompt).
@@ -13,6 +13,7 @@
 ### Changed
 - All pack bundled workflows use short kebab-case deploy names matching repo filenames (`source|dest|tier` with identical basenames).
 - `entrypoint.sh` workflow override paths updated for new filenames; Qwen edit tier sed for FP8 vs NVFP4.
+- `qwen-image-edit-2511` workflow now uses the Comfy-Org Qwen Image Edit 2511 subgraph instead of the FireRed-derived graph shell.
 - Bundled workflows: replace `LayerUtility: SaveImagePlus` with core `SaveImage` (LayerStyle no longer required for saves).
 - `flux2` pack is workflow-deprecated; Klein selectors live on `klein-distilled`.
 - `update_workflow_prompts.py` and `audit_workflow_assets.py` aligned with renamed workflow paths.

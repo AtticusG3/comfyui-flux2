@@ -207,6 +207,7 @@ CORE_NODE_TYPES = {
     "VAEDecodeAudio",
     "CFGNorm",
     "FluxKontextImageScale",
+    "FluxKontextMultiReferenceLatentMethod",
     "TextEncodeQwenImageEditPlus",
 }
 
@@ -391,6 +392,27 @@ def find_bundled_source(workflows_dir: Path, pack_dir: Path, src: str) -> Path |
     return None
 
 
+def audit_subgraph_definitions(workflows_dir: Path) -> list[dict[str, object]]:
+    """Workflows that reference UUID subgraph node types without embedded definitions."""
+    from embed_workflow_subgraphs import (
+        build_donor_index,
+        embed_subgraphs,
+        load_templates,
+    )
+
+    templates = load_templates()
+    donors = build_donor_index(workflows_dir)
+    issues: list[dict[str, object]] = []
+    for wf_path in sorted(workflows_dir.rglob("*.json")):
+        if "_templates" in wf_path.parts:
+            continue
+        _added, unresolved = embed_subgraphs(wf_path, templates, donors, dry_run=True)
+        if unresolved:
+            rel = wf_path.relative_to(workflows_dir).as_posix()
+            issues.append({"workflow": rel, "subgraph_ids": sorted(unresolved)})
+    return issues
+
+
 def audit_bundled_manifests(
     workflows_dir: Path, packs_dir: Path
 ) -> list[dict[str, str]]:
@@ -470,6 +492,13 @@ def main() -> int:
                 )
 
     manifest_issues = audit_bundled_manifests(workflows_dir, packs_dir)
+    subgraph_issues = audit_subgraph_definitions(workflows_dir)
+    bundled_rels = set(bundled.keys())
+    subgraph_blocking = [
+        item
+        for item in subgraph_issues
+        if item["workflow"] in bundled_rels
+    ]
 
     if args.json:
         print(
@@ -479,6 +508,8 @@ def main() -> int:
                     "node_issues": node_issues,
                     "unmapped": unmapped,
                     "manifest_issues": manifest_issues,
+                    "subgraph_issues": subgraph_issues,
+                    "subgraph_blocking": subgraph_blocking,
                 },
                 indent=2,
             )
@@ -505,8 +536,22 @@ def main() -> int:
                 print(f"  - {item['pack']}: {item['source']}")
         else:
             print("[OK] All workflows-bundled sources exist.")
+        if subgraph_issues:
+            print(f"[WARN] Missing embedded subgraph definitions ({len(subgraph_issues)}):")
+            for item in subgraph_issues:
+                ids = ", ".join(item["subgraph_ids"])
+                print(f"  - {item['workflow']}: {ids}")
+        else:
+            print("[OK] Subgraph definitions present for all UUID node types.")
+        if subgraph_blocking:
+            print(
+                f"[ERROR] Bundled workflows missing subgraph definitions ({len(subgraph_blocking)}):"
+            )
+            for item in subgraph_blocking:
+                ids = ", ".join(item["subgraph_ids"])
+                print(f"  - {item['workflow']}: {ids}")
 
-    return 1 if model_issues or manifest_issues else 0
+    return 1 if model_issues or manifest_issues or subgraph_blocking else 0
 
 
 if __name__ == "__main__":

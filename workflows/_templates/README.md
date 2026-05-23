@@ -10,4 +10,6 @@ Nested subgraph definitions from golden workflows. Path: ``definitions.subgraphs
 | Upscaler.json | RealESRGAN / model upscale |
 | HiRes_Fix_SDXL_reference.json | Inline RealVisXL V5 2-pass latent hires |
 
-Use ``python scripts/merge_enhancement_templates.py --workflow <path>`` to graft templates onto plain pack workflows.
+Use ``python scripts/merge_enhancement_templates.py --workflow <path>`` to graft templates onto plain pack workflows by name.
+
+Use ``python scripts/embed_workflow_subgraphs.py`` to embed any referenced template subgraph ids (and known id aliases) into all workflows under ``workflows/``.

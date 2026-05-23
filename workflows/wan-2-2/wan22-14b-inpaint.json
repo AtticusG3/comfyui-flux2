@@ -210,7 +210,7 @@
         }
       },
       "widgets_values": [
-        "The car in the foreground transforms, its paint fades from white to the iconic black-and-gold Keiichi Tsuchiya Levin livery, \u571f\u5c4b\u572d\u5e02 kanji on the door appears, the transformation is smooth and cinematic, all other scene elements remain unchanged, consistent motion"
+        "blurry, low quality, watermark, text, distorted motion, flickering, inconsistent lighting, morphing faces, extra limbs"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -1415,7 +1415,7 @@
         }
       },
       "widgets_values": [
-        "The car in the foreground transforms, its paint fades from white to the iconic black-and-gold Keiichi Tsuchiya Levin livery, \u571f\u5c4b\u572d\u5e02 kanji on the door appears, the transformation is smooth and cinematic, all other scene elements remain unchanged, consistent motion"
+        "blurry, low quality, watermark, text, distorted motion, flickering, inconsistent lighting, morphing faces, extra limbs"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -1851,7 +1851,7 @@
         }
       },
       "widgets_values": [
-        "The car in the foreground transforms, its paint fades from white to the iconic black-and-gold Keiichi Tsuchiya Levin livery, \u571f\u5c4b\u572d\u5e02 kanji on the door appears, the transformation is smooth and cinematic, all other scene elements remain unchanged, consistent motion"
+        "Transform the foreground car paint to black-and-gold Keiichi Tsuchiya Levin livery, kanji door text appears smoothly, all other scene elements unchanged, cinematic motion"
       ],
       "color": "#232",
       "bgcolor": "#353"
@@ -1904,7 +1904,7 @@
         }
       },
       "widgets_values": [
-        "The car in the foreground transforms, its paint fades from white to the iconic black-and-gold Keiichi Tsuchiya Levin livery, \u571f\u5c4b\u572d\u5e02 kanji on the door appears, the transformation is smooth and cinematic, all other scene elements remain unchanged, consistent motion"
+        "Transform the foreground car paint to black-and-gold Keiichi Tsuchiya Levin livery, kanji door text appears smoothly, all other scene elements unchanged, cinematic motion"
       ],
       "color": "#232",
       "bgcolor": "#353"
@@ -1956,7 +1956,7 @@
         }
       },
       "widgets_values": [
-        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-inp\n) \n\n**Diffusion Model**\n- [wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\nFile save location\n\n```\nComfyUI/\n\u251c\u2500\u2500\u2500\ud83d\udcc2 models/\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 diffusion_models/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 loras/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 text_encoders/\n\u2502   \u2502   \u2514\u2500\u2500\u2500 umt5_xxl_fp8_e4m3fn_scaled.safetensors \n\u2502   \u2514\u2500\u2500\u2500\ud83d\udcc2 vae/\n\u2502       \u2514\u2500\u2500 wan_2.1_vae.safetensors\n```\n"
+        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-inp\n) \n\n**Diffusion Model**\n- [wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\nFile save location\n\n```\nComfyUI/\n├───📂 models/\n│   ├───📂 diffusion_models/\n│   │   ├─── wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors\n│   │   └─── wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors\n│   ├───📂 loras/\n│   │   ├─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   │   └─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   ├───📂 text_encoders/\n│   │   └─── umt5_xxl_fp8_e4m3fn_scaled.safetensors \n│   └───📂 vae/\n│       └── wan_2.1_vae.safetensors\n```\n"
       ],
       "color": "#432",
       "bgcolor": "#000"

@@ -69,6 +69,7 @@ Validate in **comfy-router** with `schemas/nodes/prompt-format-DRAFT.json` and `
 | Contract enums (`family`, `mode`, `aspect`) | no | yes |
 | Node-ref vs exports/schemas | no | yes |
 | Pack models/nodes | `audit_workflow_assets.py` (`--pack-audit`) | N/A |
+| Example prompts / sampler defaults | `validate_workflow_semantics.py` (`--semantics`) | N/A |
 
 ## Widget values warning
 

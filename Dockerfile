@@ -41,13 +41,12 @@ RUN uv pip install --no-cache \
     xformers \
     --index-url https://download.pytorch.org/whl/${CUDA_VERSION}
 
-# av (PyAV), flash-attn, sageattention (SeedVR2 / attention backends). flash-attn may
-# skip if no compatible prebuilt wheel exists for the torch+cuda matrix.
+# av (PyAV), sageattention (SeedVR2), optional flash-attn wheel only (no nvcc in this image).
 RUN uv pip install --no-cache packaging wheel setuptools && \
     uv pip install --no-cache av sageattention && \
-    (uv pip install --no-cache flash-attn --no-build-isolation && \
+    (uv pip install --no-cache --only-binary flash-attn flash-attn && \
         python -c "import flash_attn; print('[OK] flash-attn available')" || \
-        echo "[WARN] flash-attn not installed (no wheel or build failed); optional.")
+        echo "[WARN] flash-attn skipped (no prebuilt wheel for torch+cu130); xformers and sageattention are used.")
 
 COPY scripts/lib/. /scripts/lib/
 COPY scripts/install_comfyui.sh /scripts/install_comfyui.sh

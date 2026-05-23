@@ -9,6 +9,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_04 = REPO_ROOT / "schemas/comfy/workflow-definition-v0.4.json"
 SCHEMA_10 = REPO_ROOT / "schemas/comfy/workflow-definition-v1.0.json"
 AUDIT_SCRIPT = REPO_ROOT / "scripts/audit_workflow_assets.py"
+SEMANTICS_SCRIPT = REPO_ROOT / "scripts/validate_workflow_semantics.py"
 FORMAT_04, FORMAT_10, FORMAT_API = "0.4", "1.0", "API"
 TAG_04, TAG_10 = "schema-ComfyWorkflow0_4", "schema-ComfyWorkflow1_0"
 
@@ -147,6 +148,33 @@ def validate_file(path: Path) -> bool:
     emit(rel, "links", ok_links, links_msg)
     return ok_schema and ok_links
 
+def run_semantics(paths):
+    if not SEMANTICS_SCRIPT.is_file():
+        emit("workflows/", "semantics", False, "semantics script missing")
+        return False
+    rel_paths = []
+    for p in paths:
+        try:
+            rel_paths.append(str(p.relative_to(REPO_ROOT)))
+        except ValueError:
+            rel_paths.append(str(p))
+    proc = subprocess.run(
+        [sys.executable, str(SEMANTICS_SCRIPT), *rel_paths],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+    )
+    if proc.stdout:
+        for line in proc.stdout.rstrip().splitlines():
+            sys.stdout.write(f"{line}\n")
+    if proc.stderr:
+        for line in proc.stderr.rstrip().splitlines():
+            sys.stdout.write(f"[semantics][stderr] {line}\n")
+    ok = proc.returncode == 0
+    if not ok and not proc.stdout:
+        emit("workflows/", "semantics", False, f"exit {proc.returncode}")
+    return ok
+
 def run_pack_audit():
     if not AUDIT_SCRIPT.is_file():
         emit("workflows/", "pack-audit", False, "audit script missing")
@@ -175,12 +203,19 @@ def main():
     parser = argparse.ArgumentParser(description="Validate ComfyUI workflow JSON.")
     parser.add_argument("paths", nargs="*")
     parser.add_argument("--pack-audit", action="store_true")
+    parser.add_argument(
+        "--semantics",
+        action="store_true",
+        help="Check example prompts and sampler defaults match pack expectations",
+    )
     args = parser.parse_args()
     targets = expand_paths(args.paths or ["workflows"])
     if not targets:
         sys.stdout.write("usage: validate_workflow_json.py <workflow.json> [...]\n")
         return 2
     failed = any(not validate_file(t) for t in targets)
+    if args.semantics and not run_semantics(targets):
+        failed = True
     if args.pack_audit and not run_pack_audit():
         failed = True
     return 1 if failed else 0
