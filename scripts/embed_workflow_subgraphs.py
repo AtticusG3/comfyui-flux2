@@ -23,6 +23,7 @@ UUID_TYPE_RE = re.compile(
 SUBGRAPH_ID_ALIASES: dict[str, str] = {
     "9946648f-befe-4830-8f0f-0f309ad8ae5b": "e856a1af-fe5f-4934-9c1e-b17c0b25eb2f",
     "e846bb28-af4b-468e-8dc6-d53ccd1783f0": "fb515013-3f23-4eb7-aacd-3429e6821e68",
+    "9eb5e812-b4d5-4e4d-add7-be79575a80d9": "fa7296b5-c974-4466-bfe3-a1f05f43b880",
 }
 
 SKIP_TEMPLATE_NAMES = {"HiRes_Fix_SDXL_reference.json"}
