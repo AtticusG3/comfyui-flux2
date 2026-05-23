@@ -176,11 +176,21 @@ def looks_like_model_name(value: str) -> bool:
 
 
 def iter_nodes(workflow: dict):
+    """Yield nodes from UI export graphs, including nested subgraph definitions."""
     nodes = workflow.get("nodes")
     if isinstance(nodes, list):
         for node in nodes:
             if isinstance(node, dict):
                 yield node
+
+        definitions = workflow.get("definitions")
+        if isinstance(definitions, dict):
+            for subgraph in definitions.get("subgraphs", []):
+                if not isinstance(subgraph, dict):
+                    continue
+                for node in subgraph.get("nodes", []):
+                    if isinstance(node, dict):
+                        yield node
         return
 
     for value in workflow.values():
@@ -231,7 +241,8 @@ def extract_loader_refs(node: dict) -> list[tuple[str, str]]:
             if looks_like_model_name(value):
                 refs.append((subdir, str(value).strip()))
 
-    refs.extend(extract_from_properties(node, subdir))
+    if not refs:
+        refs.extend(extract_from_properties(node, subdir))
     return refs
 
 
