@@ -1,0 +1,49 @@
+name: Registry cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually delete (unchecked = dry run)"
+        type: boolean
+        default: false
+      min_downloads:
+        description: "Keep GHCR versions with at least this many downloads"
+        type: number
+        default: 2
+      skip_ghcr:
+        description: "Skip GHCR package version cleanup"
+        type: boolean
+        default: false
+      skip_releases:
+        description: "Skip GitHub release cleanup"
+        type: boolean
+        default: false
+
+permissions:
+  packages: write
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prune GHCR and releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          args=(python3 scripts/registry_cleanup.py --min-downloads "${{ inputs.min_downloads }}")
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            args+=(--apply)
+          fi
+          if [ "${{ inputs.skip_ghcr }}" = "true" ]; then
+            args+=(--skip-ghcr)
+          fi
+          if [ "${{ inputs.skip_releases }}" = "true" ]; then
+            args+=(--skip-releases)
+          fi
+          "${args[@]}"

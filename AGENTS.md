@@ -89,6 +89,8 @@ sync/update logic, and persistent host-mounted data paths.
   - update `CHANGELOG.md`
   - commit -> push -> tag -> push tag
   - create GitHub Release entry for the new tag.
+  - CI publishes cu130-only images (`docker-publish.yml`); prune old GHCR/releases via
+    `scripts/registry_cleanup.py` or `.github/workflows/registry-cleanup.yml`.
 
 ## Learned User Preferences
 

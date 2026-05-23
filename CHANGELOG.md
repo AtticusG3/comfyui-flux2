@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.4] -- cu130-only publishes and registry cleanup
+
+### Added
+- `scripts/registry_cleanup.py` and workflow `.github/workflows/registry-cleanup.yml` to prune legacy `-cu126`/`-cu128` GHCR versions, low-download package versions, and superseded GitHub releases (keeps `latest`, `main`, highest patch per semver major).
+- `scripts/cleanup-registry.ps1` wrapper for local dry runs.
+
+### Changed
+- Docker CI builds and publishes **cu130 only** (removed CUDA matrix); image tags are `latest`, `main`, `vX.Y.Z`, and `X.Y` without CUDA suffixes.
+
 ## [1.6.3] -- Pack workflow reseed and ComfyUI git sync on bind mounts
 
 ### Added

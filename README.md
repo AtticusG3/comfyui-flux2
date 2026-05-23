@@ -34,10 +34,10 @@ Published images install **stable** `torch`, `torchvision`, `torchaudio`, and `x
 | Image tag | PyTorch wheel index | Channel | Typical use |
 | --- | --- | --- | --- |
 | `ghcr.io/atticusg3/comfyui-flux2:latest` | `cu130` | Stable wheels from PyTorch index | Default; CUDA 13.0 driver stack |
-| `...:latest-cu128` | `cu128` | Stable | CUDA 12.8 (e.g. Blackwell host drivers) |
-| `...:latest-cu126` | `cu126` | Stable | Older driver stacks |
+| `ghcr.io/atticusg3/comfyui-flux2:main` | `cu130` | Same as `latest` on `main` builds | Branch-style pin |
+| `ghcr.io/atticusg3/comfyui-flux2:v1.6.3` | `cu130` | Same stack, semver pin | Reproducible release |
 
-Pinned semver tags follow the same pattern, for example `v1.4.0`, `v1.4.0-cu128`, `v1.4.0-cu126`.
+CI publishes **cu130 only** (no `-cu126` / `-cu128` matrix tags). For other CUDA indexes, build locally with `docker build --build-arg CUDA_VERSION=cu128`.
 
 **Nightly / RTX 50 note:** Some Blackwell setups require **PyTorch nightly** builds from `https://download.pytorch.org/whl/nightly/cu130` or `nightly/cu128` (see [EigenFunction32/ComfyUI-docker](https://github.com/EigenFunction32/ComfyUI-docker) README table pattern). This repository’s **published** images do not switch to nightly automatically; advanced users can build locally with a different index if needed.
 
@@ -259,7 +259,16 @@ docker compose logs -f comfyui
 
 ## Releases
 
-Version in `VERSION` and history in `CHANGELOG.md`. Tag `v*` to publish versioned GHCR tags via CI.
+Version in `VERSION` and history in `CHANGELOG.md`. Tag `v*` to publish cu130 images to GHCR (`latest`, `main`, `vX.Y.Z`, `X.Y`).
+
+**Registry hygiene:** GitHub Actions workflow [Registry cleanup](.github/workflows/registry-cleanup.yml) (or `scripts/registry_cleanup.py` / `scripts/cleanup-registry.ps1`) prunes clutter:
+
+- Deletes all `*-cu126` / `*-cu128` GHCR versions.
+- Keeps `latest`, `main`, and the **highest patch per semver major** (e.g. `v1.6.3` for major `1`).
+- Deletes other GHCR versions with fewer than 2 total downloads (configurable).
+- Deletes older GitHub **releases** that are not in the keep set (not the source repo).
+
+Run a dry run first: `python scripts/registry_cleanup.py` or Actions -> Registry cleanup (leave **Apply** unchecked). Requires `gh` auth with `read:packages` and `delete:packages`.
 
 To push to a Gitea host without storing a token in `git remote`, set **`GITEA_TOKEN`** (and optionally **`GITEA_USER`**, **`GITEA_HOST`**, **`GITEA_REPO_PATH`**) in your environment, keep `origin` as a plain `https://…/owner/repo.git` URL, then run **`scripts/gitea-push.ps1`** (Windows) or **`scripts/gitea-push.sh`** (Linux/macOS). Pass ref names as arguments when not on a branch (for example `main` `v1.5.0`). If the server reports the repository is a read-only mirror, push from the non-mirror upstream instead.
 
