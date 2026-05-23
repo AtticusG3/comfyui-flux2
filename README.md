@@ -181,7 +181,7 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `flux2` | Image | (workflows only) | (workflows only) | Optional Flux.2 Klein JSON bundle; pair with `klein-distilled` for weights. |
 | `z-image-turbo` | Image | Z-Image Turbo + Qwen FP8 text encoder | Z-Image Turbo + Qwen BF16 text encoder | Focused fast distilled Z-Image workflow. `NVFP4_SUPPORTED=true` swaps diffusion to official `z_image_turbo_nvfp4.safetensors`. |
 | `z-image-base` | Image | Z-Image Base + Qwen FP8 text encoder | Z-Image Base + Qwen BF16 text encoder | Focused non-distilled Base workflow. `NVFP4_SUPPORTED=true` + `NVFP4_MODE=allow-community` can swap diffusion to marcorez8 quality NVFP4. |
-| `z-image-anime` | Image | Z-Image NVFP4 + Z-Anime FP8 stack | Z-Image BF16 + Z-Anime BF16 stack | Large HF downloads; bundled Z workflows. |
+| `z-image-anime` | Image | Z-Anime NVFP4 (r0b0tlab) + SeeSee21 FP8 TE/VAE | Z-Anime BF16 base + 4-step distill + BF16 TE/VAE | Large HF downloads; bundled `Z-Anime T2I.json` only. |
 | `qwen-image-edit-2511` | Image | NVFP4 diffusion + Qwen TE/VAE | FP8 diffusion + Qwen TE/VAE | Weights only; build or import a 2511 edit graph in ComfyUI. |
 | `hidream-o1` | Image | nodes + workflow only | nodes + workflow only | HiDream O1 custom nodes + example workflow. Download FP8/BF16 weights via Manager or HF after startup. Startup upgrades `transformers>=4.57.1` when this pack is selected. |
 

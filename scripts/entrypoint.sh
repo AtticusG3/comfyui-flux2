@@ -1213,11 +1213,18 @@ apply_nvfp4_workflow_overrides() {
     local zaanime_origin="$workflows_dir/Z-Anime T2I.json"
     if [ -f "$zaanime_origin" ]; then
         if [ "$VRAM_TARGET" == "low" ]; then
-            sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-8step-fp8.safetensors/g' "$zaanime_origin"
-            echo "[INFO] Workflow override: Z-Anime low -> FP8 distill filename."
+            sed -i 's/z-anime-distill-4step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's/qwen_3_4b-bf16\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
+            echo "[INFO] Workflow override: Z-Anime low -> NVFP4 distill + FP8 TE filenames."
         else
-            sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-8step-bf16.safetensors/g' "$zaanime_origin"
-            echo "[INFO] Workflow override: Z-Anime high -> BF16 distill filename."
+            sed -i 's/z-anime-distill-4step-nvfp4\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"
+            sed -i 's/qwen_3_4b-fp8\.safetensors/qwen_3_4b-bf16.safetensors/g' "$zaanime_origin"
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-bf16.safetensors/g' "$zaanime_origin"
+            echo "[INFO] Workflow override: Z-Anime high -> BF16 distill + TE filenames."
         fi
     fi
 

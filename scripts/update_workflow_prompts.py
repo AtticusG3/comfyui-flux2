@@ -288,7 +288,7 @@ def pack_name(rel_path: str):
         return "ace-step"
     if "hunyuan-3d/" in rel_path:
         return "hunyuan-3d"
-    if "z-anime/" in rel_path or "z-image-turbo/" in rel_path:
+    if "z-anime/" in rel_path:
         return "z-image-anime"
     if "ernie-image/" in rel_path:
         return "ernie-image"

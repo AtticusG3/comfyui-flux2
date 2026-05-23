@@ -1,3 +1,2 @@
 z-anime/Z-Anime T2I.json|Z-Anime T2I.json|both
-z-image-turbo/Z-Image turbo T2I.json|Z-Image turbo T2I.json|both
-z-image-turbo/Z-Image base T2I.json|Z-Image base T2I.json|high
+
