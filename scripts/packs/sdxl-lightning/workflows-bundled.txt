@@ -1,4 +1,2 @@
 # source_path|destination_filename|tier
-sdxl-lightning/sdxl-lightning-workflow-low.json|SDXL Lightning - 4 Step Full Checkpoint.json|low
-sdxl-lightning/sdxl-lightning-workflow-high.json|SDXL Lightning - 8 Step Full Checkpoint.json|high
-sdxl-lightning/sdxl-lightning-workflow-full.json|SDXL Lightning - Full Workflow.json|high
+sdxl-lightning/SDXL_Lightning T2I.json|SDXL Lightning - Text to Image.json|both
