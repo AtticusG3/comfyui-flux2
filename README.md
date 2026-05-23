@@ -54,7 +54,7 @@ docker compose exec comfyui python -c "import torch; print('torch', torch.__vers
 - **Drivers:** NVIDIA documents RTX 50 / Blackwell with recent **570+** drivers and CUDA **12.8+** on the host; match your image tag (`latest` vs `latest-cu128`) to what `nvidia-smi` reports as the maximum CUDA version for the driver.
 - **NVFP4 in ComfyUI:** See [New ComfyUI Optimizations for NVIDIA GPUs](https://blog.comfy.org/p/new-comfyui-optimizations-for-nvidia-gpus). Enable only on supported stacks; unsupported hardware can be slower than FP8.
 
-**Environment flags (this repo)**
+### Environment Flags
 
 | Variable | Values | Role |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ docker compose exec comfyui python -c "import torch; print('torch', torch.__vers
 
 There is no `NVFP4_MODE=true`; use `NVFP4_SUPPORTED=true` together with `NVFP4_MODE` as above.
 
-**Optional tooling (advanced, not installed by this image)**
+### Optional Tooling
 
 - [comfy_kitchen](https://github.com/Comfy-Org/comfy-kitchen) and [ComfyUI_Kitchen_nvfp4_Converter](https://github.com/tritant/ComfyUI_Kitchen_nvfp4_Converter) for NVFP4 conversion workflows.
 - **SageAttention 2/3:** Building optimized attention kernels for Blackwell is described in community Docker guides such as [mmartial/ComfyUI-Nvidia-Docker](https://github.com/mmartial/ComfyUI-Nvidia-Docker) (`userscripts_dir`). This image does not compile SageAttention; use SDPA / default attention if a workflow references `sageattn` and fails.
@@ -167,6 +167,7 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | --- | --- | --- | --- | --- |
 | `klein-distilled` | Image | Flux 2 Klein 4B distilled | Flux 2 Klein 9B distilled | Requires `HF_TOKEN`. |
 | `firered-image-edit` | Image | FireRed 1.0 FP8-mixed + Qwen VL FP8 + VAE + Lightning LoRA | BF16 diffusion + BF16 Qwen | [Comfy workflow](https://www.comfy.org/workflows/image_firered_image_edit1_1-c0198b907108/), [low VRAM article](https://aistudynow.com/how-to-fix-firered-image-edit-in-comfyui-my-custom-workflow-for-low-vram/). Bundled JSON defaults to **LOW** filenames; on HIGH tier set UNETLoader / CLIPLoader widgets to the BF16 artifact names from `models-high.txt`. Community NVFP4 with `NVFP4_SUPPORTED=true` and `NVFP4_MODE=allow-community`. |
+| `realvisxl` | Image | RealVisXL V5 Lightning FP16 | RealVisXL V5 FP16 + latent hires-fix workflow | Focused photoreal SDXL pack using RealVisXL defaults: DPM++ SDE Karras, strong anatomy negatives, and hires detail pass on high tier. |
 | `flux1-krea` | Image | FP8 text encoder | FP16 text encoder | |
 | `hunyuan-video` | Video | T2V | T2V + I2V | Heavy. |
 | `hunyuan-3d` | 3D | Shape | Shape + PBR | |
@@ -178,8 +179,11 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `sdxl-editing` | Image | Inpaint base | + refiner / upscale | |
 | `ernie-image` | Image | Turbo FP8 path | SFT BF16 | See pack `pack.json`. |
 | `flux2` | Image | (workflows only) | (workflows only) | Optional Flux.2 Klein JSON bundle; pair with `klein-distilled` for weights. |
+| `z-image-turbo` | Image | Z-Image Turbo + Qwen FP8 text encoder | Z-Image Turbo + Qwen BF16 text encoder | Focused fast distilled Z-Image workflow. `NVFP4_SUPPORTED=true` swaps diffusion to official `z_image_turbo_nvfp4.safetensors`. |
+| `z-image-base` | Image | Z-Image Base + Qwen FP8 text encoder | Z-Image Base + Qwen BF16 text encoder | Focused non-distilled Base workflow. `NVFP4_SUPPORTED=true` + `NVFP4_MODE=allow-community` can swap diffusion to marcorez8 quality NVFP4. |
 | `z-image-anime` | Image | Z-Image NVFP4 + Z-Anime FP8 stack | Z-Image BF16 + Z-Anime BF16 stack | Large HF downloads; bundled Z workflows. |
 | `qwen-image-edit-2511` | Image | NVFP4 diffusion + Qwen TE/VAE | FP8 diffusion + Qwen TE/VAE | Weights only; build or import a 2511 edit graph in ComfyUI. |
+| `hidream-o1` | Image | FP8 folder (~10-11 GB) | BF16 folder (~18-20 GB) | HiDream O1 nodes + bundled example workflow. |
 
 **`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed.
 
@@ -192,7 +196,7 @@ NVFP4_SUPPORTED=true
 NVFP4_MODE=official-only
 ```
 
-With `NVFP4_MODE=allow-community`, community NVFP4 URLs (Wan I2V, FireRed Starnodes) may apply where configured in `entrypoint.sh`.
+With `NVFP4_MODE=allow-community`, community NVFP4 URLs (Wan I2V, FireRed Starnodes, Z-Image Base quality quant) may apply where configured in `entrypoint.sh`.
 
 ## Runtime VRAM arg precedence
 

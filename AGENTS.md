@@ -34,9 +34,14 @@ sync/update logic, and persistent host-mounted data paths.
 - Pack files follow low/high VRAM split:
   - `models-low.txt`, `models-high.txt`
   - `workflows-low.txt`, `workflows-high.txt`
+- Bundled workflows use `workflows-bundled.txt` entries as
+  `source|destination|tier` where tier is `low`, `high`, or `both` (default `both`).
+  Do not copy entire workflow directories without tier metadata.
 - For `klein-distilled`, workflows are bundled in `workflows/`; avoid re-adding
   duplicate template downloads under `scripts/packs/klein-distilled/workflows-*.txt`.
 - Keep workflow JSON names stable unless user explicitly requests rename.
+- Keep `z-image-base`, `z-image-turbo`, and `z-image-anime` as distinct selectable packs;
+  each has different strengths and should not be collapsed into a single selector.
 
 ## NVFP4 Policy
 
@@ -44,7 +49,8 @@ sync/update logic, and persistent host-mounted data paths.
 - `NVFP4_MODE`:
   - `official-only` (default): official NVFP4 sources only.
   - `allow-community`: allows configured community NVFP4 overrides (experimental),
-  including Wan I2V and **firered-image-edit** (cocorang FP8-mixed to Starnodes NVFP4).
+  including Wan I2V, **flux1-krea** (elihung), **ernie-image** SFT (Starnodes),
+  and **firered-image-edit** (cocorang FP8-mixed to Starnodes NVFP4).
 - Preserve original NVFP4 model filenames when swapping URLs.
 - Ensure workflows are switched/updated to the NVFP4-specific model filenames.
 

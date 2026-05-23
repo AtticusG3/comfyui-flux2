@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0] -- RealVisXL, HiDream O1, workflow dependency gating
+
+### Added
+- Pack: `realvisxl` with RealVisXL V5.0 Lightning low-tier and full RealVisXL V5.0 high-tier model lists.
+- Workflows: RealVisXL fast photoreal Lightning workflow and high-tier photoreal hires workflow with RealVisXL-recommended sampler, CFG, negative prompt, and detail-pass defaults.
+- Pack: `hidream-o1` with Saganaki22 HiDream O1 custom nodes, FP8/BF16 model folder downloads, and bundled example workflow.
+- Packs: focused `z-image-turbo` and `z-image-base` selectors alongside the combined `z-image-anime` pack.
+- Workflow/model dependency sync script for managed workflow validation and model backfill.
+
+### Changed
+- Startup now registers URL-downloaded workflows for dependency sync and runs bundled workflow installation after pack gating/node sync.
+- HiDream O1 startup ensures compatible Qwen3-VL `transformers` support.
+- Z-Image Base workflow now references the Comfy-Org `z_image_bf16.safetensors` artifact.
+- `z-image-anime` selectors no longer alias `z-image-turbo`, so the focused Turbo selector resolves to the dedicated pack.
+- Documentation and pack selector examples updated for RealVisXL, HiDream O1, and focused Z-Image packs.
+
 ## [1.5.0] -- Packs (flux2, Z-Image/Z-Anime, Qwen Edit 2511), deps, startup workflow policy
 
 ### Added
