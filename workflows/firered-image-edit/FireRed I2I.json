@@ -497,7 +497,7 @@
         "models": [
           {
             "name": "FireRed-Image-Edit-1.0_fp8mixed_comfy",
-            "url": "https://huggingface.co/cocorang/FireRed-Image-Edit-1.0-FP8_And_BF16/resolve/main/FireRed-Image-Edit-1_NVFP4.safetensors",
+            "url": "https://huggingface.co/cocorang/FireRed-Image-Edit-1.0-FP8_And_BF16/resolve/main/FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors",
             "directory": "diffusion_models"
           }
         ],
@@ -510,7 +510,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "FireRed-Image-Edit-1_NVFP4.safetensors",
+        "FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors",
         "default"
       ],
       "color": "#422342",

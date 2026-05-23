@@ -3581,7 +3581,7 @@
               }
             },
             "widgets_values": [
-              "zImageTurboVAE_v10.safetensors"
+              "ae.safetensors"
             ],
             "color": "#346434",
             "bgcolor": "rgba(24,24,27,.9)"
@@ -3749,7 +3749,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "z-Image-turbo-nvfp4.safetensors",
+              "z_image_turbo_nvfp4.safetensors",
               "default"
             ],
             "color": "#346434",

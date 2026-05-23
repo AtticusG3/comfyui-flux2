@@ -3713,7 +3713,7 @@
               }
             },
             "widgets_values": [
-              "zImageTurboVAE_v10.safetensors"
+              "ae.safetensors"
             ],
             "color": "#346434",
             "bgcolor": "rgba(24,24,27,.9)"
