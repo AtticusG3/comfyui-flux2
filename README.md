@@ -243,7 +243,7 @@ Typical bind mounts:
 
 ComfyUI code may live in a named volume depending on compose; see your `docker-compose.yml`.
 
-Staged ComfyUI git sync skips `/models/`, `/input/`, `/output/`, `/user/`, and `/custom_nodes/` during rsync (root-anchored excludes) so bind mounts are not deleted (`Device or resource busy`). Unanchored `models/` would also match `comfy/ldm/models/` and break imports; startup re-syncs `comfy/ldm/models` from staging after apply and verifies `comfy/ldm/models/autoencoder.py` (exits with recovery hints if missing). Workflows bind to `./data/workflows` only; `/user/` is excluded as a whole. Pack bundled workflows copy into `./data/workflows` on first start (empty folder). With `RESEED_PACK_WORKFLOWS=true`, changing `MODELS_DOWNLOAD` and restarting adds or overwrites pack workflow files without clearing your folder.
+Staged ComfyUI git sync skips `/models/`, `/input/`, `/output/`, `/custom_nodes/`, and `/user/default/workflows/` during rsync (root-anchored excludes) so bind mounts are not deleted (`Device or resource busy`). Unanchored `models/` would also match `comfy/ldm/models/` and break imports; startup re-syncs `comfy/ldm/models` from staging after apply, repairs from git when needed, and verifies `comfy/ldm/models/autoencoder.py` before ComfyUI starts (exits with recovery hints if missing). Pack bundled workflows copy into `./data/workflows` on first start (empty folder). With `RESEED_PACK_WORKFLOWS=true`, changing `MODELS_DOWNLOAD` and restarting adds or overwrites pack workflow files without clearing your folder.
 
 **Maintainers:** validate workflow JSON and pack coverage before PRs:
 

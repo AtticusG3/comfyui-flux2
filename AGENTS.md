@@ -35,13 +35,14 @@ sync/update logic, and persistent host-mounted data paths.
 - Manual/orphan `custom_nodes/*/requirements.txt` installs require
   `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager Try fix for manual nodes.
 - Git sync uses staged clone-or-update (`scripts/lib/git_sync.sh`) for atomic apply.
-  ComfyUI rsync excludes bind-mounted `/models/`, `/input/`, `/output/`, `/user/`,
-  and `/custom_nodes/` (leading slash = ComfyUI root only; unanchored `models/` would
-  also skip `comfy/ldm/models/`). After apply, `_git_sync_ensure_comfy_ldm_models()`
-  re-syncs `comfy/ldm/models` from staging. Use `--no-group --no-owner` for Docker Desktop volumes.
-- `verify_comfyui_core_tree()` in `scripts/entrypoint.sh` runs after ComfyUI sync and
-  requires `comfy/ldm/models/autoencoder.py`; on failure prints `[ERROR]` and exits (rebuild
-  image, restart, or remove the persisted ComfyUI volume).
+  ComfyUI rsync excludes bind-mounted `/models/`, `/input/`, `/output/`, `/custom_nodes/`,
+  and `/user/default/workflows/` (leading slash = ComfyUI root only; unanchored `models/`
+  would also skip `comfy/ldm/models/`). Rsync `protect` filters keep bind mounts from being
+  deleted. After apply, `_git_sync_ensure_comfy_ldm_models()` re-syncs `comfy/ldm/models`
+  from staging. Use `--no-group --no-owner` for Docker Desktop volumes.
+- `ensure_comfyui_core_tree()` in `scripts/entrypoint.sh` repairs `comfy/ldm/models` from
+  git or staging when missing, then requires `comfy/ldm/models/autoencoder.py` (runs after
+  ComfyUI sync and again before ComfyUI start). On failure prints `[ERROR]` and exits.
 - `RESEED_PACK_WORKFLOWS=true` installs bundled/URL pack workflows when
   `./data/workflows` already has JSON; full managed cleanup only on first empty seed.
 - `patch_comfyui_video_types_py()` runs after ComfyUI sync and again immediately before

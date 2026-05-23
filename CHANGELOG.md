@@ -2,8 +2,12 @@
 
 ## Unreleased
 
+## [1.7.1] -- ComfyUI core tree repair after git rsync
+
 ### Fixed
-- ComfyUI staged git rsync now uses root-anchored excludes (`/models/`, `/input/`, `/output/`, `/user/`, `/custom_nodes/`) so unanchored `models/` no longer deletes `comfy/ldm/models/autoencoder.py`. Startup re-syncs `comfy/ldm/models` from staging after apply and aborts with `[ERROR]` if `autoencoder.py` is still missing.
+- ComfyUI staged git rsync uses root-anchored excludes (`/models/`, `/input/`, `/output/`, `/custom_nodes/`, `/user/default/workflows/`) so unanchored `models/` no longer deletes `comfy/ldm/models/autoencoder.py`.
+- Rsync `protect` filters keep bind-mounted `models`, `input`, `output`, `custom_nodes`, and `user/default/workflows` from being pruned on `--delete`.
+- Startup re-syncs `comfy/ldm/models` from staging, repairs from git or staging cache when missing, and aborts with `[ERROR]` if `autoencoder.py` is still missing (checked after ComfyUI sync and again before ComfyUI start).
 
 ## [1.7.0] -- Bundled workflow refresh, short names, Klein and Qwen edit packs
 

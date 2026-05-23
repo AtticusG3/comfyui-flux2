@@ -717,6 +717,47 @@ verify_comfyui_core_tree() {
     return 1
 }
 
+repair_comfyui_ldm_models() {
+    local marker="${COMFYUI_DIR}/comfy/ldm/models/autoencoder.py"
+    local dst="${COMFYUI_DIR}/comfy/ldm/models"
+
+    if [ -f "$marker" ]; then
+        return 0
+    fi
+
+    echo "[INFO] Repairing comfy/ldm/models on persisted ComfyUI tree..."
+
+    if [ -d "${COMFYUI_DIR}/.git" ]; then
+        if git -C "$COMFYUI_DIR" checkout HEAD -- comfy/ldm/models 2>/dev/null && [ -f "$marker" ]; then
+            echo "[OK] Restored comfy/ldm/models from ComfyUI git."
+            return 0
+        fi
+    fi
+
+    local staging_root="${GIT_STAGING_ROOT:-/tmp/git-staging}"
+    local src staging
+    for staging in "${staging_root}"/*/comfy/ldm/models; do
+        [ -d "$staging" ] || continue
+        mkdir -p "$dst"
+        if command -v rsync >/dev/null 2>&1; then
+            rsync -a --no-times --omit-dir-times --no-perms --no-group --no-owner "$staging/" "$dst/"
+        else
+            cp -a "$staging"/. "$dst/"
+        fi
+        if [ -f "$marker" ]; then
+            echo "[OK] Restored comfy/ldm/models from git staging cache."
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+ensure_comfyui_core_tree() {
+    repair_comfyui_ldm_models || true
+    verify_comfyui_core_tree
+}
+
 patch_comfyui_video_types_py() {
     export COMFYUI_DIR="${COMFYUI_DIR:-/app/ComfyUI}"
     local f="${COMFYUI_DIR}/comfy_api/latest/_input_impl/video_types.py"
@@ -809,7 +850,7 @@ fi
 
 # ComfyUI
 clone_or_update "$COMFYUI_DIR" "https://github.com/Comfy-Org/ComfyUI.git" "master"
-verify_comfyui_core_tree || exit 1
+ensure_comfyui_core_tree || exit 1
 patch_comfyui_video_types_py
 ensure_pip_module
 
@@ -1720,6 +1761,7 @@ fi
 
 patch_comfyui_video_types_py || exit 1
 ensure_hidream_transformers
+ensure_comfyui_core_tree || exit 1
 
 echo ""
 echo "########################################"

@@ -107,8 +107,8 @@ _git_sync_rsync_excludes_for_target() {
             '/models/' \
             '/input/' \
             '/output/' \
-            '/user/' \
-            '/custom_nodes/'
+            '/custom_nodes/' \
+            '/user/default/workflows/'
     fi
 
     if [ -n "${GIT_SYNC_RSYNC_EXTRA_EXCLUDES:-}" ]; then
@@ -121,21 +121,44 @@ _git_sync_rsync_excludes_for_target() {
     fi
 }
 
+_git_sync_comfy_rsync_filters() {
+    local name="$1"
+    [ "$name" = "ComfyUI" ] || return 0
+    # Do not delete bind-mounted dirs on the persisted ComfyUI tree (--delete).
+    printf '%s\n' \
+        'protect models/' \
+        'protect input/' \
+        'protect output/' \
+        'protect custom_nodes/' \
+        'protect user/default/workflows/'
+}
+
 _git_sync_ensure_comfy_ldm_models() {
     local staging="$1"
     local target="$2"
     local src="${staging}/comfy/ldm/models"
     local dst="${target}/comfy/ldm/models"
+    local marker="${dst}/autoencoder.py"
 
     if [ ! -d "$src" ]; then
-        return 0
+        echo "[ERROR] Staged ComfyUI missing comfy/ldm/models; cannot repair core tree."
+        return 1
     fi
     mkdir -p "$dst"
     if command -v rsync >/dev/null 2>&1; then
-        rsync -a --no-times --omit-dir-times --no-perms --no-group --no-owner "$src/" "$dst/" || true
-    else
-        cp -a "$src"/. "$dst/" 2>/dev/null || true
+        if ! rsync -a --no-times --omit-dir-times --no-perms --no-group --no-owner "$src/" "$dst/"; then
+            echo "[ERROR] Failed to sync comfy/ldm/models from staging."
+            return 1
+        fi
+    elif ! cp -a "$src"/. "$dst/"; then
+        echo "[ERROR] Failed to copy comfy/ldm/models from staging."
+        return 1
     fi
+    if [ ! -f "$marker" ]; then
+        echo "[ERROR] comfy/ldm/models still missing autoencoder.py after staging sync."
+        return 1
+    fi
+    return 0
 }
 
 _git_sync_apply_staging() {
@@ -151,10 +174,13 @@ _git_sync_apply_staging() {
 
     if command -v rsync >/dev/null 2>&1; then
         local -a rsync_args=(-a --no-times --omit-dir-times --no-perms --no-group --no-owner --delete)
-        local exclude
+        local exclude filter
         while IFS= read -r exclude; do
             [ -n "$exclude" ] && rsync_args+=(--exclude="$exclude")
         done < <(_git_sync_rsync_excludes_for_target "$target")
+        while IFS= read -r filter; do
+            [ -n "$filter" ] && rsync_args+=(--filter="$filter")
+        done < <(_git_sync_comfy_rsync_filters "$name")
         if ! rsync "${rsync_args[@]}" "$staging/" "$target/"; then
             echo "[WARN] rsync reported errors applying staged ${name} (bind mounts or permissions may be expected on some hosts)."
         fi
@@ -164,7 +190,7 @@ _git_sync_apply_staging() {
     fi
 
     if [ "$name" = "ComfyUI" ]; then
-        _git_sync_ensure_comfy_ldm_models "$staging" "$target"
+        _git_sync_ensure_comfy_ldm_models "$staging" "$target" || return 1
     fi
     echo "[OK] Applied staged sync to ${name}."
 }
