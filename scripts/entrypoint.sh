@@ -632,56 +632,16 @@ log_or_install_orphan_node_reqs() {
 
 # PyAV rotation: some builds expose rotation via metadata instead of frame.rotation.
 patch_comfyui_video_types_py() {
+    export COMFYUI_DIR="${COMFYUI_DIR:-/app/ComfyUI}"
     local f="${COMFYUI_DIR}/comfy_api/latest/_input_impl/video_types.py"
     if [ ! -f "$f" ]; then
         return 0
     fi
-    if grep -q 'getattr(frame, "rotation", None)' "$f" 2>/dev/null; then
-        echo "[INFO] video_types.py rotation fallback already present."
-        return 0
+    echo "[INFO] Ensuring ComfyUI video_types.py PyAV rotation fallback..."
+    if ! python3 /scripts/patch_video_types_rotation.py; then
+        echo "[ERROR] Failed to patch video_types.py for PyAV rotation fallback."
+        return 1
     fi
-    echo "[INFO] Patching ComfyUI video_types.py for rotation metadata fallback..."
-    export COMFYUI_DIR
-    python3 - <<'PY'
-from pathlib import Path
-import os
-import re
-import sys
-
-path = Path(os.environ["COMFYUI_DIR"]) / "comfy_api" / "latest" / "_input_impl" / "video_types.py"
-text = path.read_text(encoding="utf-8")
-
-pattern = re.compile(
-    r"^(\s*)img = frame\.to_ndarray\(format=image_format\)\s+# shape: \(H, W, 4\)\n"
-    r"\1if frame\.rotation != 0:\n"
-    r"\1\s+k = int\(round\(frame\.rotation // 90\)\)\n"
-    r"\1\s+img = np\.rot90\(img, k=k, axes=\(0, 1\)\)\.copy\(\)",
-    re.MULTILINE,
-)
-
-def repl(match: re.Match[str]) -> str:
-    indent = match.group(1)
-    inner = indent + "    "
-    return (
-        f"{indent}img = frame.to_ndarray(format=image_format)  # shape: (H, W, 4)\n"
-        f"{indent}rotation = getattr(frame, \"rotation\", None)\n"
-        f"{indent}if rotation is None:\n"
-        f"{inner}md = getattr(frame, \"metadata\", None)\n"
-        f"{inner}rotation = int(md.get(\"rotate\", 0)) if isinstance(md, dict) else 0\n"
-        f"{indent}if rotation != 0:\n"
-        f"{inner}k = int(round(float(rotation) / 90.0)) % 4\n"
-        f"{inner}if k:\n"
-        f"{inner}    img = np.rot90(img, k=k, axes=(0, 1)).copy()"
-    )
-
-patched, count = pattern.subn(repl, text, count=1)
-if count != 1:
-    print("[WARN] video_types.py expected rotation block not found; skipping patch.")
-    sys.exit(0)
-
-path.write_text(patched, encoding="utf-8")
-print("[OK] Patched video_types.py rotation fallback.")
-PY
 }
 
 # HiDream O1 requires transformers with Qwen3-VL model code.
@@ -1625,6 +1585,9 @@ rm -f "$TEMP_MODELS" "$TEMP_WORKFLOWS"
 if [ "$SEED_WORKFLOWS" -eq 1 ]; then
     write_managed_workflow_manifest
 fi
+
+patch_comfyui_video_types_py || exit 1
+ensure_hidream_transformers
 
 echo ""
 echo "########################################"

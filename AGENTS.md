@@ -14,6 +14,9 @@ sync/update logic, and persistent host-mounted data paths.
 
 - `scripts/entrypoint.sh`: startup orchestration, repo sync, model/workflow downloads,
   base install of `vram-utils` nodes/workflows on every start, optional `none` pack selection.
+- `scripts/patch_video_types_rotation.py`: PyAV rotation fallback patch for ComfyUI
+  `comfy_api/latest/_input_impl/video_types.py` (structural line matching, not sed literals).
+- `scripts/lib/git_sync.sh`: staged clone-or-update helper used by entrypoint.
 - `scripts/packs/<pack>/`: pack metadata, models/workflows lists, optional `nodes.txt`.
 - `workflows/`: bundled JSON workflows copied into ComfyUI on startup.
 - `docker-compose.yml`, `.env.example`, `README.md`, `LOCAL_SETUP.md`: runtime docs/config.
@@ -30,6 +33,10 @@ sync/update logic, and persistent host-mounted data paths.
 - Manual/orphan `custom_nodes/*/requirements.txt` installs require
   `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager Try fix for manual nodes.
 - Git sync uses staged clone-or-update (`scripts/lib/git_sync.sh`) for atomic apply.
+- `patch_comfyui_video_types_py()` runs after ComfyUI sync and again immediately before
+  ComfyUI start (`|| exit 1` on the final run). Implementation: `scripts/patch_video_types_rotation.py`.
+- When `hidream-o1` nodes are synced, `ensure_hidream_transformers()` upgrades
+  `transformers>=4.57.1` for Qwen3-VL support.
 - Do not allow custom-node requirements to downgrade torch stack pins:
   - filter: `torch`, `torchvision`, `torchaudio`, `xformers`.
 
@@ -78,3 +85,22 @@ sync/update logic, and persistent host-mounted data paths.
   - update `CHANGELOG.md`
   - commit -> push -> tag -> push tag
   - create GitHub Release entry for the new tag.
+
+## Learned User Preferences
+
+- Do not edit attached plan files when implementing plans; use existing todos and mark progress there.
+- Release workflow: semver bump, CHANGELOG, commit, push, tag, GitHub release, then watch CI to completion.
+- Prefer ComfyUI Manager **Try fix** for orphan/manual custom nodes after startup; keep `INSTALL_ORPHAN_NODE_REQS=false` by default.
+- Do not re-add connectivity doctor probes or Civicomfy; both were intentionally removed.
+- `hidream-o1` is nodes + bundled workflow only; user downloads FP8/BF16 weights via Manager or Hugging Face after startup.
+- Keep `z-image-base`, `z-image-turbo`, and `z-image-anime` as distinct selectable packs; do not collapse them.
+
+## Learned Workspace Facts
+
+- `scripts/` (entrypoint, install_comfyui, lib) are baked into the Docker image, not bind-mounted; script changes require `docker compose build`.
+- Startup auto-removes unmanaged legacy custom-node dirs: `ComfyUI-Trellis2-GGUF`, `inference-gpu`, `openai-api`, bad `ComfyUI-NewBie` clone.
+- Image pre-bakes ComfyUI, Manager, and vram-utils (including comfyui-openai-api); not Civicomfy.
+- `flash-attn` pre-bake is best-effort and often fails on torch 2.12 + cu130; xformers and sageattention are the reliable attention backends.
+- Runtime image has no compilers; source-only pip deps after managed node updates need image rebuild or Manager **Try fix**.
+- ComfyUI `video_types.py` PyAV rotation patch lives in `scripts/patch_video_types_rotation.py`;
+  use structural line matching (not sed literal replace) so upstream indentation changes do not break it.

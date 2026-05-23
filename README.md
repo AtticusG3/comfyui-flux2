@@ -182,11 +182,11 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `z-image-base` | Image | Z-Image Base + Qwen FP8 text encoder | Z-Image Base + Qwen BF16 text encoder | Focused non-distilled Base workflow. `NVFP4_SUPPORTED=true` + `NVFP4_MODE=allow-community` can swap diffusion to marcorez8 quality NVFP4. |
 | `z-image-anime` | Image | Z-Image NVFP4 + Z-Anime FP8 stack | Z-Image BF16 + Z-Anime BF16 stack | Large HF downloads; bundled Z workflows. |
 | `qwen-image-edit-2511` | Image | NVFP4 diffusion + Qwen TE/VAE | FP8 diffusion + Qwen TE/VAE | Weights only; build or import a 2511 edit graph in ComfyUI. |
-| `hidream-o1` | Image | nodes + workflow only | nodes + workflow only | HiDream O1 custom nodes + example workflow. Download FP8/BF16 weights via Manager or HF after startup. |
+| `hidream-o1` | Image | nodes + workflow only | nodes + workflow only | HiDream O1 custom nodes + example workflow. Download FP8/BF16 weights via Manager or HF after startup. Startup upgrades `transformers>=4.57.1` when this pack is selected. |
 
 **`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, [comfyui-openai-api](https://github.com/hekmon/comfyui-openai-api) (Ollama/OpenRouter/OpenAI-compatible LLM nodes for bundled prompt workflows), plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed.
 
-Startup installs requirements for managed nodes only by default (collated into one pip pass). Custom nodes left on the persisted volume from old packs or manual installs are still importable by ComfyUI, but their requirements are skipped unless `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager **Try fix** after startup for manual nodes, or remove stale folders. Known legacy orphans (Trellis2-GGUF, inference-gpu, old openai-api) are removed automatically when not managed.
+Startup installs requirements for managed nodes only by default (collated into one pip pass). Custom nodes left on the persisted volume from old packs or manual installs are still importable by ComfyUI, but their requirements are skipped unless `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager **Try fix** after startup for manual nodes, or remove stale folders. Known legacy orphans (Trellis2-GGUF, inference-gpu, openai-api, bad ComfyUI-NewBie clone without `__init__.py`) are removed automatically when not managed.
 
 Example:
 
@@ -208,6 +208,8 @@ With `NVFP4_MODE=allow-community`, community NVFP4 URLs (Wan I2V, FireRed Starno
 5. Else add no automatic VRAM args.
 
 ## Connectivity routing examples
+
+Connectivity variables are read by `scripts/entrypoint.sh` at container runtime. Add any you use to the `environment:` block in `docker-compose.yml` (or an `env_file`); values in a host `.env` file are not passed through unless compose lists them.
 
 ```bash
 CONNECTIVITY_ROUTE_DEFAULT=vpn
@@ -242,6 +244,8 @@ ComfyUI code may live in a named volume depending on compose; see your `docker-c
 
 ## Development
 
+`scripts/` (entrypoint, packs, `scripts/lib/git_sync.sh`, patches) are **baked into the image**, not bind-mounted. After changing startup scripts, rebuild before testing:
+
 ```bash
 docker compose build
 docker compose config
@@ -258,7 +262,8 @@ To push to a Gitea host without storing a token in `git remote`, set **`GITEA_TO
 
 ## Notes
 
-- Image wheels include `av`, `sageattention`, and best-effort `flash-attn` (build installs `packaging`/`wheel` first; may still skip if no compatible wheel for your torch+cuda build).
+- Image wheels include `av`, `sageattention`, and best-effort `flash-attn` (build installs `packaging`/`wheel` first; may still skip if no compatible wheel for your torch+cuda build). **xformers** and **sageattention** are the reliable attention backends in published images.
 - Custom node `requirements.txt` installs filter `torch`, `torchvision`, `torchaudio`, and `xformers` so they cannot downgrade the image stack.
-- ComfyUI, ComfyUI-Manager, base VRAM nodes, and pack nodes sync on startup via staged git (atomic apply on fetch success).
+- ComfyUI, ComfyUI-Manager, base VRAM nodes, and pack nodes sync on startup via staged git (`scripts/lib/git_sync.sh`: fetch into staging, rsync on success; failed fetch leaves the live tree untouched).
+- Before ComfyUI starts, `scripts/patch_video_types_rotation.py` patches `comfy_api/latest/_input_impl/video_types.py` for PyAV builds that lack `frame.rotation` (uses `metadata["rotate"]` fallback). A failed patch when the rotation block is missing aborts startup.
 - The runtime image has no compilers. If a managed node update adds a source-only Python dependency, rebuild the image or use ComfyUI Manager **Try fix**; optional future `build-deps` compose profile can add `build-essential` when needed.

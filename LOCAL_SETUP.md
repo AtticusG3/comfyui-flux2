@@ -46,7 +46,15 @@ Use `LOW_VRAM=false` for high-tier GPUs. Set `HF_TOKEN` only when a selected mod
 - `official-only` (default): official NVFP4 URLs only (Klein 4B and 9B).
 - `allow-community`: also enables configured community NVFP4 overrides (Wan 2.2 I2V mixed checkpoints; FireRed Image Edit Starnodes quant; experimental).
 
+Optional startup tuning (see `.env.example` and README):
+
+- `COMFYUI_GIT_UPDATE=false` skips fetch/reset of managed git repos for faster restarts when refs are already current.
+- `INSTALL_ORPHAN_NODE_REQS=false` (default) installs Python requirements for managed nodes only; set `true` to also install manual/orphan custom-node requirements from the persisted volume.
+- For `hidream-o1`, startup syncs nodes and the bundled workflow only; download FP8/BF16 weights via ComfyUI Manager or Hugging Face after startup.
+
 ## Build And Run
+
+Startup scripts under `scripts/` are baked into the image. Rebuild after changing them:
 
 ```powershell
 docker-compose up -d --build
@@ -69,6 +77,8 @@ Open `http://localhost:8188`.
 - GPU not detected: verify Docker Desktop WSL integration and retry the NVIDIA sample command.
 - Out of VRAM: set `LOW_VRAM=true`, keep `AUTO_VRAM_ARGS=true`, or set `COMFYUI_VRAM_ARGS=--lowvram --reserve-vram 1.5 --cpu-vae`.
 - API clients timing out: wait for model downloads and ComfyUI startup to finish, then check `http://localhost:8188/object_info`.
+- **Video load errors / PyAV `rotation` attribute**: startup patches ComfyUI `video_types.py` via `scripts/patch_video_types_rotation.py`. If startup exits with a rotation patch error after a ComfyUI update, rebuild the image so the patch script is current, then restart.
+- **Orphan custom nodes missing deps**: default startup skips `requirements.txt` for manual nodes on the volume. Use ComfyUI Manager **Try fix**, set `INSTALL_ORPHAN_NODE_REQS=true`, or remove stale folders.
 - **GGUF / `OSError: [Errno 19] No such device` in `numpy.memmap` / `ComfyUI-GGUF`**: GGUF loaders memory-map weights. **`mmap` can return `ENODEV`** when the **backing filesystem** does not support mapping that file normally, even if read/write works. That includes **Docker bind mounts backed by NFS/SMB**, **paths on Gluster/other FUSE**, and **Docker Desktop virtiofs binds from Windows**. On a **Linux VM** (e.g. **Debian on Proxmox**), common causes are **`./data/models` on a NAS or network mount**, **`/var/lib/docker`** on shared storage, or bind mounts onto those. **Mitigation:** keep `.gguf` files on **local VM disk** (ext4/xfs/ZFS block device, etc.), use a **named volume** on local disk, or copy weights off network mounts before load.
 Runtime flag precedence (highest to lowest):
 
