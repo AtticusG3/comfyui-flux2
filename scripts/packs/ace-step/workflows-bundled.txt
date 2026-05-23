@@ -1,2 +1,2 @@
-# source_path|destination_filename|tier
-ace-step/audio-ace-step-1-5-checkpoint.json|ACE-Step 1.5 - Text to Music.json|both
+# source_path (under /workflows/)|destination_filename|tier
+ace-step/ace-step-t2m.json|ace-step-t2m.json|both

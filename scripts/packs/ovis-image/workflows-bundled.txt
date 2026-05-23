@@ -1,2 +1,2 @@
-# source_path|destination_filename|tier
-ovis-image/image-ovis-text-to-image.json|Ovis Image - Text to Image.json|both
+# source_path (under /workflows/)|destination_filename|tier
+ovis-image/ovis-t2i.json|ovis-t2i.json|both

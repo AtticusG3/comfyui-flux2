@@ -1,0 +1,338 @@
+{
+  "id": "e856a1af-fe5f-4934-9c1e-b17c0b25eb2f",
+  "version": 1,
+  "state": {
+    "lastGroupId": 7,
+    "lastNodeId": 582,
+    "lastLinkId": 1088,
+    "lastRerouteId": 2
+  },
+  "revision": 0,
+  "config": {},
+  "name": "Generate Image",
+  "inputNode": {
+    "id": -10,
+    "bounding": [
+      -1678,
+      -344,
+      128,
+      168
+    ]
+  },
+  "outputNode": {
+    "id": -20,
+    "bounding": [
+      -930,
+      -304,
+      128,
+      68
+    ]
+  },
+  "inputs": [
+    {
+      "id": "180d105f-e879-4a3c-8e27-43647ddc24e9",
+      "name": "vae",
+      "type": "VAE",
+      "linkIds": [
+        825
+      ],
+      "localized_name": "vae",
+      "pos": [
+        -1574,
+        -320
+      ]
+    },
+    {
+      "id": "8e99a59f-de0d-4126-8800-da8a714593bf",
+      "name": "model",
+      "type": "MODEL",
+      "linkIds": [
+        811
+      ],
+      "localized_name": "model",
+      "pos": [
+        -1574,
+        -300
+      ]
+    },
+    {
+      "id": "2940aeb0-1251-4c8e-a107-7ac4d1dda735",
+      "name": "positive",
+      "type": "CONDITIONING",
+      "linkIds": [
+        919
+      ],
+      "localized_name": "positive",
+      "pos": [
+        -1574,
+        -280
+      ]
+    },
+    {
+      "id": "09fd1bfd-e7a8-41bb-9124-101fda684024",
+      "name": "latent_image",
+      "type": "LATENT",
+      "linkIds": [
+        817
+      ],
+      "localized_name": "latent_image",
+      "pos": [
+        -1574,
+        -260
+      ]
+    },
+    {
+      "id": "0f4616db-1fdd-40de-8d2f-0c8eb6febd4d",
+      "name": "seed",
+      "type": "INT",
+      "linkIds": [
+        454
+      ],
+      "localized_name": "seed",
+      "pos": [
+        -1574,
+        -240
+      ]
+    },
+    {
+      "id": "f20df0fc-7d4a-4ed7-9fcb-b2a943a4356d",
+      "name": "negative",
+      "type": "CONDITIONING",
+      "linkIds": [
+        1085
+      ],
+      "pos": [
+        -1574,
+        -220
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "3e2e6b7d-02f9-4ce4-8bb8-b4ce56135df5",
+      "name": "IMAGE",
+      "type": "IMAGE",
+      "linkIds": [
+        904
+      ],
+      "localized_name": "IMAGE",
+      "pos": [
+        -906,
+        -280
+      ]
+    }
+  ],
+  "widgets": [],
+  "nodes": [
+    {
+      "id": 276,
+      "type": "VAEDecode",
+      "pos": [
+        -1490,
+        -110
+      ],
+      "size": [
+        500,
+        80
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "samples",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 409
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 825
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            904
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "VAEDecode",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.5.1"
+        },
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "widgets_values": [],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 262,
+      "type": "KSampler",
+      "pos": [
+        -1490,
+        -480
+      ],
+      "size": [
+        500,
+        350
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 811
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 919
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 1085
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 817
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": 454
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "slot_index": 0,
+          "links": [
+            409
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "KSampler",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.5.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        894123078220135,
+        "fixed",
+        9,
+        1,
+        "euler",
+        "beta",
+        1
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)",
+      "shape": 1
+    }
+  ],
+  "groups": [],
+  "links": [
+    {
+      "id": 409,
+      "origin_id": 262,
+      "origin_slot": 0,
+      "target_id": 276,
+      "target_slot": 0,
+      "type": "LATENT"
+    },
+    {
+      "id": 825,
+      "origin_id": -10,
+      "origin_slot": 0,
+      "target_id": 276,
+      "target_slot": 1,
+      "type": "VAE"
+    },
+    {
+      "id": 811,
+      "origin_id": -10,
+      "origin_slot": 1,
+      "target_id": 262,
+      "target_slot": 0,
+      "type": "MODEL"
+    },
+    {
+      "id": 919,
+      "origin_id": -10,
+      "origin_slot": 2,
+      "target_id": 262,
+      "target_slot": 1,
+      "type": "CONDITIONING"
+    },
+    {
+      "id": 817,
+      "origin_id": -10,
+      "origin_slot": 3,
+      "target_id": 262,
+      "target_slot": 3,
+      "type": "LATENT"
+    },
+    {
+      "id": 454,
+      "origin_id": -10,
+      "origin_slot": 4,
+      "target_id": 262,
+      "target_slot": 4,
+      "type": "INT"
+    },
+    {
+      "id": 904,
+      "origin_id": 276,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 0,
+      "type": "IMAGE"
+    },
+    {
+      "id": 1085,
+      "origin_id": -10,
+      "origin_slot": 5,
+      "target_id": 262,
+      "target_slot": 2,
+      "type": "CONDITIONING"
+    }
+  ],
+  "extra": {}
+}

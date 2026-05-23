@@ -1,0 +1,2 @@
+# source_path (under /workflows/)|destination_filename|tier
+qwen-image-edit-2511/qwen-edit-2511.json|qwen-edit-2511.json|both

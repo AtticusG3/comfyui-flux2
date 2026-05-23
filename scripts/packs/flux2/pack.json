@@ -6,7 +6,7 @@
   ],
   "upstream_urls": [],
   "requires_hf_token": false,
-  "notes_low": "Optional Flux.2 Klein workflow bundle only. Pair with klein-distilled for models (HF_TOKEN required for BFL weights).",
-  "notes_high": "Optional Flux.2 Klein workflow bundle only. Pair with klein-distilled for models (HF_TOKEN required for BFL weights).",
-  "description": "Flux.2 Klein bundled ComfyUI workflows (no model downloads in this pack)."
+  "notes_low": "Deprecated selector: use klein-distilled for Klein models and bundled workflows.",
+  "notes_high": "Deprecated selector: use klein-distilled for Klein models and bundled workflows.",
+  "description": "Legacy alias for klein-distilled workflow routing (no model downloads; workflows install via klein-distilled)."
 }

@@ -1,2 +1,3 @@
-# source_path|destination_filename|tier
-sdxl-lightning/SDXL_Lightning T2I.json|SDXL Lightning - Text to Image.json|both
+# source_path (under /workflows/)|destination_filename|tier
+sdxl-lightning/sdxl-lightning-hires.json|sdxl-lightning-hires.json|high
+sdxl-lightning/sdxl-lightning-t2i.json|sdxl-lightning-t2i.json|both

@@ -1,4 +1,0 @@
-# source_path (under /workflows/) | destination filename in user/default/workflows
-# Pair with klein-distilled pack for model downloads.
-flux2/Flux 2 Klein T2I.json|Flux 2 Klein T2I.json|high
-flux2/Flux 2 Klein I2I.json|Flux 2 Klein I2I.json|high

@@ -1,0 +1,986 @@
+{
+  "id": "df832ee4-080d-4077-8ad6-700de3090267",
+  "version": 1,
+  "state": {
+    "lastGroupId": 7,
+    "lastNodeId": 575,
+    "lastLinkId": 1079,
+    "lastRerouteId": 2
+  },
+  "revision": 0,
+  "config": {},
+  "name": "Llama.cpp PE",
+  "inputNode": {
+    "id": -10,
+    "bounding": [
+      -2030,
+      290,
+      128,
+      148
+    ]
+  },
+  "outputNode": {
+    "id": -20,
+    "bounding": [
+      -50,
+      400,
+      171.861328125,
+      108
+    ]
+  },
+  "inputs": [
+    {
+      "id": "7207f4bd-00d8-43cc-8b52-cbf2b6996f8d",
+      "name": "on_false",
+      "type": "STRING",
+      "linkIds": [
+        840,
+        843
+      ],
+      "localized_name": "on_false",
+      "label": "prompt",
+      "pos": [
+        -1926,
+        314
+      ]
+    },
+    {
+      "id": "226c2573-789f-48fb-9a2d-4f05e8aa5da9",
+      "name": "switch",
+      "type": "BOOLEAN",
+      "linkIds": [
+        1020
+      ],
+      "localized_name": "switch",
+      "label": "llm_enhance",
+      "pos": [
+        -1926,
+        334
+      ]
+    },
+    {
+      "id": "eba68d3c-3673-4aa3-9d4f-86441f0ec8b2",
+      "name": "clip",
+      "type": "CLIP",
+      "linkIds": [
+        813,
+        1014
+      ],
+      "localized_name": "clip",
+      "pos": [
+        -1926,
+        354
+      ]
+    },
+    {
+      "id": "e03829e2-a6ad-4dae-a67b-a45b4c4152f2",
+      "name": "images",
+      "type": "IMAGE",
+      "linkIds": [
+        1008
+      ],
+      "pos": [
+        -1926,
+        374
+      ]
+    },
+    {
+      "id": "3e2d0dbc-cfa8-4ed5-ab78-2a26ea53755f",
+      "name": "force_regen",
+      "type": "BOOLEAN",
+      "linkIds": [
+        1011
+      ],
+      "pos": [
+        -1926,
+        394
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "1d6d2e76-f820-43f0-b97d-32b07d531219",
+      "name": "CONDITIONING",
+      "type": "CONDITIONING",
+      "linkIds": [
+        1022
+      ],
+      "label": "positive_conditioning",
+      "pos": [
+        -26,
+        424
+      ]
+    },
+    {
+      "id": "5f7fd793-a507-44a0-9ef0-9689d4dce6ab",
+      "name": "CONDITIONING_1",
+      "type": "CONDITIONING",
+      "linkIds": [
+        1023
+      ],
+      "label": "negative_conditioning",
+      "pos": [
+        -26,
+        444
+      ]
+    },
+    {
+      "id": "1eb908df-fccd-4b94-a955-9277b967dc39",
+      "name": "output",
+      "type": "STRING",
+      "linkIds": [
+        1047
+      ],
+      "pos": [
+        -26,
+        464
+      ]
+    }
+  ],
+  "widgets": [],
+  "nodes": [
+    {
+      "id": 482,
+      "type": "ComfySwitchNode",
+      "pos": [
+        -710,
+        300
+      ],
+      "size": [
+        300,
+        150
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "on_false",
+          "name": "on_false",
+          "type": "STRING",
+          "link": 840
+        },
+        {
+          "localized_name": "on_true",
+          "name": "on_true",
+          "type": "STRING",
+          "link": 1046
+        },
+        {
+          "label": "switch",
+          "localized_name": "switch",
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 1018
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "output",
+          "name": "output",
+          "type": "STRING",
+          "links": [
+            839
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 479,
+      "type": "OAIAPI_Client",
+      "pos": [
+        -1800,
+        130
+      ],
+      "size": [
+        400,
+        210
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "localized_name": "API Client",
+          "name": "API Client",
+          "type": "OAIAPI_CLIENT",
+          "links": [
+            836
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "openai-api",
+        "ver": "2.0.1",
+        "Node name for S&R": "OAIAPI_Client"
+      },
+      "widgets_values": [
+        "http://192.168.1.228:8081/v1",
+        2,
+        600,
+        "sk-llama-cpp"
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 268,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -380,
+        300
+      ],
+      "size": [
+        300,
+        140
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 813
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 839
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            1022
+          ]
+        }
+      ],
+      "title": "Final Positive Prompt",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "CLIPTextEncode",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "text": true
+          },
+          "version": "7.5.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "A classic Nissan Skyline GT-R R32 in gunmetal grey at Daikoku PA under yellow sodium lights, crowd of tuned cars in soft bokeh, wide angle, gritty urban night photography"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)",
+      "shape": 1
+    },
+    {
+      "id": 481,
+      "type": "OAIAPI_ChatCompletion",
+      "pos": [
+        -1800,
+        500
+      ],
+      "size": [
+        450,
+        570
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "API Client",
+          "localized_name": "client",
+          "name": "client",
+          "type": "OAIAPI_CLIENT",
+          "link": 836
+        },
+        {
+          "label": "History",
+          "localized_name": "history",
+          "name": "history",
+          "shape": 7,
+          "type": "OAIAPI_HISTORY",
+          "link": null
+        },
+        {
+          "label": "Options",
+          "localized_name": "options",
+          "name": "options",
+          "shape": 7,
+          "type": "OAIAPI_OPTIONS",
+          "link": null
+        },
+        {
+          "label": "image(s)",
+          "localized_name": "images",
+          "name": "images",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 1008
+        },
+        {
+          "localized_name": "force_regen",
+          "name": "force_regen",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "force_regen"
+          },
+          "link": 1011
+        },
+        {
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": 843
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "Response",
+          "name": "Response",
+          "type": "STRING",
+          "links": [
+            1047,
+            1073
+          ]
+        },
+        {
+          "localized_name": "History",
+          "name": "History",
+          "type": "OAIAPI_HISTORY",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "openai-api",
+        "ver": "2.0.1",
+        "Node name for S&R": "OAIAPI_ChatCompletion"
+      },
+      "widgets_values": [
+        "Qwen3.5:9b",
+        false,
+        "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field, photorealistic, dark grimy realism",
+        "You are a professional **AI Image Generation Prompt Engineering Engine** and **Creative Director** specialising in **Juggernaut SDXL** \u2014 a photorealistic diffusion model with exceptional cinematic lighting, skin rendering, and environmental storytelling. Your task is to analyse the user's raw image request and produce both a positive prompt and a scene-aware negative prompt in a single pass.\n\n---\n\n## Model Context: Juggernaut SDXL\n\nJuggernaut SDXL is built on the SDXL dual-CLIP architecture and responds best to natural language photography briefs rather than keyword tags. Photographic quality anchors must appear first to lock the style register before scene content is processed. Its key strengths:\n\n- Skin pore detail, subsurface scattering, natural undertones\n- Rembrandt, golden hour, three-point studio, and dramatic directional lighting\n- 50mm\u2013135mm portrait focal lengths; 24mm\u201335mm environmental shots\n- Shallow depth of field with sharp subject and soft background separation\n- Fabric weight, weave texture, and garment drape\n- Cinematic color science: Kodak Portra, Fujifilm Velvia, Arri Alexa grade\n\nKnown failure modes: anatomical errors under complex composition, style bleed toward illustration without strong photographic anchoring, over-smoothed skin without texture guidance, blown highlights without exposure language.\n\n---\n\n## Execution: Two-Pass Internal Reasoning\n\nYou must complete both passes before writing output. Do not output anything until both passes are complete.\n\n### Pass 1 \u2014 Positive Prompt Construction\n\n**Step 1: Analyse**\nIdentify: core subject, user intent, text requirements, reference constraints, hidden knowledge to resolve, number of people, lighting complexity, style register.\n\n**Step 2: Resolve Knowledge**\nFor any reference to poetry, lyrics, quotes, formulas, historical figures, landmarks, artworks, cultural symbols, or events \u2014 resolve to specific visual attributes before writing. Never pass unresolved references into the prompt.\n\n**Step 3: Compose**\nWrite the positive prompt using the SCALIST-J framework below. Output as a single English paragraph, 100\u2013250 words.\n\n### Pass 2 \u2014 Negative Prompt Construction\n\n**Step 4: Parse your own positive prompt**\nRead the positive prompt you just composed. Identify: subject type, number of people, lighting style, artistic register, text presence, depth of field intent, any intentional stylistic elements (grain, neon, bokeh, etc.).\n\n**Step 5: Activate relevant failure mode categories**\nSelect from the Negative Prompt Reference below. Deactivate any category that conflicts with the positive prompt's intentional content.\n\n**Step 6: Qualify suppressors**\nWhere a suppressor could block intended content, either remove it or narrow it. Order suppressors by severity for this specific scene.\n\n---\n\n## SCALIST-J Framework (Positive Prompt)\n\n### 0. Quality Anchor \u2014 ALWAYS FIRST\nBegin every prompt with a quality anchor block. Select only terms that match the scene's intent:\n\n> RAW photo, hyperrealistic, photorealistic, UHD, DSLR quality, 8K resolution, ultra-detailed\n\nDo not place any scene description before the anchor.\n\n### 1. Subject\nIdentity, apparent age, facial morphology, complexion, skin undertone, hair, eye shape and colour, body proportions, clothing fit and fabric. For portrait detail: specify natural skin texture, visible pore detail, subsurface scattering on cheeks and nose bridge.\n\n### 2. Composition\nShot framing (extreme close-up / close-up / medium / full body / wide / aerial), camera angle (eye level / low / high / dutch), subject placement, foreground/midground/background layer separation, negative space, focal point. Always state focal length explicitly.\n\n### 3. Action\nWhat the subject is doing, direction of movement, posture, interaction, gaze direction, body language, weight distribution.\n\n### 4. Location\nScene setting, architectural or environmental detail, historical era, time of day, weather, atmosphere \u2014 described at set designer level.\n\n### 5. Image Style\nOne primary register only: photorealistic (default), cinematic, fashion editorial, documentary, fine art photography, architectural photography. Do not mix registers.\n\n### 6. Lighting \u2014 Critical for Juggernaut\nAlways specify all of:\n\n- **Source**: natural window / golden hour sunlight / overcast / studio strobe with softbox / ring light / practical lamp / candlelight\n- **Direction**: front-lit / side-lit / Rembrandt / split / rim or back-lit / top-down / under-lit\n- **Quality**: hard and directional / soft and diffused / specular highlights / matte texture\n- **Colour temperature**: warm 3200K / neutral daylight 5600K / cool 7000K+ / mixed\n- **Exposure**: well-exposed with lifted shadows / high contrast with crushed blacks / high key / low key\n- **Skin response**: subsurface scattering warmth and highlight rolloff where skin is visible\n\n### 7. Color Grade\nAlways specify one:\n\n- Kodak Portra 400: warm skin, gentle highlight rolloff\n- Fujifilm Velvia: vivid saturation, deep greens and blues\n- Arri Alexa cinematic: teal shadows, warm mids\n- Desaturated editorial: muted tones, lifted blacks\n- High-contrast noir: deep shadows, silver highlights\n- Natural ungraded daylight\n\n### 8. Specs\nLens focal length, aperture (f/1.8 shallow / f/8 environmental), shutter character (frozen / motion blur), depth of field, focus plane, bokeh quality (smooth circular / swirly / anamorphic oval). Always specify whether background is sharp or softly defocused.\n\n### 9. Text Rendering\nIf text is required in the image: exact string in English quotation marks, font style, colour, material (engraved / painted / neon / embossed / projected), and precise spatial placement.\n\n---\n\n## Person Resolution Rules\n\nDescribe every human subject individually (Person 1, Person 2, etc.) covering:\n\n- Apparent age range\n- Biological sex and body proportions\n- Ancestry or regional phenotype consistent with scene location and era \u2014 do not fabricate diversity that is not geographically or historically credible\n- Skin tone and undertone (warm olive / cool ivory / deep mahogany / golden brown)\n- Facial structure: jawline, cheekbone prominence, nose bridge and tip, lip fullness\n- Eye shape (almond / hooded / deep-set / wide), iris colour\n- Hair: colour, texture, length, style\n- Height and build (lean / athletic / stocky / slight)\n- Distinguishing features: asymmetries, freckles, moles, scars, smile lines, tattoos\n- Clothing: garment type, fabric weight, colour, fit, wear patterns, accessories\n- Expression, gaze direction, posture, body language\n\nNo two people in the same scene may share identical facial structure, proportions, hairstyle, or expression unless the scene requires it (twins, clones, uniforms). Describe each person fully before describing group interaction.\n\n---\n\n## Spatial Anchoring Rules\n\nAll spatial relationships must be explicit. Do not use: next to, some, beautiful, nice, interesting.\n\n| Vague | Replace with |\n|---|---|\n| next to | directly to the left of, at arm's length |\n| some trees | three birch trees in the mid-left background |\n| beautiful light | warm 3200K sunlight at 15 degrees above horizon, long shadows cast left |\n| behind her | standing half a step behind and to her right, faces angled toward each other |\n\n---\n\n## Abstract Concept Visualisation\n\nConvert abstract concepts to concrete visual elements before writing:\n\n- Loneliness \u2192 single figure, vast empty space, desaturated palette, averted gaze\n- Freedom \u2192 open horizon, motion blur on hair and fabric, birds in background\n- Danger \u2192 hard directional red light, high contrast, shallow focus, tense posture\n- Healing \u2192 soft diffused window light, warm skin tones, relaxed expression, natural setting\n\n---\n\n## Negative Prompt Reference (Pass 2)\n\nSelect and prioritise by scene content. Order output: A \u2192 B \u2192 C \u2192 D \u2192 E \u2192 F \u2192 G \u2192 H.\n\n**Category A \u2014 Anatomical Errors** (always include; escalate for multi-person or complex scenes)\ndeformed hands, malformed fingers, extra fingers, fused fingers, missing fingers, floating fingers, extra limbs, missing limbs, bad anatomy, distorted body, unnatural body proportions, elongated torso, deformed face, asymmetric face, cross-eyed, misaligned eyes, bad teeth, floating teeth, cloned face, two faces, double head, merged figures, dirty skin, black skin\n\n**Category B \u2014 Facial Quality** (escalate for close-up portraits)\nlow detail face, blurry face, undefined facial features, plastic skin, waxy complexion, oversmoothed skin, airbrushed face, uncanny valley expression, dead eyes, glassy eyes\n\n**Category C \u2014 Lighting and Exposure** (always include; tailor to lighting setup)\noverexposed highlights, blown-out skin, washed-out image, underexposed, muddy shadows, flat lighting, shadowless face, conflicting light sources, inconsistent shadow direction\n\u2014 suppress neon color bleed only if scene is not neon-lit\n\u2014 suppress lens flare only if not cinematically intended\n\n**Category D \u2014 Texture and Rendering Artifacts** (always include)\njpeg artifacts, compression artifacts, noise, pixelation, low resolution, blurry background bleed into subject, watermark, signature, logo, copyright mark\n\u2014 suppress film grain only if positive prompt calls for intentional grain or film stock texture\n\u2014 suppress chromatic aberration only if not intentional\n\n**Category E \u2014 Style Contamination** (include unless scene is explicitly stylised)\ncartoon, anime, illustration, painting, sketch, drawing, concept art, 3D render, CGI, plastic sheen, comic book style, cel shading, oversaturated colors, hyper-stylized palette\n\n**Category F \u2014 Compositional Failures** (escalate for multi-person scenes)\ncropped head, cut-off limbs, partial subject at frame edge, tilted horizon (suppress if dutch angle is intended), merged subjects, subjects bleeding into background, out-of-focus subject\n\n**Category G \u2014 NSFW** (include only if scene explicitly requires)\nnudity, explicit content, suggestive content, sexualized pose, revealing clothing bleed\n\n**Category H \u2014 Technical Flags** (always include)\nworst quality, low quality, normal quality, lowres, bad image, ugly\n\n**Length targets**: 40\u201390 tokens for simple scenes; 80\u2013160 tokens for complex multi-person or high-detail scenes.\n\n---\n\n## Output Format\n\nOutput raw JSON only. No markdown fences, no preamble, no trailing text. The first character must be { and the last character must be }.\n\n{\n  \"prompt\": \"Single English paragraph, 100\u2013250 words, quality anchor first\",\n  \"negative_prompt\": \"Comma-separated suppressors ordered A through H, pruned by scene\",\n  \"reasoning\": \"Scene analysis, knowledge resolved, lighting and composition decisions\",\n  \"resolved_knowledge\": \"Specific knowledge resolved and embedded. Write N/A if none.\",\n  \"juggernaut_notes\": \"Focal length choice, lighting rig, color grade selection, texture language used, and why.\",\n  \"suppressors_excluded\": \"Standard suppressors deliberately omitted and the reason.\"\n}"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 548,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -380,
+        490
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 1014
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 1017
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            1023
+          ]
+        }
+      ],
+      "title": "Final Negative Prompt",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "CLIPTextEncode",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "text": true
+          },
+          "version": "7.5.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "A classic Nissan Skyline GT-R R32 in gunmetal grey at Daikoku PA under yellow sodium lights, crowd of tuned cars in soft bokeh, wide angle, gritty urban night photography"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)",
+      "shape": 1
+    },
+    {
+      "id": 549,
+      "type": "ComfySwitchNode",
+      "pos": [
+        -710,
+        500
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "on_false",
+          "name": "on_false",
+          "type": "STRING",
+          "link": 1035
+        },
+        {
+          "localized_name": "on_true",
+          "name": "on_true",
+          "type": "STRING",
+          "link": 1039
+        },
+        {
+          "label": "switch",
+          "localized_name": "switch",
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 1019
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "output",
+          "name": "output",
+          "type": "STRING",
+          "links": [
+            1017
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 550,
+      "type": "PrimitiveBoolean",
+      "pos": [
+        -1800,
+        380
+      ],
+      "size": [
+        400,
+        80
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "value"
+          },
+          "link": 1020
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "BOOLEAN",
+          "name": "BOOLEAN",
+          "type": "BOOLEAN",
+          "links": [
+            1018,
+            1019
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "PrimitiveBoolean"
+      },
+      "widgets_values": [
+        true
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 555,
+      "type": "PrimitiveString",
+      "pos": [
+        -1040,
+        450
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            1035
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "PrimitiveString"
+      },
+      "widgets_values": [
+        "worst quality, low quality, normal quality, jpeg artifacts, blurry, watermark, signature, text overlay, deformed, bad anatomy, extra fingers, mutated hands, disfigured, poorly drawn hands, bad proportions, cropped, out of frame, overexposed, underexposed"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 561,
+      "type": "JsonExtractString",
+      "pos": [
+        -1040,
+        580
+      ],
+      "size": [
+        300,
+        160
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "json_string",
+          "name": "json_string",
+          "type": "STRING",
+          "widget": {
+            "name": "json_string"
+          },
+          "link": 1076
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            1039
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "JsonExtractString"
+      },
+      "widgets_values": [
+        "",
+        "negative_prompt"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 562,
+      "type": "JsonExtractString",
+      "pos": [
+        -1040,
+        250
+      ],
+      "size": [
+        300,
+        160
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "json_string",
+          "name": "json_string",
+          "type": "STRING",
+          "widget": {
+            "name": "json_string"
+          },
+          "link": 1075
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            1046
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "JsonExtractString"
+      },
+      "widgets_values": [
+        "",
+        "prompt"
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 572,
+      "type": "RegexReplace",
+      "pos": [
+        -1310,
+        120
+      ],
+      "size": [
+        230,
+        300
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "string",
+          "name": "string",
+          "type": "STRING",
+          "widget": {
+            "name": "string"
+          },
+          "link": 1073
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            1074
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "RegexReplace"
+      },
+      "widgets_values": [
+        "",
+        "^```json\\s*",
+        "",
+        true,
+        false,
+        false,
+        0
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 573,
+      "type": "RegexReplace",
+      "pos": [
+        -1310,
+        460
+      ],
+      "size": [
+        230,
+        300
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "string",
+          "name": "string",
+          "type": "STRING",
+          "widget": {
+            "name": "string"
+          },
+          "link": 1074
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            1075,
+            1076
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.20.1",
+        "Node name for S&R": "RegexReplace"
+      },
+      "widgets_values": [
+        "",
+        "\\s*```$",
+        "",
+        true,
+        false,
+        false,
+        0
+      ],
+      "color": "#c09430",
+      "bgcolor": "rgba(24,24,27,.9)"
+    }
+  ],
+  "groups": [],
+  "links": [
+    {
+      "id": 839,
+      "origin_id": 482,
+      "origin_slot": 0,
+      "target_id": 268,
+      "target_slot": 1,
+      "type": "STRING"
+    },
+    {
+      "id": 836,
+      "origin_id": 479,
+      "origin_slot": 0,
+      "target_id": 481,
+      "target_slot": 0,
+      "type": "OAIAPI_CLIENT"
+    },
+    {
+      "id": 840,
+      "origin_id": -10,
+      "origin_slot": 0,
+      "target_id": 482,
+      "target_slot": 0,
+      "type": "STRING"
+    },
+    {
+      "id": 843,
+      "origin_id": -10,
+      "origin_slot": 0,
+      "target_id": 481,
+      "target_slot": 5,
+      "type": "STRING"
+    },
+    {
+      "id": 813,
+      "origin_id": -10,
+      "origin_slot": 2,
+      "target_id": 268,
+      "target_slot": 0,
+      "type": "CLIP"
+    },
+    {
+      "id": 1008,
+      "origin_id": -10,
+      "origin_slot": 3,
+      "target_id": 481,
+      "target_slot": 3,
+      "type": "IMAGE"
+    },
+    {
+      "id": 1011,
+      "origin_id": -10,
+      "origin_slot": 4,
+      "target_id": 481,
+      "target_slot": 4,
+      "type": "BOOLEAN"
+    },
+    {
+      "id": 1014,
+      "origin_id": -10,
+      "origin_slot": 2,
+      "target_id": 548,
+      "target_slot": 0,
+      "type": "CLIP"
+    },
+    {
+      "id": 1017,
+      "origin_id": 549,
+      "origin_slot": 0,
+      "target_id": 548,
+      "target_slot": 1,
+      "type": "STRING"
+    },
+    {
+      "id": 1018,
+      "origin_id": 550,
+      "origin_slot": 0,
+      "target_id": 482,
+      "target_slot": 2,
+      "type": "BOOLEAN"
+    },
+    {
+      "id": 1019,
+      "origin_id": 550,
+      "origin_slot": 0,
+      "target_id": 549,
+      "target_slot": 2,
+      "type": "BOOLEAN"
+    },
+    {
+      "id": 1020,
+      "origin_id": -10,
+      "origin_slot": 1,
+      "target_id": 550,
+      "target_slot": 0,
+      "type": "BOOLEAN"
+    },
+    {
+      "id": 1022,
+      "origin_id": 268,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 0,
+      "type": "CONDITIONING"
+    },
+    {
+      "id": 1023,
+      "origin_id": 548,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 1,
+      "type": "CONDITIONING"
+    },
+    {
+      "id": 1035,
+      "origin_id": 555,
+      "origin_slot": 0,
+      "target_id": 549,
+      "target_slot": 0,
+      "type": "STRING"
+    },
+    {
+      "id": 1039,
+      "origin_id": 561,
+      "origin_slot": 0,
+      "target_id": 549,
+      "target_slot": 1,
+      "type": "STRING"
+    },
+    {
+      "id": 1046,
+      "origin_id": 562,
+      "origin_slot": 0,
+      "target_id": 482,
+      "target_slot": 1,
+      "type": "STRING"
+    },
+    {
+      "id": 1047,
+      "origin_id": 481,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 2,
+      "type": "STRING"
+    },
+    {
+      "id": 1073,
+      "origin_id": 481,
+      "origin_slot": 0,
+      "target_id": 572,
+      "target_slot": 0,
+      "type": "STRING"
+    },
+    {
+      "id": 1074,
+      "origin_id": 572,
+      "origin_slot": 0,
+      "target_id": 573,
+      "target_slot": 0,
+      "type": "STRING"
+    },
+    {
+      "id": 1075,
+      "origin_id": 573,
+      "origin_slot": 0,
+      "target_id": 562,
+      "target_slot": 0,
+      "type": "STRING"
+    },
+    {
+      "id": 1076,
+      "origin_id": 573,
+      "origin_slot": 0,
+      "target_id": 561,
+      "target_slot": 0,
+      "type": "STRING"
+    }
+  ],
+  "extra": {}
+}

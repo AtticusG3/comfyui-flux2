@@ -1,4 +1,4 @@
-# source_path|destination_filename|tier
-workflows-bundled/SDXL 1.0 - Img2img Edit.json|SDXL 1.0 - Img2img Edit.json|both
-workflows-bundled/SDXL 1.0 - Inpaint.json|SDXL 1.0 - Inpaint.json|both
-workflows-bundled/SDXL 1.0 - Outpaint.json|SDXL 1.0 - Outpaint.json|both
+# source_path (under /workflows/)|destination_filename|tier
+sdxl-editing/sdxl-img2img.json|sdxl-img2img.json|both
+sdxl-editing/sdxl-inpaint.json|sdxl-inpaint.json|both
+sdxl-editing/sdxl-outpaint.json|sdxl-outpaint.json|both

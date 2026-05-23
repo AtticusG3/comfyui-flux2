@@ -1192,7 +1192,7 @@ apply_nvfp4_workflow_overrides() {
 
     # Z-Anime uses the same core Z-Image/Lumina2 loader path, but its model
     # filenames differ from the upstream Z-Image Turbo template.
-    local zaanime_low="$workflows_dir/Z Anime - Distill 4 Step NVFP4.json"
+    local zaanime_low="$workflows_dir/z-anime-t2i.json"
     if [ -f "$zaanime_low" ]; then
         sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_low"
         sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_low"
@@ -1201,7 +1201,7 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] Workflow override: Z-Anime low -> NVFP4 distill filenames."
     fi
 
-    local zaanime_high="$workflows_dir/Z Anime - Distill 4 Step BF16.json"
+    local zaanime_high="$workflows_dir/z-anime-t2i.json"
     if [ -f "$zaanime_high" ]; then
         sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_high"
         sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-bf16.safetensors/g' "$zaanime_high"
@@ -1210,9 +1210,9 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] Workflow override: Z-Anime high -> BF16 distill filenames."
     fi
 
-    # Bundled Z-Anime T2I.json ships with 4step NVFP4 + FP8 TE; sed aligns to
+    # Bundled z-anime-t2i.json ships with 4step NVFP4 + FP8 TE; sed aligns to
     # VRAM_TARGET and normalizes legacy 8-step names.
-    local zaanime_origin="$workflows_dir/Z-Anime T2I.json"
+    local zaanime_origin="$workflows_dir/z-anime-t2i.json"
     if [ -f "$zaanime_origin" ]; then
         if [ "$VRAM_TARGET" == "low" ]; then
             sed -i 's/z-anime-distill-4step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
@@ -1242,26 +1242,26 @@ apply_nvfp4_workflow_overrides() {
     fi
 
     if [ "$VRAM_TARGET" == "low" ]; then
-        local zturbo_low="$workflows_dir/Z Image Turbo - Text to Image.json"
+        local zturbo_low="$workflows_dir/z-turbo-t2i.json"
         if [ -f "$zturbo_low" ] && grep -Fq "qwen_3_4b.safetensors" "$zturbo_low"; then
             sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b_fp8_mixed.safetensors/g' "$zturbo_low"
             echo "[INFO] Workflow override: Z-Image Turbo low -> Qwen FP8 text encoder."
         fi
 
-        local zbase_low="$workflows_dir/Z Image Base - Text to Image.json"
+        local zbase_low="$workflows_dir/z-base-t2i.json"
         if [ -f "$zbase_low" ] && grep -Fq "qwen_3_4b.safetensors" "$zbase_low"; then
             sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b_fp8_mixed.safetensors/g' "$zbase_low"
             echo "[INFO] Workflow override: Z-Image Base low -> Qwen FP8 text encoder."
         fi
 
-        local zturbo_origin_low="$workflows_dir/Z-Image turbo T2I.json"
+        local zturbo_origin_low="$workflows_dir/z-turbo-t2i.json"
         if [ -f "$zturbo_origin_low" ] && grep -Fq "z_image_turbo_bf16.safetensors" "$zturbo_origin_low"; then
             sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo_origin_low"
             echo "[INFO] Workflow override: Z-Image Turbo low -> official NVFP4 filename."
         fi
     fi
 
-    local hidream="$workflows_dir/HiDream O1 - Example.json"
+    local hidream="$workflows_dir/hidream-o1-example.json"
     if [ -f "$hidream" ]; then
         if [ "$VRAM_TARGET" == "low" ]; then
             sed -i 's/HiDream-O1-Image-Dev-2604-BF16/HiDream-O1-Image-FP8/g' "$hidream"
@@ -1274,6 +1274,19 @@ apply_nvfp4_workflow_overrides() {
         fi
     fi
 
+    local qwen_edit="$workflows_dir/qwen-edit-2511.json"
+    if [ -f "$qwen_edit" ]; then
+        if [ "$VRAM_TARGET" == "high" ]; then
+            sed -i 's/qwen_image_edit_2511_nvfp4\.safetensors/Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors/g' "$qwen_edit"
+            sed -i 's#https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4/resolve/main/qwen_image_edit_2511_nvfp4\.safetensors#https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8/resolve/main/Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors#g' "$qwen_edit"
+            echo "[INFO] Workflow override: Qwen Image Edit 2511 high -> FP8 diffusion filename."
+        elif grep -Fq "Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors" "$qwen_edit"; then
+            sed -i 's/Qwen-Image-Edit-2511-FP8_e4m3fn\.safetensors/qwen_image_edit_2511_nvfp4.safetensors/g' "$qwen_edit"
+            sed -i 's#https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8/resolve/main/Qwen-Image-Edit-2511-FP8_e4m3fn\.safetensors#https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4/resolve/main/qwen_image_edit_2511_nvfp4.safetensors#g' "$qwen_edit"
+            echo "[INFO] Workflow override: Qwen Image Edit 2511 low -> NVFP4 diffusion filename."
+        fi
+    fi
+
     if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
         return 0
     fi
@@ -1281,10 +1294,10 @@ apply_nvfp4_workflow_overrides() {
     local changed=0
     local wf
     for wf in \
-        "$workflows_dir/FLUX.2 Klein 4B Distilled - Text to Image.json" \
-        "$workflows_dir/FLUX.2 Klein 4B Distilled - Image Edit.json" \
-        "$workflows_dir/FLUX.2 Klein 9B Distilled - Text to Image.json" \
-        "$workflows_dir/FLUX.2 Klein 9B Distilled - Image Edit.json"
+        "$workflows_dir/klein-4b-t2i.json" \
+        "$workflows_dir/klein-4b-edit.json" \
+        "$workflows_dir/klein-9b-t2i.json" \
+        "$workflows_dir/klein-9b-edit.json"
     do
         if [ -f "$wf" ]; then
             sed -i 's/flux-2-klein-4b-fp8\.safetensors/flux-2-klein-4b-nvfp4.safetensors/g' "$wf"
@@ -1297,19 +1310,19 @@ apply_nvfp4_workflow_overrides() {
         echo "[INFO] NVFP4 workflow override enabled: switched Klein workflows to NVFP4 model filenames."
     fi
 
-    local zturbo="$workflows_dir/Z Image Turbo - Text to Image.json"
+    local zturbo="$workflows_dir/z-turbo-t2i.json"
     if [ -f "$zturbo" ] && grep -Fq "z_image_turbo_bf16.safetensors" "$zturbo"; then
         sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo"
         echo "[INFO] NVFP4 workflow override enabled: Z-Image Turbo -> official NVFP4 filename."
     fi
 
-    local zturbo_origin="$workflows_dir/Z-Image turbo T2I.json"
+    local zturbo_origin="$workflows_dir/z-turbo-t2i.json"
     if [ -f "$zturbo_origin" ] && grep -Fq "z_image_turbo_bf16.safetensors" "$zturbo_origin"; then
         sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo_origin"
         echo "[INFO] NVFP4 workflow override enabled: Z-Image Turbo -> official NVFP4 filename."
     fi
 
-    local ewf_er="$workflows_dir/ERNIE-Image-Turbo - Text to Image.json"
+    local ewf_er="$workflows_dir/ernie-turbo-t2i.json"
     if [ -f "$ewf_er" ]; then
         # Abiray Turbo: match workflow widget defaults to nvfp4 filenames when list was switched.
         if grep -Fq "ernie-image-turbo-fp8.safetensors" "$ewf_er"; then
@@ -1320,25 +1333,25 @@ apply_nvfp4_workflow_overrides() {
 
     # Community NVFP4 workflow filename rewrites.
     if [ "$NVFP4_MODE_LC" == "allow-community" ]; then
-        local frwf="$workflows_dir/FireRed Image Edit 1.0 - Image Edit.json"
+        local frwf="$workflows_dir/firered-edit.json"
         if [ -f "$frwf" ] && grep -Fq "FireRed-Image-Edit-1.0_fp8mixed_comfy.safetensors" "$frwf"; then
             sed -i 's/FireRed-Image-Edit-1.0_fp8mixed_comfy\.safetensors/FireRed-Image-Edit-1_NVFP4.safetensors/g' "$frwf"
             echo "[INFO] NVFP4 workflow override enabled: FireRed Image Edit -> Starnodes NVFP4 filename."
         fi
 
-        local kreawf="$workflows_dir/FLUX.1 Krea Dev - Text to Image.json"
+        local kreawf="$workflows_dir/flux-krea-t2i.json"
         if [ -f "$kreawf" ] && grep -Fq "flux1-krea-dev_fp8_scaled.safetensors" "$kreawf"; then
             sed -i 's/flux1-krea-dev_fp8_scaled\.safetensors/flux1-krea-dev-nvfp4.safetensors/g' "$kreawf"
             echo "[INFO] NVFP4 workflow override enabled: FLUX.1 Krea Dev -> elihung NVFP4 filename."
         fi
 
-        local ewf_sft="$workflows_dir/ERNIE-Image - Text to Image.json"
+        local ewf_sft="$workflows_dir/ernie-sft-t2i.json"
         if [ -f "$ewf_sft" ] && grep -Fq "ernie-image.safetensors" "$ewf_sft"; then
             sed -i 's/ernie-image\.safetensors/ernie-image-nvfp4.safetensors/g' "$ewf_sft"
             echo "[INFO] NVFP4 workflow override enabled: ERNIE-Image SFT -> Starnodes NVFP4 filename."
         fi
 
-        local zbase="$workflows_dir/Z Image Base - Text to Image.json"
+        local zbase="$workflows_dir/z-base-t2i.json"
         if [ -f "$zbase" ] && grep -Fq "z_image_bf16.safetensors" "$zbase"; then
             sed -i 's/z_image_bf16\.safetensors/z-image-base-nvfp4_quality.safetensors/g' "$zbase"
             echo "[INFO] NVFP4 workflow override enabled: Z-Image Base -> community quality NVFP4 filename."

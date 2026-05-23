@@ -1,0 +1,2 @@
+# source_path (under /workflows/)|destination_filename|tier
+hunyuan-video/hunyuan-video-guide.json|hunyuan-video-guide.json|both

@@ -1,1 +1,1 @@
-# All workflows for this pack are bundled in workflows/klein-distilled/
+# Bundled via workflows-bundled.txt (4B T2I + 4B image edit; NVFP4 via entrypoint sed).

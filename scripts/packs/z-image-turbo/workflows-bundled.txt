@@ -1,2 +1,2 @@
-# source_path|destination_filename|tier
-z-image-turbo/Z-Image turbo T2I.json|Z Image Turbo - Text to Image.json|both
+# source_path (under /workflows/)|destination_filename|tier
+z-image-turbo/z-turbo-t2i.json|z-turbo-t2i.json|both

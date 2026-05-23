@@ -1,0 +1,34 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "MarkdownNote",
+      "pos": [
+        0,
+        0
+      ],
+      "size": [
+        600,
+        200
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "MarkdownNote"
+      },
+      "widgets_values": [
+        "Import official Hunyuan Video workflow: drag Comfy-Org example .webp from workflows-high.txt into ComfyUI, then Save. Models: hunyuan_video_t2v_720p_bf16 (low/high per pack tier)."
+      ]
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

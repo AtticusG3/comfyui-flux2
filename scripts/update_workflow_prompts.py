@@ -20,35 +20,29 @@ ANIME_NEG = (
 
 
 SCENES = {
-    "workflows/flux2/Flux 2 Klein T2I.json": (
+    "workflows/flux2/klein-9b-t2i.json": (
         "A Nissan Silvia S15 Spec-R in metallic pearl white parked in front of a closed Daikoku Futo "
         "style warehouse, sodium vapor lights, light rain, wide-angle automotive photograph",
         "",
     ),
-    "workflows/flux2/Flux 2 Klein I2I.json": (
+    "workflows/flux2/klein-9b-edit.json": (
         "Turn the car into a midnight purple widebody build with carbon canards and a large rear wing, "
         "keep license plate and stance, same environment and lighting",
         "",
     ),
-    "workflows/sdxl-lightning/sdxl-lightning-workflow-low.json": (
+    "workflows/sdxl-lightning/sdxl-lightning-t2i.json": (
         "A Toyota Supra MK4 A80 drifting through a hairpin on the Nurburgring dressed in Japanese livery, "
         "twin-turbo exhaust flames, Rising Sun flag hood wrap, motion blur on tyres, race marshal in background, "
         "overcast dramatic sky, professional motorsport photography, telephoto lens compression, ultra sharp",
         SDXL_NEG,
     ),
-    "workflows/sdxl-lightning/sdxl-lightning-workflow-high.json": (
+    "workflows/sdxl-lightning/sdxl-lightning-hires.json": (
         "Shibuya crossing at 3am during a typhoon, a heavily modified Honda NSX-R C30 with Kanjo style livery "
         "rolling through standing water, reflections of red and white traffic lights on the flooded road surface, "
         "background figures with umbrellas, cinematic anamorphic bokeh, Hasselblad medium-format texture, photorealistic",
         SDXL_NEG,
     ),
-    "workflows/sdxl-lightning/sdxl-lightning-workflow-full.json": (
-        "Replace the car in the foreground with a 2003 Mitsubishi Lancer Evolution VIII in Evo Blue Pearl, "
-        "Group N livery with RALLIART text on the door, gravel road rally stage, spectators wearing happi coats "
-        "visible behind snow poles, same lighting conditions as the original image",
-        SDXL_NEG,
-    ),
-    "workflows/flux1-krea/flux1-krea-dev.json": (
+    "workflows/flux1-krea/flux-krea-t2i.json": (
         "A Kawasaki Z900RS Cafe Racer in candy green standing on the forecourt of a 1970s Showa-era petrol station "
         "in rural Hokkaido, analogue pump with hiragana labels, elderly station attendant in company uniform bowing, "
         "late autumn maples surrounding the scene, Kodak Portra 400 film emulation, slight halation on highlights",
@@ -69,91 +63,127 @@ SCENES = {
         "<quality>masterpiece, best quality</quality>",
         ANIME_NEG,
     ),
-    "workflows/ovis-image/image-ovis-text-to-image.json": (
+    "workflows/ovis-image/ovis-t2i.json": (
         "A bold Japanese drift event poster, foreground shows a widebody Mazda RX-7 FD in aggressive stance mid-drift with tyre smoke, "
         "background is a night race circuit with stadium lights, large text reads DRIFT MATSURI 2025 in stylised English and below it "
         "走り屋の祭り in bold gothic kanji, event details text Ebisu Circuit • Fukushima • August at the bottom, clean graphic design, "
         "high contrast, professional print quality",
         ANIME_NEG,
     ),
-    "workflows/wan-2-2/text-to-video-wan22-5b.json": (
+    "workflows/wan-2-2/wan22-5b-t2v.json": (
         "A Toyota AE86 Trueno being driven up a mountain touge road in Gunma at dawn, drifting through tight S-curves surrounded by "
         "cryptomeria cedar forest, dramatic tyre smoke catching the first rays of sunrise, cinematic wide tracking shot, camera mounted "
         "low at road level, smooth consistent motion",
         VIDEO_NEG,
     ),
-    "workflows/wan-2-2/image-to-video-wan22-5b.json": (
+    "workflows/wan-2-2/wan22-5b-i2v.json": (
         "The driver's hands grip the D-shaped steering wheel of an AE86, gearstick shifts, revs visible on the analogue tachometer "
         "climbing to 8000rpm, dashboard shaking, Gunma mountain road hairpin visible through the windscreen, handheld camera feel, "
         "consistent interior detail throughout",
         VIDEO_NEG,
     ),
-    "workflows/wan-2-2/text-to-video-wan22-14b.json": (
+    "workflows/wan-2-2/wan22-14b-t2v.json": (
         "A JGTC 2001 grid start at Suzuka Circuit, Castrol Tom's Supra and Xanavi Nismo GT-R lined up alongside GT300 cars, dramatic "
         "wide establishing shot looking down the main straight, team crews watching, crowd packed grandstands, Fuji Bank logo visible "
         "on bridges, cinematic broadcast quality, consistent motion throughout all vehicles and people",
         VIDEO_NEG,
     ),
-    "workflows/wan-2-2/image-to-video-wan22-14b.json": (
+    "workflows/wan-2-2/wan22-14b-i2v.json": (
         "Animate this scene: the driver of the Supra raises his helmet visor and gives a thumbs up to the camera, steam rises from the "
         "car's hood post-race, mechanics run toward it, confetti begins falling from above, natural crowd movement in background, "
         "broadcast-quality video motion",
         VIDEO_NEG,
     ),
-    "workflows/wan-2-2/video-wan2-2-14b-fun-inpaint.json": (
+    "workflows/wan-2-2/wan22-14b-inpaint.json": (
         "The car in the foreground transforms, its paint fades from white to the iconic black-and-gold Keiichi Tsuchiya Levin livery, "
         "土屋圭市 kanji on the door appears, the transformation is smooth and cinematic, all other scene elements remain unchanged, "
         "consistent motion",
         VIDEO_NEG,
     ),
-    "workflows/wan-2-2/video-wan2-2-14b-fun-camera.json": (
+    "workflows/wan-2-2/wan22-14b-camera.json": (
         "An Initial D style downhill chase through Hakone at night, an RX-7 Spirit R and a Lan-Evo IX weave through switchbacks while the "
         "camera transitions from roof-mounted POV to roadside tracking and then aerial reveal, roadside vending machines glow in the mist, "
         "authentic touge atmosphere, smooth coherent motion",
         VIDEO_NEG,
     ),
-    "workflows/ace-step/audio-ace-step-1-5-checkpoint.json": (
+    "workflows/ace-step/ace-step-t2m.json": (
         "Japanese city pop, 1980s Shibuya-kei style, driving synth bass, Rhodes electric piano, brushed jazz drumkit, warm tape saturation, "
         "female Japanese vocal hooks, late-night cruise vibes, 108 BPM, key of F major",
         "",
     ),
-    "workflows/hunyuan-3d/3d-hunyuan3d-v2-1.json": (
+    "workflows/hunyuan-3d/hunyuan3d-i2-3d.json": (
         "Highly detailed 3D model of a Nissan Silvia S15 Spec-R, clean studio three-quarter front view, Brilliant Blue pearl paint, stock "
         "body kit, chrome RAYS VOLK TE37 wheels, clean topology suitable for a game asset pipeline",
         "",
     ),
-    "workflows/z-anime/Z-Anime T2I.json": (
+    "workflows/z-anime/z-anime-t2i.json": (
         "A young anime pilot girl in a crisp white JASDF-style flight suit standing on the deck of a fictional carrier at sunset, "
         "F-2 inspired trainer behind her with kanji roundels, warm rim light, detailed anime illustration, cinematic vertical composition",
         ANIME_NEG,
     ),
-    "workflows/z-image-turbo/Z-Image turbo T2I.json": (
+    "workflows/z-image-turbo/z-turbo-t2i.json": (
         "Photorealistic night photograph of a Toyota GR Yaris Circuit Edition in Emotional Red II parked on a Hakone hairpin, "
         "light rain, guardrail reflections, long exposure light trails from distant traffic, 35mm lens look",
         "",
     ),
-    "workflows/z-image-turbo/Z-Image base T2I.json": (
+    "workflows/z-image-turbo/z-base-t2i.json": (
         "Studio lit product shot of a carbon-kevlar racing helmet with subtle Mount Fuji line art, matte finish, neutral grey sweep, "
         "sharp focus, commercial automotive photography",
         "",
     ),
-    "workflows/ernie-image/ERNIE-Image - T2I.json": (
+    "workflows/ernie-image/ernie-sft-t2i.json": (
         "Watercolor travel poster of Kanazawa Higashi Chaya district at dusk, paper grain, soft edges, muted indigo and ochre palette, "
         "small silhouettes of tourists, vintage railway typography in corner",
         "",
     ),
-    "workflows/ernie-image/ERNIE-Image-Turbo T2I.json": (
+    "workflows/ernie-image/ernie-turbo-t2i.json": (
         "Bold vector travel sticker of a shinkansen nose cone in cobalt and white, thick white outline, flat colors, minimal shadows, "
         "suitable for print on a laptop skin",
         "",
     ),
-    "workflows/firered-image-edit/FireRed I2I.json": (
+    "workflows/firered-image-edit/firered-edit.json": (
         "Change the jacket to a bright indigo technical shell with reflective piping, keep pose and background, realistic fabric folds",
         "",
     ),
-    "workflows/sdxl-lightning/SDXL_Lightning T2I.json": (
-        "A classic Nissan Skyline GT-R R32 in gunmetal grey at Daikoku PA under yellow sodium lights, crowd of tuned cars in soft bokeh, "
-        "wide angle, gritty urban night photography",
+    "workflows/flux2/klein-4b-t2i.json": (
+        "A Nissan Silvia S15 Spec-R in metallic pearl white, low VRAM 4B Klein path, "
+        "sodium vapor lights, light rain, wide-angle automotive photograph",
+        "",
+    ),
+    "workflows/flux2/klein-4b-edit.json": (
+        "Turn the car into a midnight purple widebody build, keep environment and lighting, 4B Klein edit",
+        "",
+    ),
+    "workflows/qwen-image-edit-2511/qwen-edit-2511.json": (
+        "Change the jacket to a bright indigo technical shell with reflective piping, keep pose and background",
+        "",
+    ),
+    "workflows/realvisxl/realvisxl-lightning-t2i.json": (
+        "A classic Nissan Skyline GT-R R32 in gunmetal grey at Daikoku PA, gritty urban night photography",
+        SDXL_NEG,
+    ),
+    "workflows/realvisxl/realvisxl-v5-hires.json": (
+        "Shibuya crossing at 3am, modified Honda NSX-R, photorealistic hires pass",
+        SDXL_NEG,
+    ),
+    "workflows/hidream-o1/hidream-o1-example.json": (
+        "A cinematic portrait of a woman in a red coat standing in neon rain, editorial photography",
+        "",
+    ),
+    "workflows/hunyuan-video/hunyuan-video-guide.json": (
+        "A cat walking on a beach at sunset, gentle waves, cinematic motion",
+        VIDEO_NEG,
+    ),
+    "workflows/sdxl-editing/sdxl-img2img.json": (
+        "Replace the car with a Mitsubishi Lancer Evolution VIII in Evo Blue Pearl, same lighting",
+        SDXL_NEG,
+    ),
+    "workflows/sdxl-editing/sdxl-inpaint.json": (
+        "Fill the masked region with matching asphalt texture and lane markings",
+        SDXL_NEG,
+    ),
+    "workflows/sdxl-editing/sdxl-outpaint.json": (
+        "Extend the scene with more city street and neon signs, consistent perspective",
         SDXL_NEG,
     ),
 }
@@ -303,7 +333,11 @@ def safe_console(text: str):
 
 def main():
     root = Path("workflows")
-    files = sorted(p.as_posix() for p in root.rglob("*.json"))
+    files = sorted(
+        p.as_posix()
+        for p in root.rglob("*.json")
+        if "/_templates/" not in p.as_posix()
+    )
     missing = [f for f in files if f not in SCENES]
     if missing:
         raise RuntimeError(f"Scene mapping missing for files: {missing}")

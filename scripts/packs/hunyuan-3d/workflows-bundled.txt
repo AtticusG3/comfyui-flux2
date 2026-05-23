@@ -1,2 +1,2 @@
-# source_path|destination_filename|tier
-hunyuan-3d/3d-hunyuan3d-v2-1.json|Hunyuan3D 2.1 - Image to 3D.json|both
+# source_path (under /workflows/)|destination_filename|tier
+hunyuan-3d/hunyuan3d-i2-3d.json|hunyuan3d-i2-3d.json|both

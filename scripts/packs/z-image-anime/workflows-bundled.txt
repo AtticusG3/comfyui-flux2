@@ -1,2 +1,2 @@
-z-anime/Z-Anime T2I.json|Z-Anime T2I.json|both
-
+# source_path (under /workflows/)|destination_filename|tier
+z-anime/z-anime-t2i.json|z-anime-t2i.json|both

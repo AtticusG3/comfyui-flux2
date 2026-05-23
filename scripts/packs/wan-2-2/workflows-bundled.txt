@@ -1,7 +1,7 @@
-# source_path|destination_filename|tier
-wan-2-2/text-to-video-wan22-5b.json|Wan 2.2 - 5B Text to Video.json|low
-wan-2-2/image-to-video-wan22-5b.json|Wan 2.2 - 5B Image to Video.json|low
-wan-2-2/text-to-video-wan22-14b.json|Wan 2.2 - 14B Text to Video.json|high
-wan-2-2/image-to-video-wan22-14b.json|Wan 2.2 - 14B Image to Video.json|high
-wan-2-2/video-wan2-2-14b-fun-inpaint.json|Wan 2.2 - 14B Fun Inpaint.json|high
-wan-2-2/video-wan2-2-14b-fun-camera.json|Wan 2.2 - 14B Fun Camera Control.json|high
+# source_path (under /workflows/)|destination_filename|tier
+wan-2-2/wan22-14b-camera.json|wan22-14b-camera.json|high
+wan-2-2/wan22-14b-i2v.json|wan22-14b-i2v.json|high
+wan-2-2/wan22-14b-inpaint.json|wan22-14b-inpaint.json|high
+wan-2-2/wan22-14b-t2v.json|wan22-14b-t2v.json|high
+wan-2-2/wan22-5b-i2v.json|wan22-5b-i2v.json|low
+wan-2-2/wan22-5b-t2v.json|wan22-5b-t2v.json|low

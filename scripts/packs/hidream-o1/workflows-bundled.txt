@@ -1,2 +1,2 @@
-# source_path|destination_filename|tier
-hidream-o1/HiDream O1 - Example.json|HiDream O1 - Example.json|both
+# source_path (under /workflows/)|destination_filename|tier
+hidream-o1/hidream-o1-example.json|hidream-o1-example.json|both

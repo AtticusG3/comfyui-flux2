@@ -317,8 +317,8 @@ def load_bundled_mappings(packs_dir: Path) -> dict[str, list[tuple[str, str]]]:
 
 def infer_pack_from_path(rel: str) -> str | None:
     rel = rel.replace("\\", "/")
-    if rel.startswith("Flux 2 Klein"):
-        return "klein-distilled" if any(x in rel for x in ("4B", "9B")) else "flux2"
+    if rel.startswith("klein-") or "klein-" in rel:
+        return "klein-distilled"
     if "/" in rel:
         first = rel.split("/", 1)[0]
         if first == "z-anime":

@@ -1,1 +1,10 @@
-# VRAM utilities do not download model weights.
+﻿# VRAM utilities: shared enhancement models (always-on with vram-utils nodes)
+# SeedVR2 DiT + VAE (~3.9 GB total) for bundled workflow upscaler subgraphs.
+
+https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/seedvr2_ema_3b_fp8_e4m3fn.safetensors
+  dir=ComfyUI/models/SEEDVR2
+  out=seedvr2_ema_3b_fp8_e4m3fn.safetensors
+
+https://huggingface.co/numz/SeedVR2_comfyUI/resolve/main/ema_vae_fp16.safetensors
+  dir=ComfyUI/models/SEEDVR2
+  out=ema_vae_fp16.safetensors
