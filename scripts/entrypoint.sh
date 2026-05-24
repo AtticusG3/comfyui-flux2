@@ -1771,6 +1771,7 @@ echo ""
 
 export PATH="${PATH}:/app/.local/bin"
 export PYTHONPYCACHEPREFIX="/app/.cache/pycache"
+export CC="${CC:-gcc}"
 
 cd /app
 

@@ -12,6 +12,7 @@ services:
       - "./data/output:/app/ComfyUI/output"
       - "./data/workflows:/app/ComfyUI/user/default/workflows"
     environment:
+      - CC=gcc
       - TZ=${TZ:-UTC}
       - CLI_ARGS=${CLI_ARGS:-}
       - AUTO_VRAM_ARGS=${AUTO_VRAM_ARGS:-true}
