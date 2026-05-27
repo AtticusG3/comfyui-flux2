@@ -274,6 +274,8 @@ UUID_NODE_RE = re.compile(
     re.I,
 )
 
+NVFP4_FILENAME_RE = re.compile(r"nvfp4", re.I)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -413,6 +415,43 @@ def audit_subgraph_definitions(workflows_dir: Path) -> list[dict[str, object]]:
     return issues
 
 
+def audit_pack_catalog_nvfp4_downloads(packs_dir: Path) -> list[dict[str, str]]:
+    """Pack catalogs must not download NVFP4 weights unless entrypoint swap is enabled."""
+    issues: list[dict[str, str]] = []
+    for pack_dir in sorted(packs_dir.iterdir()):
+        if not pack_dir.is_dir():
+            continue
+        for tier in ("low", "high"):
+            models_file = pack_dir / f"models-{tier}.txt"
+            if not models_file.is_file():
+                continue
+            _, planned = parse_download_blocks(models_file)
+            for name in sorted(planned):
+                if NVFP4_FILENAME_RE.search(name):
+                    issues.append(
+                        {"pack": pack_dir.name, "tier": tier, "model": name}
+                    )
+    return issues
+
+
+def audit_bundled_workflow_nvfp4_defaults(
+    bundled: dict[str, list[tuple[str, str]]], workflows_dir: Path
+) -> list[dict[str, str]]:
+    """Bundled workflow sources must ship non-NVFP4 loader defaults (NVFP4 via startup only)."""
+    issues: list[dict[str, str]] = []
+    for src in sorted(bundled.keys()):
+        if "_templates" in src:
+            continue
+        wf_path = workflows_dir / src
+        if not wf_path.is_file():
+            continue
+        for _subdir, filename in extract_workflow_refs(wf_path):
+            name = Path(filename).name
+            if NVFP4_FILENAME_RE.search(name):
+                issues.append({"workflow": src, "model": name})
+    return issues
+
+
 def audit_bundled_manifests(
     workflows_dir: Path, packs_dir: Path
 ) -> list[dict[str, str]]:
@@ -492,6 +531,8 @@ def main() -> int:
                 )
 
     manifest_issues = audit_bundled_manifests(workflows_dir, packs_dir)
+    catalog_nvfp4_issues = audit_pack_catalog_nvfp4_downloads(packs_dir)
+    bundled_nvfp4_issues = audit_bundled_workflow_nvfp4_defaults(bundled, workflows_dir)
     subgraph_issues = audit_subgraph_definitions(workflows_dir)
     bundled_rels = set(bundled.keys())
     subgraph_blocking = [
@@ -508,6 +549,8 @@ def main() -> int:
                     "node_issues": node_issues,
                     "unmapped": unmapped,
                     "manifest_issues": manifest_issues,
+                    "catalog_nvfp4_issues": catalog_nvfp4_issues,
+                    "bundled_nvfp4_issues": bundled_nvfp4_issues,
                     "subgraph_issues": subgraph_issues,
                     "subgraph_blocking": subgraph_blocking,
                 },
@@ -536,6 +579,22 @@ def main() -> int:
                 print(f"  - {item['pack']}: {item['source']}")
         else:
             print("[OK] All workflows-bundled sources exist.")
+        if catalog_nvfp4_issues:
+            print(
+                f"[ERROR] Pack catalogs download NVFP4 by default ({len(catalog_nvfp4_issues)}):"
+            )
+            for item in catalog_nvfp4_issues:
+                print(f"  - {item['pack']} ({item['tier']}): {item['model']}")
+        else:
+            print("[OK] Pack catalogs use FP8/BF16 defaults (no NVFP4 out= filenames).")
+        if bundled_nvfp4_issues:
+            print(
+                f"[ERROR] Bundled workflows ship NVFP4 loader defaults ({len(bundled_nvfp4_issues)}):"
+            )
+            for item in bundled_nvfp4_issues:
+                print(f"  - {item['workflow']}: {item['model']}")
+        else:
+            print("[OK] Bundled workflow loader defaults are non-NVFP4.")
         if subgraph_issues:
             print(f"[WARN] Missing embedded subgraph definitions ({len(subgraph_issues)}):")
             for item in subgraph_issues:
@@ -551,7 +610,15 @@ def main() -> int:
                 ids = ", ".join(item["subgraph_ids"])
                 print(f"  - {item['workflow']}: {ids}")
 
-    return 1 if model_issues or manifest_issues or subgraph_blocking else 0
+    return (
+        1
+        if model_issues
+        or manifest_issues
+        or catalog_nvfp4_issues
+        or bundled_nvfp4_issues
+        or subgraph_blocking
+        else 0
+    )
 
 
 if __name__ == "__main__":

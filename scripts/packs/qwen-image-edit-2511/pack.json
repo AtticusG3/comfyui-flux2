@@ -12,7 +12,7 @@
     "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning"
   ],
   "requires_hf_token": false,
-  "notes_low": "NVFP4 diffusion (Bedovyy) + shared Qwen Image TE/VAE + Lightning 4-step LoRA. Bundled Comfy-Org image-edit workflow. RTX 50+ class GPUs.",
-  "notes_high": "FP8 e4m3fn diffusion (1038lab) + shared Qwen Image TE/VAE + Lightning 4-step LoRA. Bundled workflow UNET defaults rewritten to FP8 on startup.",
+  "notes_low": "FP8 diffusion (1038lab) + shared Qwen Image TE/VAE + Lightning 4-step LoRA. Set NVFP4_SUPPORTED=true for Bedovyy NVFP4 on Blackwell.",
+  "notes_high": "FP8 e4m3fn diffusion (1038lab) + shared Qwen Image TE/VAE + Lightning 4-step LoRA.",
   "description": "Qwen Image Edit 2511 image-to-image weights and bundled ComfyUI Lightning edit workflow."
 }

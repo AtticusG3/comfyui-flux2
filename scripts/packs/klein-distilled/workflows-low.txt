@@ -1,1 +1,1 @@
-# Bundled via workflows-bundled.txt (4B T2I + 4B image edit; NVFP4 via entrypoint sed).
+# Bundled via workflows-bundled.txt (4B T2I + 4B image edit; FP8 default; NVFP4 via entrypoint when flagged).

@@ -1,11 +1,13 @@
-# Z-Anime NVFP4 (r0b0tlab) + SeeSee21 TE/VAE
-https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-base-nvfp4.safetensors
-  dir=ComfyUI/models/diffusion_models
-  out=z-anime-base-nvfp4.safetensors
+# Z-Anime FP8 (SeeSee21) + TE/VAE
+# NVFP4_SUPPORTED=true swaps diffusion to r0b0tlab Z-Anime-NVFP4 (Blackwell only).
 
-https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4.safetensors
+https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-base-fp8.safetensors
   dir=ComfyUI/models/diffusion_models
-  out=z-anime-distill-4step-nvfp4.safetensors
+  out=z-anime-base-fp8.safetensors
+
+https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8.safetensors
+  dir=ComfyUI/models/diffusion_models
+  out=z-anime-distill-4step-fp8.safetensors
 
 https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors
   dir=ComfyUI/models/text_encoders
@@ -18,4 +20,3 @@ https://huggingface.co/SeeSee21/Z-Anime/resolve/main/vae/ae.safetensors
 https://huggingface.co/fofr/comfyui/resolve/45bfaf76abb8bcef84a6227ef4473485c2d1406e/upscale_models/RealESRGAN_x2.pth
   dir=ComfyUI/models/upscale_models
   out=RealESRGAN_x2.pth
-

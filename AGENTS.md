@@ -72,7 +72,8 @@ sync/update logic, and persistent host-mounted data paths.
 
 ## NVFP4 Policy
 
-- `NVFP4_SUPPORTED=true` enables URL override logic.
+- Default `NVFP4_SUPPORTED=false`: pack catalogs and bundled workflows use FP8/BF16 only (no NVFP4 downloads). Z-Anime low tier uses [SeeSee21 FP8](https://huggingface.co/SeeSee21/Z-Anime/tree/main/diffusion_models); high tier uses SeeSee21 BF16.
+- `NVFP4_SUPPORTED=true` enables URL override logic (Klein, Z-Turbo, Z-Anime FP8 to r0b0tlab NVFP4, Qwen Edit FP8 to Bedovyy NVFP4, etc.).
 - `NVFP4_MODE`:
   - `official-only` (default): official NVFP4 sources only.
   - `allow-community`: allows configured community NVFP4 overrides (experimental),
@@ -117,6 +118,7 @@ sync/update logic, and persistent host-mounted data paths.
 - Keep `z-image-base`, `z-image-turbo`, and `z-image-anime` as distinct selectable packs; do not collapse them.
 - Bundled workflows use core `SaveImage`, not `LayerUtility: SaveImagePlus` (LayerStyle not required for saves).
 - After editing `workflows/**/*.json`, run `validate-comfyui-workflow` / `scripts/validate_workflow_json.py` before merge.
+- `NVFP4_SUPPORTED=false` means no NVFP4 downloads or workflow filenames anywhere; default packs use FP8 on low VRAM and BF16 on high (e.g. Z-Anime SeeSee21). Enable NVFP4 only when hardware supports it and the flag is explicitly `true`.
 
 ## Learned Workspace Facts
 
@@ -124,10 +126,12 @@ sync/update logic, and persistent host-mounted data paths.
 - Startup auto-removes unmanaged legacy custom-node dirs: `ComfyUI-Trellis2-GGUF`, `inference-gpu`, `openai-api`, bad `ComfyUI-NewBie` clone.
 - Image pre-bakes ComfyUI, Manager, and vram-utils (including comfyui-openai-api); not Civicomfy.
 - `flash-attn` pre-bake is best-effort and often fails on torch 2.12 + cu130; xformers and sageattention are the reliable attention backends.
-- Runtime image has no compilers; source-only pip deps after managed node updates need image rebuild or Manager **Try fix**.
+- Runtime image includes gcc/build-essential for SageAttention 2 / Triton JIT; compose and entrypoint set `CC=gcc`. Other source-only pip deps after managed node updates may still need image rebuild or Manager **Try fix**.
 - ComfyUI `video_types.py` PyAV rotation patch lives in `scripts/patch_video_types_rotation.py`;
   use structural line matching (not sed literal replace) so upstream indentation changes do not break it.
-- Startup always runs the aria2 model download pass; existing models should skip/resume from
+- Startup always runs the aria2 model download pass; entrypoint dedupes merged pack lists by
+  `dir=` + `out=` via `scripts/dedupe_model_download_list.py` before aria2 to avoid duplicate-job
+  races on shared files (e.g. `vae/ae.safetensors`). Existing models should skip/resume from
   persisted `./data/models`, while repeated full downloads usually mean incomplete files,
   NVFP4 filename changes, or a missing/wiped bind mount.
 - Z-Image Turbo uses the shared Comfy-Org VAE `ae.safetensors`; do not require the old

@@ -76,6 +76,9 @@ OFFICIAL_NVFP4_CATALOG_ALIASES: dict[str, str] = {
     "flux-2-klein-9b-nvfp4.safetensors": "flux-2-klein-9b-fp8.safetensors",
     "ernie-image-turbo-nvfp4.safetensors": "ernie-image-turbo-fp8.safetensors",
     "z_image_turbo_nvfp4.safetensors": "z_image_turbo_bf16.safetensors",
+    "z-anime-base-nvfp4.safetensors": "z-anime-base-fp8.safetensors",
+    "z-anime-distill-4step-nvfp4.safetensors": "z-anime-distill-4step-fp8.safetensors",
+    "qwen_image_edit_2511_nvfp4.safetensors": "Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors",
 }
 
 # Community NVFP4 (also requires NVFP4_MODE=allow-community).

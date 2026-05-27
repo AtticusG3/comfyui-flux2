@@ -1,1 +1,1 @@
-# Bundled via workflows-bundled.txt (NVFP4 UNET default; high tier uses entrypoint FP8 rewrite).
+# Bundled via workflows-bundled.txt (FP8 UNET default; NVFP4 only when NVFP4_SUPPORTED=true).

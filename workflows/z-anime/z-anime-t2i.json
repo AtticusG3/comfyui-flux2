@@ -3396,8 +3396,8 @@
               "Node name for S&R": "UNETLoader",
               "models": [
                 {
-                  "name": "z-anime-distill-4step-nvfp4.safetensors",
-                  "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z-anime-distill-4step-nvfp4.safetensors",
+                  "name": "z-anime-distill-4step-fp8.safetensors",
+                  "url": "https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8.safetensors",
                   "directory": "diffusion_models"
                 }
               ],
@@ -3415,7 +3415,7 @@
               "secondTabWidth": 65
             },
             "widgets_values": [
-              "z-anime-distill-4step-nvfp4.safetensors",
+              "z-anime-distill-4step-fp8.safetensors",
               "default"
             ],
             "color": "#346434",

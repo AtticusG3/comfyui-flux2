@@ -468,7 +468,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "z_image_turbo_nvfp4.safetensors",
+        "z_image_turbo_bf16.safetensors",
         "default"
       ],
       "color": "#346434",

@@ -1,7 +1,9 @@
-# Qwen Image Edit 2511 NVFP4 (low tier)
-https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4/resolve/main/qwen_image_edit_2511_nvfp4.safetensors
+# Qwen Image Edit 2511 FP8 (low tier; same diffusion as high)
+# NVFP4_SUPPORTED=true swaps to Bedovyy qwen_image_edit_2511_nvfp4.safetensors
+
+https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8/resolve/main/Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors
   dir=ComfyUI/models/diffusion_models
-  out=qwen_image_edit_2511_nvfp4.safetensors
+  out=Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors
 
 https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors
   dir=ComfyUI/models/text_encoders
