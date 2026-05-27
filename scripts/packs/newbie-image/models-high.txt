@@ -1,6 +1,6 @@
 # NewBie-image-Exp0.1 (high / LOW_VRAM=false)
 # Tutorial: https://docs.comfy.org/tutorials/image/newbie-image/newbie-image-exp-0-1
-# Same 3.5B model - full speed with more VRAM headroom
+# FP16 quant: https://huggingface.co/Kokoboyaw/NewBie-image-Exp0.1-quantized
 
 # Text encoder: Gemma 3 4B IT (BF16)
 https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged/resolve/main/split_files/text_encoders/gemma_3_4b_it_bf16.safetensors
@@ -12,10 +12,10 @@ https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged/resolve/main/spl
   dir=ComfyUI/models/text_encoders
   out=jina_clip_v2_bf16.safetensors
 
-# Diffusion model (BF16)
-https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged/resolve/main/split_files/diffusion_models/NewBie-Image-Exp0.1-bf16.safetensors
+# Diffusion model (FP16)
+https://huggingface.co/Kokoboyaw/NewBie-image-Exp0.1-quantized/resolve/main/newbie_image_exp0.1_fp16.safetensors
   dir=ComfyUI/models/diffusion_models
-  out=NewBie-Image-Exp0.1-bf16.safetensors
+  out=newbie_image_exp0.1_fp16.safetensors
 
 # VAE (FLUX ae)
 https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors

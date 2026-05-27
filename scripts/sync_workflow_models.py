@@ -55,6 +55,7 @@ TIER_HINTS = {
         "ernie-image-turbo",
         "lightning_4",
         "4steps",
+        "newbie_image_exp0.1_fp8",
     ),
     "high": (
         "klein-9b",
@@ -66,6 +67,8 @@ TIER_HINTS = {
         "ernie-image.safetensors",
         "lightning_8",
         "8steps",
+        "newbie_image_exp0.1_fp16",
+        "NewBie-Image-Exp0.1-bf16",
     ),
 }
 

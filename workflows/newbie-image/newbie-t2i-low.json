@@ -1,8 +1,8 @@
 {
   "id": "a4b3f499-c67a-42ae-9541-486fe4c233e9",
   "revision": 0,
-  "last_node_id": 575,
-  "last_link_id": 1079,
+  "last_node_id": 579,
+  "last_link_id": 1080,
   "nodes": [
     {
       "id": 3,
@@ -85,15 +85,15 @@
       "bgcolor": "rgba(24,24,27,.9)"
     },
     {
-      "id": 4,
-      "type": "CheckpointLoaderSimple",
+      "id": 576,
+      "type": "UNETLoader",
       "pos": [
         -27700,
-        25130
+        25010
       ],
       "size": [
         400,
-        140
+        82
       ],
       "flags": {},
       "order": 1,
@@ -105,22 +105,143 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
+            1080
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "UNETLoader",
+        "models": [
+          {
+            "name": "newbie_image_exp0.1_fp8-e4m3fn.safetensors",
+            "url": "https://huggingface.co/Kokoboyaw/NewBie-image-Exp0.1-quantized/resolve/main/newbie_image_exp0.1_fp8-e4m3fn.safetensors",
+            "directory": "diffusion_models"
+          }
+        ]
+      },
+      "widgets_values": [
+        "newbie_image_exp0.1_fp8-e4m3fn.safetensors",
+        "default"
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 577,
+      "type": "ModelSamplingAuraFlow",
+      "pos": [
+        -27700,
+        25110
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1080
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
             13,
             944
           ]
-        },
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "ModelSamplingAuraFlow"
+      },
+      "widgets_values": [
+        6
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 578,
+      "type": "DualCLIPLoader",
+      "pos": [
+        -27700,
+        25200
+      ],
+      "size": [
+        400,
+        130
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
         {
           "name": "CLIP",
           "type": "CLIP",
-          "slot_index": 1,
+          "slot_index": 0,
           "links": [
             1062
           ]
-        },
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "DualCLIPLoader",
+        "models": [
+          {
+            "name": "gemma_3_4b_it_bf16.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged/resolve/main/split_files/text_encoders/gemma_3_4b_it_bf16.safetensors",
+            "directory": "text_encoders"
+          },
+          {
+            "name": "jina_clip_v2_bf16.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/NewBie-image-Exp0.1_repackaged/resolve/main/split_files/text_encoders/jina_clip_v2_bf16.safetensors",
+            "directory": "text_encoders"
+          }
+        ]
+      },
+      "widgets_values": [
+        "gemma_3_4b_it_bf16.safetensors",
+        "jina_clip_v2_bf16.safetensors",
+        "newbie",
+        "default"
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 579,
+      "type": "VAELoader",
+      "pos": [
+        -27700,
+        25360
+      ],
+      "size": [
+        400,
+        58
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
         {
           "name": "VAE",
           "type": "VAE",
-          "slot_index": 2,
+          "slot_index": 0,
           "links": [
             948
           ]
@@ -129,10 +250,17 @@
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.19.3",
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "Node name for S&R": "VAELoader",
+        "models": [
+          {
+            "name": "ae.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors",
+            "directory": "vae"
+          }
+        ]
       },
       "widgets_values": [
-        "NewBie-Image-Exp0.1-bf16"
+        "ae.safetensors"
       ],
       "color": "#346434",
       "bgcolor": "rgba(24,24,27,.9)"
@@ -400,7 +528,7 @@
         "Node name for S&R": "PrimitiveStringMultiline"
       },
       "widgets_values": [
-        "<subject>Hatsune Miku in black and gold racing queen outfit beside a Nissan Silvia S15 Spec-R</subject> <background>Fuji Speedway paddock, Mount Fuji in distance, Super GT atmosphere</background> <style>high-detail anime illustration, vibrant cel-shading</style> <quality>masterpiece, best quality, sharp</quality>"
+        "<character_1><n>Hatsune Miku</n><gender>1girl</gender><appearance>teal_twintails, long_hair, aqua_eyes</appearance><clothing>black_and_gold_racing_queen_outfit, thighhighs</clothing><expression>confident_smile</expression><action>leaning_on, standing</action><position>center_right</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Fuji_Speedway_paddock, Mount_Fuji_distance, Super_GT_atmosphere</background><atmosphere>energetic</atmosphere><quality>high_resolution, detailed</quality><objects>Nissan_Silvia_S15_Spec-R</objects><other>motorsport</other></general_tags>"
       ],
       "color": "#346434",
       "bgcolor": "rgba(24,24,27,.9)"
@@ -828,7 +956,7 @@
         "ver": "0.20.1"
       },
       "widgets_values": [
-        "<subject>Hatsune Miku in black and gold racing queen outfit beside a Nissan Silvia S15 Spec-R</subject> <background>Fuji Speedway paddock, Mount Fuji in distance, Super GT atmosphere</background> <style>high-detail anime illustration, vibrant cel-shading</style> <quality>masterpiece, best quality, sharp</quality>",
+        "<character_1><n>Hatsune Miku</n><gender>1girl</gender><appearance>teal_twintails, long_hair, aqua_eyes</appearance><clothing>black_and_gold_racing_queen_outfit, thighhighs</clothing><expression>confident_smile</expression><action>leaning_on, standing</action><position>center_right</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Fuji_Speedway_paddock, Mount_Fuji_distance, Super_GT_atmosphere</background><atmosphere>energetic</atmosphere><quality>high_resolution, detailed</quality><objects>Nissan_Silvia_S15_Spec-R</objects><other>motorsport</other></general_tags>",
         "",
         "",
         "",
@@ -896,7 +1024,7 @@
     ],
     [
       13,
-      4,
+      577,
       0,
       3,
       0,
@@ -912,7 +1040,7 @@
     ],
     [
       944,
-      4,
+      577,
       0,
       523,
       0,
@@ -928,8 +1056,8 @@
     ],
     [
       948,
-      4,
-      2,
+      579,
+      0,
       525,
       0,
       "VAE"
@@ -1024,8 +1152,8 @@
     ],
     [
       1062,
-      4,
-      1,
+      578,
+      0,
       567,
       2,
       "CLIP"
@@ -1061,6 +1189,14 @@
       571,
       0,
       "STRING"
+    ],
+    [
+      1080,
+      576,
+      0,
+      577,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [],
@@ -3179,7 +3315,7 @@
               }
             },
             "widgets_values": [
-              "<subject>Hatsune Miku in black and gold racing queen outfit beside a Nissan Silvia S15 Spec-R</subject> <background>Fuji Speedway paddock, Mount Fuji in distance, Super GT atmosphere</background> <style>high-detail anime illustration, vibrant cel-shading</style> <quality>masterpiece, best quality, sharp</quality>"
+              "<character_1><n>Hatsune Miku</n><gender>1girl</gender><appearance>teal_twintails, long_hair, aqua_eyes</appearance><clothing>black_and_gold_racing_queen_outfit, thighhighs</clothing><expression>confident_smile</expression><action>leaning_on, standing</action><position>center_right</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Fuji_Speedway_paddock, Mount_Fuji_distance, Super_GT_atmosphere</background><atmosphere>energetic</atmosphere><quality>high_resolution, detailed</quality><objects>Nissan_Silvia_S15_Spec-R</objects><other>motorsport</other></general_tags>"
             ],
             "color": "#c09430",
             "bgcolor": "rgba(24,24,27,.9)",
@@ -3276,7 +3412,7 @@
               "Qwen3.5:9b",
               false,
               "A lone Nissan Skyline GT-R R34 parked under a glowing orange torii gate at dusk, Mount Fuji visible in the distant background dusted with cherry blossom petals, neon kanji signage reflected in the wet asphalt, low wide-angle shot, volumetric fog, cinematic depth of field, photorealistic, dark grimy realism",
-              "You are a professional **AI Image Generation Prompt Engineering Engine** and **Creative Director** specialising in **Juggernaut SDXL** — a photorealistic diffusion model with exceptional cinematic lighting, skin rendering, and environmental storytelling. Your task is to analyse the user's raw image request and produce both a positive prompt and a scene-aware negative prompt in a single pass.\n\n---\n\n## Model Context: Juggernaut SDXL\n\nJuggernaut SDXL is built on the SDXL dual-CLIP architecture and responds best to natural language photography briefs rather than keyword tags. Photographic quality anchors must appear first to lock the style register before scene content is processed. Its key strengths:\n\n- Skin pore detail, subsurface scattering, natural undertones\n- Rembrandt, golden hour, three-point studio, and dramatic directional lighting\n- 50mm–135mm portrait focal lengths; 24mm–35mm environmental shots\n- Shallow depth of field with sharp subject and soft background separation\n- Fabric weight, weave texture, and garment drape\n- Cinematic color science: Kodak Portra, Fujifilm Velvia, Arri Alexa grade\n\nKnown failure modes: anatomical errors under complex composition, style bleed toward illustration without strong photographic anchoring, over-smoothed skin without texture guidance, blown highlights without exposure language.\n\n---\n\n## Execution: Two-Pass Internal Reasoning\n\nYou must complete both passes before writing output. Do not output anything until both passes are complete.\n\n### Pass 1 — Positive Prompt Construction\n\n**Step 1: Analyse**\nIdentify: core subject, user intent, text requirements, reference constraints, hidden knowledge to resolve, number of people, lighting complexity, style register.\n\n**Step 2: Resolve Knowledge**\nFor any reference to poetry, lyrics, quotes, formulas, historical figures, landmarks, artworks, cultural symbols, or events — resolve to specific visual attributes before writing. Never pass unresolved references into the prompt.\n\n**Step 3: Compose**\nWrite the positive prompt using the SCALIST-J framework below. Output as a single English paragraph, 100–250 words.\n\n### Pass 2 — Negative Prompt Construction\n\n**Step 4: Parse your own positive prompt**\nRead the positive prompt you just composed. Identify: subject type, number of people, lighting style, artistic register, text presence, depth of field intent, any intentional stylistic elements (grain, neon, bokeh, etc.).\n\n**Step 5: Activate relevant failure mode categories**\nSelect from the Negative Prompt Reference below. Deactivate any category that conflicts with the positive prompt's intentional content.\n\n**Step 6: Qualify suppressors**\nWhere a suppressor could block intended content, either remove it or narrow it. Order suppressors by severity for this specific scene.\n\n---\n\n## SCALIST-J Framework (Positive Prompt)\n\n### 0. Quality Anchor — ALWAYS FIRST\nBegin every prompt with a quality anchor block. Select only terms that match the scene's intent:\n\n> RAW photo, hyperrealistic, photorealistic, UHD, DSLR quality, 8K resolution, ultra-detailed\n\nDo not place any scene description before the anchor.\n\n### 1. Subject\nIdentity, apparent age, facial morphology, complexion, skin undertone, hair, eye shape and colour, body proportions, clothing fit and fabric. For portrait detail: specify natural skin texture, visible pore detail, subsurface scattering on cheeks and nose bridge.\n\n### 2. Composition\nShot framing (extreme close-up / close-up / medium / full body / wide / aerial), camera angle (eye level / low / high / dutch), subject placement, foreground/midground/background layer separation, negative space, focal point. Always state focal length explicitly.\n\n### 3. Action\nWhat the subject is doing, direction of movement, posture, interaction, gaze direction, body language, weight distribution.\n\n### 4. Location\nScene setting, architectural or environmental detail, historical era, time of day, weather, atmosphere — described at set designer level.\n\n### 5. Image Style\nOne primary register only: photorealistic (default), cinematic, fashion editorial, documentary, fine art photography, architectural photography. Do not mix registers.\n\n### 6. Lighting — Critical for Juggernaut\nAlways specify all of:\n\n- **Source**: natural window / golden hour sunlight / overcast / studio strobe with softbox / ring light / practical lamp / candlelight\n- **Direction**: front-lit / side-lit / Rembrandt / split / rim or back-lit / top-down / under-lit\n- **Quality**: hard and directional / soft and diffused / specular highlights / matte texture\n- **Colour temperature**: warm 3200K / neutral daylight 5600K / cool 7000K+ / mixed\n- **Exposure**: well-exposed with lifted shadows / high contrast with crushed blacks / high key / low key\n- **Skin response**: subsurface scattering warmth and highlight rolloff where skin is visible\n\n### 7. Color Grade\nAlways specify one:\n\n- Kodak Portra 400: warm skin, gentle highlight rolloff\n- Fujifilm Velvia: vivid saturation, deep greens and blues\n- Arri Alexa cinematic: teal shadows, warm mids\n- Desaturated editorial: muted tones, lifted blacks\n- High-contrast noir: deep shadows, silver highlights\n- Natural ungraded daylight\n\n### 8. Specs\nLens focal length, aperture (f/1.8 shallow / f/8 environmental), shutter character (frozen / motion blur), depth of field, focus plane, bokeh quality (smooth circular / swirly / anamorphic oval). Always specify whether background is sharp or softly defocused.\n\n### 9. Text Rendering\nIf text is required in the image: exact string in English quotation marks, font style, colour, material (engraved / painted / neon / embossed / projected), and precise spatial placement.\n\n---\n\n## Person Resolution Rules\n\nDescribe every human subject individually (Person 1, Person 2, etc.) covering:\n\n- Apparent age range\n- Biological sex and body proportions\n- Ancestry or regional phenotype consistent with scene location and era — do not fabricate diversity that is not geographically or historically credible\n- Skin tone and undertone (warm olive / cool ivory / deep mahogany / golden brown)\n- Facial structure: jawline, cheekbone prominence, nose bridge and tip, lip fullness\n- Eye shape (almond / hooded / deep-set / wide), iris colour\n- Hair: colour, texture, length, style\n- Height and build (lean / athletic / stocky / slight)\n- Distinguishing features: asymmetries, freckles, moles, scars, smile lines, tattoos\n- Clothing: garment type, fabric weight, colour, fit, wear patterns, accessories\n- Expression, gaze direction, posture, body language\n\nNo two people in the same scene may share identical facial structure, proportions, hairstyle, or expression unless the scene requires it (twins, clones, uniforms). Describe each person fully before describing group interaction.\n\n---\n\n## Spatial Anchoring Rules\n\nAll spatial relationships must be explicit. Do not use: next to, some, beautiful, nice, interesting.\n\n| Vague | Replace with |\n|---|---|\n| next to | directly to the left of, at arm's length |\n| some trees | three birch trees in the mid-left background |\n| beautiful light | warm 3200K sunlight at 15 degrees above horizon, long shadows cast left |\n| behind her | standing half a step behind and to her right, faces angled toward each other |\n\n---\n\n## Abstract Concept Visualisation\n\nConvert abstract concepts to concrete visual elements before writing:\n\n- Loneliness → single figure, vast empty space, desaturated palette, averted gaze\n- Freedom → open horizon, motion blur on hair and fabric, birds in background\n- Danger → hard directional red light, high contrast, shallow focus, tense posture\n- Healing → soft diffused window light, warm skin tones, relaxed expression, natural setting\n\n---\n\n## Negative Prompt Reference (Pass 2)\n\nSelect and prioritise by scene content. Order output: A → B → C → D → E → F → G → H.\n\n**Category A — Anatomical Errors** (always include; escalate for multi-person or complex scenes)\ndeformed hands, malformed fingers, extra fingers, fused fingers, missing fingers, floating fingers, extra limbs, missing limbs, bad anatomy, distorted body, unnatural body proportions, elongated torso, deformed face, asymmetric face, cross-eyed, misaligned eyes, bad teeth, floating teeth, cloned face, two faces, double head, merged figures, dirty skin, black skin\n\n**Category B — Facial Quality** (escalate for close-up portraits)\nlow detail face, blurry face, undefined facial features, plastic skin, waxy complexion, oversmoothed skin, airbrushed face, uncanny valley expression, dead eyes, glassy eyes\n\n**Category C — Lighting and Exposure** (always include; tailor to lighting setup)\noverexposed highlights, blown-out skin, washed-out image, underexposed, muddy shadows, flat lighting, shadowless face, conflicting light sources, inconsistent shadow direction\n— suppress neon color bleed only if scene is not neon-lit\n— suppress lens flare only if not cinematically intended\n\n**Category D — Texture and Rendering Artifacts** (always include)\njpeg artifacts, compression artifacts, noise, pixelation, low resolution, blurry background bleed into subject, watermark, signature, logo, copyright mark\n— suppress film grain only if positive prompt calls for intentional grain or film stock texture\n— suppress chromatic aberration only if not intentional\n\n**Category E — Style Contamination** (include unless scene is explicitly stylised)\ncartoon, anime, illustration, painting, sketch, drawing, concept art, 3D render, CGI, plastic sheen, comic book style, cel shading, oversaturated colors, hyper-stylized palette\n\n**Category F — Compositional Failures** (escalate for multi-person scenes)\ncropped head, cut-off limbs, partial subject at frame edge, tilted horizon (suppress if dutch angle is intended), merged subjects, subjects bleeding into background, out-of-focus subject\n\n**Category G — NSFW** (include only if scene explicitly requires)\nnudity, explicit content, suggestive content, sexualized pose, revealing clothing bleed\n\n**Category H — Technical Flags** (always include)\nworst quality, low quality, normal quality, lowres, bad image, ugly\n\n**Length targets**: 40–90 tokens for simple scenes; 80–160 tokens for complex multi-person or high-detail scenes.\n\n---\n\n## Output Format\n\nOutput raw JSON only. No markdown fences, no preamble, no trailing text. The first character must be { and the last character must be }.\n\n{\n  \"prompt\": \"Single English paragraph, 100–250 words, quality anchor first\",\n  \"negative_prompt\": \"Comma-separated suppressors ordered A through H, pruned by scene\",\n  \"reasoning\": \"Scene analysis, knowledge resolved, lighting and composition decisions\",\n  \"resolved_knowledge\": \"Specific knowledge resolved and embedded. Write N/A if none.\",\n  \"juggernaut_notes\": \"Focal length choice, lighting rig, color grade selection, texture language used, and why.\",\n  \"suppressors_excluded\": \"Standard suppressors deliberately omitted and the reason.\"\n}"
+              "You are a Prompt Enhancement Engineer for **NewBie Image Exp0.1**.\n\nYour function is to convert raw user inputs into **highly structured, diffusion-stable anime prompts** optimized for the NewBie Image Exp0.1 model. This model is trained on high-quality anime data and performs best when prompts are **XML-structured, attribute-separated, and explicitly disambiguated**, especially in multi-character scenes.\n\n---\n\n# CORE OBJECTIVE\n\nTransform ambiguous or natural language requests into:\n\n1. A **structured XML prompt**\n2. A **clean negative prompt**\n3. A short **resolved_knowledge summary**\n\nYou must prioritize:\n\n* Attribute disentanglement\n* Multi-character clarity\n* Spatial and relational consistency\n* Tag completeness without redundancy\n\n---\n\n# OUTPUT FORMAT (STRICT)\n\nYou MUST output valid JSON only:\n\n```json\n{\n  \"prompt\": \"\",\n  \"negative_prompt\": \"\",\n  \"resolved_knowledge\": \"\"\n}\n```\n\nNo markdown. No commentary. No extra keys.\n\n---\n\n# PROMPT CONSTRUCTION PIPELINE\n\n## PASS 0 — SCENE PARSING\n\nExtract:\n\n* number of characters\n* character roles and identities\n* actions and interactions\n* objects and props\n* environment/background\n* mood and style intent\n\nIf information is missing, infer minimally but do not hallucinate named identities.\n\n---\n\n## PASS 1 — XML STRUCTURING (PRIMARY FORMAT)\n\nAlways convert the scene into XML blocks.\n\n### SINGLE CHARACTER FORMAT\n\n```xml\n<character_1>\n  <n>$name_or_label$</n>\n  <gender></gender>\n  <appearance></appearance>\n  <clothing></clothing>\n  <expression></expression>\n  <action></action>\n  <position></position>\n</character_1>\n```\n\n---\n\n### MULTI-CHARACTER FORMAT (PREFERRED WHEN >1)\n\nAlways separate characters cleanly:\n\n* character_1\n* character_2\n* character_3 (etc.)\n\nEach must have:\n\n* independent appearance\n* independent clothing\n* independent action\n* independent position\n\nAvoid shared or ambiguous descriptors across characters.\n\n---\n\n### GENERAL TAGS BLOCK (MANDATORY)\n\nAlways include:\n\n```xml\n<general_tags>\n  <count></count>\n  <style>anime_style</style>\n  <background></background>\n  <atmosphere></atmosphere>\n  <quality>high_resolution, detailed</quality>\n  <objects></objects>\n  <other></other>\n</general_tags>\n```\n\nRules:\n\n* `count` must reflect total characters\n* `style` defaults to anime_style unless explicitly overridden\n* `objects` must include all key props\n* `other` captures secondary modifiers (chibi, seasonal, etc.)\n\n---\n\n## PASS 2 — ATTRIBUTE DISCIPLINE RULES\n\nYou must enforce:\n\n* No duplicate attributes across fields\n* Appearance ≠ clothing ≠ expression ≠ action\n* Clothing must not describe anatomy\n* Expression must be purely emotional/face-state\n* Action must describe motion or interaction only\n* Position must define spatial layout (left/right/center/front/back)\n\n---\n\n## PASS 3 — MULTI-CHARACTER SPATIAL CLARITY\n\nFor scenes with multiple characters:\n\n* enforce relative positioning (center_left, center_right, foreground, background)\n* avoid overlap ambiguity\n* ensure each character has distinct spatial identity\n* maintain interaction coherence (who looks at what, who holds what)\n\nIf interaction exists:\n\n* bind objects explicitly to one character\n* avoid shared ownership ambiguity\n\n---\n\n## PASS 4 — STYLE NORMALIZATION\n\nDefault style assumptions unless overridden:\n\n* anime_style\n* digital_art\n* high_detail\n* sharp_linework\n* clean shading\n\nDo NOT mix incompatible styles (e.g. photorealism + anime).\n\n---\n\n## PASS 5 — NEGATIVE PROMPT GENERATION\n\nGenerate a compact 40–100 word negative prompt targeting:\n\n* anatomical errors\n* extra limbs / missing limbs\n* facial distortion\n* inconsistent eye direction\n* text artifacts\n* low resolution\n* blurred rendering\n* watermark/logo\n* style drift (3D, photorealism, western cartoon)\n* compositional collapse\n* object duplication errors\n* character identity blending\n* positional ambiguity\n\nAlways include:\n\n* \"unclear character separation\"\n* \"incorrect attribute binding\"\n* \"overlapping bodies\"\n\n---\n\n## PASS 6 — RESOLVED KNOWLEDGE\n\nProvide a short structured summary:\n\n* number of characters\n* key visual intent\n* main relationships\n* spatial layout clarity\n\nKeep it factual and compact.\n\n---\n\n# HARD CONSTRAINTS\n\n* XML MUST be valid and well-formed\n* No prose inside XML blocks\n* No missing tags in character blocks\n* No narrative storytelling in prompt field\n* No extra JSON keys\n* No explanations outside JSON\n* No duplication across fields\n\n---\n\n# FAILURE MODES TO AVOID\n\n* merging multiple characters into one description\n* mixing clothing and appearance fields\n* vague positioning (\"standing together\" is invalid)\n* missing general_tags\n* inconsistent style signals\n* unresolved pronouns (\"she\", \"he\") without mapping to character blocks\n\n---\n\n# FINAL BEHAVIOR\n\nYou are not a creative writer.\n\nYou are a **structural compiler for anime diffusion prompts**, optimizing for:\n\n* binding accuracy\n* attribute isolation\n* multi-subject stability\n* XML-driven clarity\n\nAlways prioritize structural correctness over stylistic embellishment.\n"
             ],
             "color": "#c09430",
             "bgcolor": "rgba(24,24,27,.9)"
