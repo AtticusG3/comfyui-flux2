@@ -1,8 +1,8 @@
 {
   "id": "a4b3f499-c67a-42ae-9541-486fe4c233e9",
   "revision": 0,
-  "last_node_id": 575,
-  "last_link_id": 1079,
+  "last_node_id": 579,
+  "last_link_id": 1080,
   "nodes": [
     {
       "id": 3,
@@ -85,15 +85,15 @@
       "bgcolor": "rgba(24,24,27,.9)"
     },
     {
-      "id": 4,
-      "type": "CheckpointLoaderSimple",
+      "id": 576,
+      "type": "UNETLoader",
       "pos": [
         -27700,
-        25130
+        25010
       ],
       "size": [
         400,
-        140
+        82
       ],
       "flags": {},
       "order": 1,
@@ -105,22 +105,123 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
+            1080
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "ovis_image_bf16.safetensors",
+        "default"
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 577,
+      "type": "ModelSamplingAuraFlow",
+      "pos": [
+        -27700,
+        25110
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1080
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
             13,
             944
           ]
-        },
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "ModelSamplingAuraFlow"
+      },
+      "widgets_values": [
+        3
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 578,
+      "type": "CLIPLoader",
+      "pos": [
+        -27700,
+        25190
+      ],
+      "size": [
+        400,
+        106
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
         {
           "name": "CLIP",
           "type": "CLIP",
-          "slot_index": 1,
+          "slot_index": 0,
           "links": [
             1062
           ]
-        },
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "CLIPLoader"
+      },
+      "widgets_values": [
+        "ovis_2.5.safetensors",
+        "ovis",
+        "default"
+      ],
+      "color": "#346434",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 579,
+      "type": "VAELoader",
+      "pos": [
+        -27700,
+        25320
+      ],
+      "size": [
+        400,
+        58
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
         {
           "name": "VAE",
           "type": "VAE",
-          "slot_index": 2,
+          "slot_index": 0,
           "links": [
             948
           ]
@@ -129,10 +230,10 @@
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.19.3",
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "Node name for S&R": "VAELoader"
       },
       "widgets_values": [
-        "ovis_image_bf16.safetensors"
+        "ae.safetensors"
       ],
       "color": "#346434",
       "bgcolor": "rgba(24,24,27,.9)"
@@ -895,8 +996,16 @@
       "LATENT"
     ],
     [
+      1080,
+      576,
+      0,
+      577,
+      0,
+      "MODEL"
+    ],
+    [
       13,
-      4,
+      577,
       0,
       3,
       0,
@@ -912,7 +1021,7 @@
     ],
     [
       944,
-      4,
+      577,
       0,
       523,
       0,
@@ -928,8 +1037,8 @@
     ],
     [
       948,
-      4,
-      2,
+      579,
+      0,
       525,
       0,
       "VAE"
@@ -1024,8 +1133,8 @@
     ],
     [
       1062,
-      4,
-      1,
+      578,
+      0,
       567,
       2,
       "CLIP"

@@ -1,16 +1,16 @@
 # Ovis-Image 7B (low / LOW_VRAM=true)
 # Tutorial: https://docs.comfy.org/tutorials/image/ovis/ovis-image
-# 7B model - use --lowvram on tight VRAM
+# FP8 quants: https://huggingface.co/qpqpqpqpqpqp/Ovis_Image_7B_fp8
 
-# Text encoder (Ovis 2.5)
-https://huggingface.co/Comfy-Org/Ovis-Image/resolve/main/split_files/text_encoders/ovis_2.5.safetensors
+# Text encoder (Ovis 2.5 FP8 mixed)
+https://huggingface.co/qpqpqpqpqpqp/Ovis_Image_7B_fp8/resolve/main/ovis_2.5_fp8_mixed_large.safetensors
   dir=ComfyUI/models/text_encoders
-  out=ovis_2.5.safetensors
+  out=ovis_2.5_fp8_mixed_large.safetensors
 
-# Diffusion model (BF16)
-https://huggingface.co/Comfy-Org/Ovis-Image/resolve/main/split_files/diffusion_models/ovis_image_bf16.safetensors
+# Diffusion model (7B FP8 e4m3fn)
+https://huggingface.co/qpqpqpqpqpqp/Ovis_Image_7B_fp8/resolve/main/ovis_image_7b_fp8_e4m3fn.safetensors
   dir=ComfyUI/models/diffusion_models
-  out=ovis_image_bf16.safetensors
+  out=ovis_image_7b_fp8_e4m3fn.safetensors
 
 # VAE (FLUX ae)
 https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors

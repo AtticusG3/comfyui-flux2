@@ -1416,6 +1416,19 @@ apply_nvfp4_workflow_overrides() {
 
     fi
 
+    local ovis_wf="$workflows_dir/ovis-t2i.json"
+    if [ -f "$ovis_wf" ]; then
+        if [ "$VRAM_TARGET" == "low" ]; then
+            sed -i 's/ovis_image_bf16\.safetensors/ovis_image_7b_fp8_e4m3fn.safetensors/g' "$ovis_wf"
+            sed -i 's/ovis_2\.5\.safetensors/ovis_2.5_fp8_mixed_large.safetensors/g' "$ovis_wf"
+            echo "[INFO] Workflow override: Ovis Image low -> FP8 diffusion + mixed FP8 text encoder."
+        else
+            sed -i 's/ovis_image_7b_fp8_e4m3fn\.safetensors/ovis_image_bf16.safetensors/g' "$ovis_wf"
+            sed -i 's/ovis_2\.5_fp8_mixed_large\.safetensors/ovis_2.5.safetensors/g' "$ovis_wf"
+            echo "[INFO] Workflow override: Ovis Image high -> BF16 diffusion + text encoder."
+        fi
+    fi
+
     local hidream="$workflows_dir/hidream-o1-example.json"
     if [ -f "$hidream" ]; then
         if [ "$VRAM_TARGET" == "low" ]; then

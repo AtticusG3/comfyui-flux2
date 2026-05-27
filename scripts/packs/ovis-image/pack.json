@@ -7,10 +7,11 @@
   "upstream_urls": [
     "https://github.com/AIDC-AI/Ovis-Image",
     "https://huggingface.co/AIDC-AI/Ovis-Image-7B",
-    "https://huggingface.co/Comfy-Org/Ovis-Image"
+    "https://huggingface.co/Comfy-Org/Ovis-Image",
+    "https://huggingface.co/qpqpqpqpqpqp/Ovis_Image_7B_fp8"
   ],
   "requires_hf_token": false,
-  "notes_low": "7B model. Use --lowvram on tight VRAM. Excellent for text-heavy prompts and text rendering.",
+  "notes_low": "7B FP8 diffusion + mixed FP8 text encoder (~11GB). Use --lowvram on tight VRAM. Excellent for text-heavy prompts and text rendering.",
   "notes_high": "Full performance with --highvram. Strong bilingual (Chinese/English) text rendering.",
   "description": "Ovis-Image - 7B text-to-image model optimized for high-quality text rendering."
 }

@@ -1,31 +1,56 @@
 {
   "3": {
     "inputs": {
-      "ckpt_name": "ovis-image-7b.safetensors"
+      "unet_name": "ovis_image_bf16.safetensors",
+      "weight_dtype": "default"
     },
-    "class_type": "CheckpointLoaderSimple"
+    "class_type": "UNETLoader"
   },
   "4": {
     "inputs": {
-      "text": "__PROMPT__",
-      "clip": [
+      "shift": 3,
+      "model": [
         "3",
-        1
+        0
       ]
     },
-    "class_type": "CLIPTextEncode"
+    "class_type": "ModelSamplingAuraFlow"
   },
   "5": {
     "inputs": {
-      "text": "__NEGATIVE__",
+      "clip_name": "ovis_2.5.safetensors",
+      "type": "ovis",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader"
+  },
+  "6": {
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "7": {
+    "inputs": {
+      "text": "__PROMPT__",
       "clip": [
-        "3",
-        1
+        "5",
+        0
       ]
     },
     "class_type": "CLIPTextEncode"
   },
-  "6": {
+  "8": {
+    "inputs": {
+      "text": "__NEGATIVE__",
+      "clip": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "9": {
     "inputs": {
       "width": 1024,
       "height": 1024,
@@ -33,51 +58,51 @@
     },
     "class_type": "EmptyLatentImage"
   },
-  "7": {
+  "10": {
     "inputs": {
       "seed": 123456789,
-      "steps": 28,
-      "cfg": 4.5,
-      "sampler_name": "euler",
-      "scheduler": "normal",
+      "steps": 4,
+      "cfg": 1.9,
+      "sampler_name": "dpmpp_sde",
+      "scheduler": "karras",
       "denoise": 1.0,
       "model": [
-        "3",
-        0
-      ],
-      "positive": [
         "4",
         0
       ],
+      "positive": [
+        "7",
+        0
+      ],
       "negative": [
-        "5",
+        "8",
         0
       ],
       "latent_image": [
-        "6",
+        "9",
         0
       ]
     },
     "class_type": "KSampler"
   },
-  "8": {
+  "11": {
     "inputs": {
       "samples": [
-        "7",
+        "10",
         0
       ],
       "vae": [
-        "3",
-        2
+        "6",
+        0
       ]
     },
     "class_type": "VAEDecode"
   },
-  "9": {
+  "12": {
     "inputs": {
       "filename_prefix": "anythingllm_ovis_t2i",
       "images": [
-        "8",
+        "11",
         0
       ]
     },
