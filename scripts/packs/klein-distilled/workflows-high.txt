@@ -1,1 +1,1 @@
-# Bundled via workflows-bundled.txt (9B T2I + 9B image edit; FP8 default; NVFP4 via entrypoint when flagged).
+# Bundled via workflows-bundled.txt (klein-t2i + klein-edit; entrypoint selects 9B models on high tier).

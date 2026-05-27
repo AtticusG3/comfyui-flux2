@@ -1,5 +1,3 @@
 # source_path (under /workflows/)|destination_filename|tier
-flux2/klein-4b-edit.json|klein-4b-edit.json|low
-flux2/klein-4b-t2i.json|klein-4b-t2i.json|low
-flux2/klein-9b-edit.json|klein-9b-edit.json|high
-flux2/klein-9b-t2i.json|klein-9b-t2i.json|high
+flux2/klein-t2i.json|klein-t2i.json|both
+flux2/klein-edit.json|klein-edit.json|both

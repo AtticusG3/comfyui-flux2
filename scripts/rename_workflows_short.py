@@ -14,10 +14,10 @@ ENTRYPOINT = REPO / "scripts" / "entrypoint.sh"
 # old relative path under workflows/ -> new relative path (source = deploy name)
 RENAMES: dict[str, str] = {
     # klein / flux2
-    "flux2/Flux 2 Klein 4B T2I.json": "flux2/klein-4b-t2i.json",
-    "flux2/Flux 2 Klein 4B I2I.json": "flux2/klein-4b-edit.json",
-    "flux2/Flux 2 Klein T2I.json": "flux2/klein-9b-t2i.json",
-    "flux2/Flux 2 Klein I2I.json": "flux2/klein-9b-edit.json",
+    "flux2/Flux 2 Klein 4B T2I.json": "flux2/klein-t2i.json",
+    "flux2/Flux 2 Klein 4B I2I.json": "flux2/klein-edit.json",
+    "flux2/Flux 2 Klein T2I.json": "flux2/klein-t2i.json",
+    "flux2/Flux 2 Klein I2I.json": "flux2/klein-edit.json",
     # sdxl
     "sdxl-lightning/SDXL_Lightning T2I.json": "sdxl-lightning/sdxl-lightning-t2i.json",
     "sdxl-lightning/SDXL Lightning - Photoreal Hires.json": "sdxl-lightning/sdxl-lightning-hires.json",
@@ -56,10 +56,10 @@ RENAMES: dict[str, str] = {
 
 # old deployed filename -> new deployed filename (basename)
 DEPLOY_RENAMES: dict[str, str] = {
-    "FLUX.2 Klein 4B Distilled - Text to Image.json": "klein-4b-t2i.json",
-    "FLUX.2 Klein 4B Distilled - Image Edit.json": "klein-4b-edit.json",
-    "FLUX.2 Klein 9B Distilled - Text to Image.json": "klein-9b-t2i.json",
-    "FLUX.2 Klein 9B Distilled - Image Edit.json": "klein-9b-edit.json",
+    "FLUX.2 Klein 4B Distilled - Text to Image.json": "klein-t2i.json",
+    "FLUX.2 Klein 4B Distilled - Image Edit.json": "klein-edit.json",
+    "FLUX.2 Klein 9B Distilled - Text to Image.json": "klein-t2i.json",
+    "FLUX.2 Klein 9B Distilled - Image Edit.json": "klein-edit.json",
     "SDXL Lightning - Text to Image.json": "sdxl-lightning-t2i.json",
     "SDXL Lightning - Photoreal Hires.json": "sdxl-lightning-hires.json",
     "SDXL 1.0 - Img2img Edit.json": "sdxl-img2img.json",
@@ -95,10 +95,8 @@ DEPLOY_RENAMES: dict[str, str] = {
 }
 
 BUNDLED_TIERS: dict[str, str] = {
-    "flux2/klein-4b-t2i.json": "low",
-    "flux2/klein-4b-edit.json": "low",
-    "flux2/klein-9b-t2i.json": "high",
-    "flux2/klein-9b-edit.json": "high",
+    "flux2/klein-t2i.json": "both",
+    "flux2/klein-edit.json": "both",
     "sdxl-lightning/sdxl-lightning-t2i.json": "both",
     "sdxl-lightning/sdxl-lightning-hires.json": "high",
     "sdxl-editing/sdxl-img2img.json": "both",
@@ -130,10 +128,8 @@ BUNDLED_TIERS: dict[str, str] = {
 }
 
 PACK_FOR_SRC: dict[str, str] = {
-    "flux2/klein-4b-t2i.json": "klein-distilled",
-    "flux2/klein-4b-edit.json": "klein-distilled",
-    "flux2/klein-9b-t2i.json": "klein-distilled",
-    "flux2/klein-9b-edit.json": "klein-distilled",
+    "flux2/klein-t2i.json": "klein-distilled",
+    "flux2/klein-edit.json": "klein-distilled",
     "sdxl-lightning/sdxl-lightning-t2i.json": "sdxl-lightning",
     "sdxl-lightning/sdxl-lightning-hires.json": "sdxl-lightning",
     "sdxl-editing/sdxl-img2img.json": "sdxl-editing",

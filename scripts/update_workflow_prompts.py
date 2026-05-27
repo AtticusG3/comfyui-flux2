@@ -30,25 +30,15 @@ ANIME_NEG = (
 
 # Portrait + specific car + famous location; anime packs name notable female characters.
 SCENES: dict[str, tuple[str, str]] = {
-    "workflows/flux2/klein-9b-t2i.json": (
+    "workflows/flux2/klein-t2i.json": (
         "Portrait of Asuka Langley in red plugsuit cosplay leaning on a Nissan Skyline GT-R R34 "
         "V-Spec II at Shibuya Scramble Crossing at night, neon reflections on wet asphalt, "
         "cinematic automotive photography, 85mm lens",
         "",
     ),
-    "workflows/flux2/klein-9b-edit.json": (
+    "workflows/flux2/klein-edit.json": (
         "Change the Skyline to a midnight purple widebody R34 with Varis aero and larger rear wing, "
         "keep Asuka cosplay pose and Shibuya night background unchanged",
-        "",
-    ),
-    "workflows/flux2/klein-4b-t2i.json": (
-        "Portrait of Rei Ayanami in pale blue pilot suit beside a Toyota Supra MK4 A80 at "
-        "Daikoku Parking Area, sodium vapor lights, light rain, wide-angle automotive photograph",
-        "",
-    ),
-    "workflows/flux2/klein-4b-edit.json": (
-        "Change the Supra to a Veilside Fortune widebody in vibrant orange, keep Rei pose and "
-        "Daikoku PA lighting and environment",
         "",
     ),
     "workflows/sdxl-lightning/sdxl-lightning-t2i.json": (

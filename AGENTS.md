@@ -61,8 +61,8 @@ sync/update logic, and persistent host-mounted data paths.
   `source|destination|tier` where tier is `low`, `high`, or `both` (default `both`).
   Do not copy entire workflow directories without tier metadata.
 - For `klein-distilled`, install Klein workflows via `workflows-bundled.txt`
-  (`klein-4b-t2i.json`, `klein-4b-edit.json`, `klein-9b-t2i.json`, `klein-9b-edit.json`;
-  FP8 defaults, entrypoint sed to NVFP4 when enabled). Sources under `workflows/flux2/`.
+  (`klein-t2i.json`, `klein-edit.json`; FP8 defaults, entrypoint selects 4B/9B by VRAM tier
+  and sed to NVFP4 when enabled). Sources under `workflows/flux2/`.
 - Bundled workflow deploy names match repo filenames (short kebab-case, e.g.
   `sdxl-lightning-t2i.json`); `workflows-bundled.txt` uses `source|dest|tier` with
   identical source and destination basenames.

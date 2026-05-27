@@ -1341,6 +1341,7 @@ apply_nvfp4_workflow_overrides() {
     # Z-Anime: default SeeSee21 FP8 (low) / BF16 (high). NVFP4 only when NVFP4_SUPPORTED=true.
     local zaanime_origin="$workflows_dir/z-anime-t2i.json"
     if [ -f "$zaanime_origin" ]; then
+        sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/vae/ae.safetensors#g' "$zaanime_origin"
         if grep -Fq "z_image_turbo_bf16.safetensors" "$zaanime_origin"; then
             sed -i 's/z-image-turbo/z-anime/g' "$zaanime_origin"
             sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
@@ -1363,6 +1364,8 @@ apply_nvfp4_workflow_overrides() {
                 sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
                 sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
                 sed -i 's#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8.safetensors#g' "$zaanime_origin"
+                sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b-fp8\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors#g' "$zaanime_origin"
+                sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-bf16\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors#g' "$zaanime_origin"
                 sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step FP8)/g' "$zaanime_origin"
                 sed -i 's/Text to Image (Z-Anime Distill 4 Step NVFP4)/Text to Image (Z-Anime Distill 4 Step FP8)/g' "$zaanime_origin"
                 sed -i 's/qwen_3_4b-bf16\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
@@ -1382,6 +1385,7 @@ apply_nvfp4_workflow_overrides() {
             sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"
             sed -i 's#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-bf16.safetensors#g' "$zaanime_origin"
             sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-bf16.safetensors#g' "$zaanime_origin"
+            sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-bf16.safetensors#g' "$zaanime_origin"
             sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step BF16)/g' "$zaanime_origin"
             sed -i 's/Text to Image (Z-Anime Distill 4 Step FP8)/Text to Image (Z-Anime Distill 4 Step BF16)/g' "$zaanime_origin"
             sed -i 's/Text to Image (Z-Anime Distill 4 Step NVFP4)/Text to Image (Z-Anime Distill 4 Step BF16)/g' "$zaanime_origin"
@@ -1400,6 +1404,7 @@ apply_nvfp4_workflow_overrides() {
         local zturbo_low="$workflows_dir/z-turbo-t2i.json"
         if [ -f "$zturbo_low" ] && grep -Fq "qwen_3_4b.safetensors" "$zturbo_low"; then
             sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b_fp8_mixed.safetensors/g' "$zturbo_low"
+            sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b\.safetensors#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b_fp8_mixed.safetensors#g' "$zturbo_low"
             echo "[INFO] Workflow override: Z-Image Turbo low -> Qwen FP8 text encoder."
         fi
 
@@ -1424,6 +1429,49 @@ apply_nvfp4_workflow_overrides() {
         fi
     fi
 
+    # Klein: canonical bundled workflows use 9B defaults; switch to 4B on low VRAM.
+    local klein_t2i="$workflows_dir/klein-t2i.json"
+    local klein_edit="$workflows_dir/klein-edit.json"
+    for wf in "$klein_t2i" "$klein_edit"; do
+        if [ ! -f "$wf" ]; then
+            continue
+        fi
+        if [ "$VRAM_TARGET" == "low" ]; then
+            sed -i 's/flux-2-klein-9b-nvfp4\.safetensors/flux-2-klein-4b-nvfp4.safetensors/g' "$wf"
+            sed -i 's/flux-2-klein-9b-fp8\.safetensors/flux-2-klein-4b-fp8.safetensors/g' "$wf"
+            sed -i 's#https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/#https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/#g' "$wf"
+            sed -i 's/FLUX.2-klein-9b-fp8/FLUX.2-klein-4b-fp8/g' "$wf"
+            sed -i 's/flux2-klein-9B/flux2-klein-4B/g' "$wf"
+            sed -i 's/qwen_3_8b_fp8mixed\.safetensors/qwen_3_4b.safetensors/g' "$wf"
+            sed -i 's#https://huggingface.co/Comfy-Org/flux2-klein-9B/#https://huggingface.co/Comfy-Org/flux2-klein-4B/#g' "$wf"
+        else
+            sed -i 's/flux-2-klein-4b-nvfp4\.safetensors/flux-2-klein-9b-nvfp4.safetensors/g' "$wf"
+            sed -i 's/flux-2-klein-4b-fp8\.safetensors/flux-2-klein-9b-fp8.safetensors/g' "$wf"
+            sed -i 's#https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/#https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/#g' "$wf"
+            sed -i 's/FLUX.2-klein-4b-fp8/FLUX.2-klein-9b-fp8/g' "$wf"
+            sed -i 's/flux2-klein-4B/flux2-klein-9B/g' "$wf"
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_8b_fp8mixed.safetensors/g' "$wf"
+            sed -i 's#https://huggingface.co/Comfy-Org/flux2-klein-4B/#https://huggingface.co/Comfy-Org/flux2-klein-9B/#g' "$wf"
+        fi
+    done
+    if [ -f "$klein_edit" ]; then
+        if [ "$VRAM_TARGET" == "low" ]; then
+            sed -i 's/full_encoder_small_decoder\.safetensors/flux2-vae.safetensors/g' "$klein_edit"
+            sed -i 's#https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/resolve/main/full_encoder_small_decoder\.safetensors#https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors#g' "$klein_edit"
+            echo "[INFO] Workflow override: Klein edit low -> 4B models + flux2-vae."
+        else
+            sed -i 's/flux2-vae\.safetensors/full_encoder_small_decoder.safetensors/g' "$klein_edit"
+            sed -i 's#https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae\.safetensors#https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/resolve/main/full_encoder_small_decoder.safetensors#g' "$klein_edit"
+            echo "[INFO] Workflow override: Klein edit high -> 9B models + small decoder VAE."
+        fi
+    elif [ -f "$klein_t2i" ]; then
+        if [ "$VRAM_TARGET" == "low" ]; then
+            echo "[INFO] Workflow override: Klein T2I low -> 4B models."
+        else
+            echo "[INFO] Workflow override: Klein T2I high -> 9B models."
+        fi
+    fi
+
     local qwen_edit="$workflows_dir/qwen-edit-2511.json"
     if [ -f "$qwen_edit" ]; then
         if [ "$NVFP4_SUPPORTED_LC" == "true" ]; then
@@ -1439,12 +1487,7 @@ apply_nvfp4_workflow_overrides() {
 
     if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
         local wf
-        for wf in \
-            "$workflows_dir/klein-4b-t2i.json" \
-            "$workflows_dir/klein-4b-edit.json" \
-            "$workflows_dir/klein-9b-t2i.json" \
-            "$workflows_dir/klein-9b-edit.json"
-        do
+        for wf in "$workflows_dir/klein-t2i.json" "$workflows_dir/klein-edit.json"; do
             if [ -f "$wf" ]; then
                 sed -i 's/flux-2-klein-4b-nvfp4\.safetensors/flux-2-klein-4b-fp8.safetensors/g' "$wf"
                 sed -i 's/flux-2-klein-9b-nvfp4\.safetensors/flux-2-klein-9b-fp8.safetensors/g' "$wf"
@@ -1486,12 +1529,7 @@ apply_nvfp4_workflow_overrides() {
     fi
 
     local changed=0
-    for wf in \
-        "$workflows_dir/klein-4b-t2i.json" \
-        "$workflows_dir/klein-4b-edit.json" \
-        "$workflows_dir/klein-9b-t2i.json" \
-        "$workflows_dir/klein-9b-edit.json"
-    do
+    for wf in "$workflows_dir/klein-t2i.json" "$workflows_dir/klein-edit.json"; do
         if [ -f "$wf" ]; then
             sed -i 's/flux-2-klein-4b-fp8\.safetensors/flux-2-klein-4b-nvfp4.safetensors/g' "$wf"
             sed -i 's/flux-2-klein-9b-fp8\.safetensors/flux-2-klein-9b-nvfp4.safetensors/g' "$wf"
