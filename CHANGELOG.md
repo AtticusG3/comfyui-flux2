@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## [1.7.2] -- Dedupe aria2 model downloads by output path
+
+### Fixed
+- Startup dedupes aggregated pack model lists by `dir=` + `out=` before aria2 runs, so multiple packs requesting the same file (e.g. `vae/ae.safetensors`) no longer race and trigger a false `[ERROR] Model download failed` when one GID completes and another errors.
+
 ## [1.7.1] -- ComfyUI core tree repair after git rsync
 
 ### Fixed

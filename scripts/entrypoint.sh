@@ -1714,6 +1714,12 @@ if [ -s "$MANAGED_WORKFLOWS_MANIFEST" ]; then
     fi
 fi
 
+# Multiple packs can list the same dir=/out=; aria2 races on one file and may ERR while another OK.
+if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
+    python3 /scripts/dedupe_model_download_list.py "$TEMP_MODELS" \
+        || echo "[WARN] Model download list dedupe reported issues."
+fi
+
 # Filter model list if HF_TOKEN not set (remove lines marked # Requires HF_TOKEN)
 if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
     if [ -z "${HF_TOKEN}" ]; then
