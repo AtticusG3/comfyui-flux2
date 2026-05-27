@@ -59,17 +59,27 @@ SCENES: dict[str, tuple[str, str]] = {
         "",
     ),
     "workflows/newbie-image/newbie-t2i-low.json": (
-        "<subject>Hatsune Miku in black and gold racing queen outfit beside a Nissan Silvia S15 Spec-R</subject> "
-        "<background>Fuji Speedway paddock, Mount Fuji in distance, Super GT atmosphere</background> "
-        "<style>high-detail anime illustration, vibrant cel-shading</style> "
-        "<quality>masterpiece, best quality, sharp</quality>",
+        "<character_1><n>Hatsune Miku</n><gender>1girl</gender>"
+        "<appearance>teal_twintails, long_hair, aqua_eyes</appearance>"
+        "<clothing>black_and_gold_racing_queen_outfit, thighhighs</clothing>"
+        "<expression>confident_smile</expression><action>leaning_on, standing</action>"
+        "<position>center_right</position></character_1>"
+        "<general_tags><count>1girl, solo</count><style>anime_style, digital_art</style>"
+        "<background>Fuji_Speedway_paddock, Mount_Fuji_distance, Super_GT_atmosphere</background>"
+        "<atmosphere>energetic</atmosphere><quality>high_resolution, detailed</quality>"
+        "<objects>Nissan_Silvia_S15_Spec-R</objects><other>motorsport</other></general_tags>",
         ANIME_NEG,
     ),
     "workflows/newbie-image/newbie-t2i-high.json": (
-        "<subject>Rem from Re:Zero in maid outfit beside a Subaru WRX STI WRB at Akihabara night street</subject> "
-        "<background>neon signs, light rain, crowded sidewalk</background> "
-        "<style>detailed anime illustration, cinematic rim light</style> "
-        "<quality>masterpiece, best quality</quality>",
+        "<character_1><n>Rem</n><gender>1girl</gender>"
+        "<appearance>short_hair, blue_hair, hair_over_one_eye, blue_eyes</appearance>"
+        "<clothing>maid_outfit, white_apron, hair_ribbon</clothing>"
+        "<expression>gentle_smile</expression><action>leaning_on, standing</action>"
+        "<position>center_left</position></character_1>"
+        "<general_tags><count>1girl, solo</count><style>anime_style, digital_art</style>"
+        "<background>Akihabara_night_street, neon_signs, light_rain, crowded_sidewalk</background>"
+        "<atmosphere>urban_night</atmosphere><quality>high_resolution, detailed</quality>"
+        "<objects>Subaru_WRX_STI_WRB</objects><other>jdm</other></general_tags>",
         ANIME_NEG,
     ),
     "workflows/ovis-image/ovis-t2i.json": (

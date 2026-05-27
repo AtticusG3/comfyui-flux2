@@ -119,6 +119,7 @@ sync/update logic, and persistent host-mounted data paths.
 - Bundled workflows use core `SaveImage`, not `LayerUtility: SaveImagePlus` (LayerStyle not required for saves).
 - After editing `workflows/**/*.json`, run `validate-comfyui-workflow` / `scripts/validate_workflow_json.py` before merge.
 - `NVFP4_SUPPORTED=false` means no NVFP4 downloads or workflow filenames anywhere; default packs use FP8 on low VRAM and BF16 on high (e.g. Z-Anime SeeSee21). Enable NVFP4 only when hardware supports it and the flag is explicitly `true`.
+- Z-Anime workflow LLM prompt-enhancement system prompts must target SeeSee21/Z-Anime only; do not reuse or mix Z-Image Base or Z-Image Turbo prompting rules.
 
 ## Learned Workspace Facts
 
@@ -139,6 +140,8 @@ sync/update logic, and persistent host-mounted data paths.
 - ComfyUI 0.22+ needs `comfy-aimdo` aligned with ComfyUI `requirements.txt` (HostBuffer API);
   entrypoint `ensure_comfy_aimdo_package()` reconciles the pin on startup (rebuild image after script changes).
 - Pack selector `flux2` is deprecated; Klein workflows ship via `klein-distilled` (`workflows/flux2/` sources).
-- GitHub Actions cannot name secrets with a `GITHUB_` prefix; use `GH_TOKEN: ${{ github.token }}` for `gh` in workflows.
+- `ovis-image` is split-file only: bundled workflow and AnythingLLM API examples use `UNETLoader` +
+  `ModelSamplingAuraFlow` + `CLIPLoader` (type `ovis`) + `VAELoader`, not `CheckpointLoaderSimple`; low tier
+  FP8 from qpqpqpqpqpqp/Ovis_Image_7B_fp8 with entrypoint sed by VRAM tier.
 - Nested UUID subgraphs in bundled workflows should be embedded via `scripts/embed_workflow_subgraphs.py`
   before release so `audit_workflow_assets.py` does not warn on missing definitions.
