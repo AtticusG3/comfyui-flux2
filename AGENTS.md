@@ -118,6 +118,8 @@ sync/update logic, and persistent host-mounted data paths.
 - Keep `z-image-base`, `z-image-turbo`, and `z-image-anime` as distinct selectable packs; do not collapse them.
 - Bundled workflows use core `SaveImage`, not `LayerUtility: SaveImagePlus` (LayerStyle not required for saves).
 - After editing `workflows/**/*.json`, run `validate-comfyui-workflow` / `scripts/validate_workflow_json.py` before merge.
+- For embedded UUID subgraph workflows, also run `python scripts/validate_workflow_topology.py <path>` and optional strict parity `python scripts/validate_workflow_topology.py --check-wrapper <path>`.
+- To repair wrapper port drift deterministically, use `python scripts/sync_subgraph_wrapper_ports.py <path> --subgraph-id <uuid> --write` instead of hand-editing wrapper slots.
 - `NVFP4_SUPPORTED=false` means no NVFP4 downloads or workflow filenames anywhere; default packs use FP8 on low VRAM and BF16 on high (e.g. Z-Anime SeeSee21). Enable NVFP4 only when hardware supports it and the flag is explicitly `true`.
 - Z-Anime workflow LLM prompt-enhancement system prompts must target SeeSee21/Z-Anime only; do not reuse or mix Z-Image Base or Z-Image Turbo prompting rules.
 

@@ -1,0 +1,36 @@
+﻿---
+description: Deterministic embedded-subgraph mutation and wrapper-port synchronization rules for workflows under workflows/**/*.json
+globs:
+  - "workflows/**/*.json"
+alwaysApply: false
+---
+
+# Workflow Subgraph Determinism
+
+## Source of truth
+
+- For UUID wrapper nodes, the embedded definition under `definitions.subgraphs` is the source of truth for input/output ports.
+- Wrapper `nodes[].inputs` and `nodes[].outputs` must match subgraph interface count and types.
+
+## Required gates after mutation
+
+- `python scripts/validate_workflow_json.py <path>`
+- `python scripts/validate_workflow_topology.py <path>`
+
+Recommended full pass:
+
+- `python scripts/validate_workflow_json.py --semantics --topology <path>`
+
+## Safe repair path (no guessing)
+
+Use:
+
+`python scripts/sync_subgraph_wrapper_ports.py <path> --subgraph-id <uuid> --write`
+
+Then apply behavior wiring edits intentionally and re-run gates.
+
+## Hard prohibitions
+
+- No invented node types or unknown slot wiring.
+- No silent link-id churn across unrelated nodes.
+- No edits to unrelated subgraphs in the same file unless requested.

@@ -1,0 +1,560 @@
+﻿#!/usr/bin/env python3
+"""Validate ComfyUI workflow topology, including embedded subgraph wrappers.
+
+Checks performed:
+- Link endpoint integrity for root graph and embedded subgraphs.
+- Node input/output link references point to real link ids.
+- Optional UUID wrapper parity checks against embedded subgraph interfaces.
+- Optional wrapper auto-fix mode to sync wrapper ports from embedded definitions.
+
+ASCII-only output.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+UUID_RE = re.compile(
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    re.IGNORECASE,
+)
+PSEUDO_NODE_IDS = {-10, -20}
+
+
+def emit(path: str, gate: str, ok: bool, msg: str = "") -> None:
+    line = f"{path}  {gate}  {'PASS' if ok else 'FAIL'}"
+    if msg:
+        line += f"  {msg}"
+    sys.stdout.write(line + "\n")
+
+
+def _links_kind(links: list[Any]) -> str | None:
+    if not links:
+        return "tuple"
+    first = links[0]
+    if isinstance(first, list):
+        return "tuple"
+    if isinstance(first, dict):
+        return "object"
+    return None
+
+
+def _link_fields(link: Any, kind: str) -> tuple[int | None, Any, Any]:
+    if kind == "tuple":
+        if not isinstance(link, list) or len(link) < 5:
+            return None, None, None
+        return link[0], link[1], link[3]
+    if not isinstance(link, dict):
+        return None, None, None
+    return link.get("id"), link.get("origin_id"), link.get("target_id")
+
+
+def _node_ids(graph: dict[str, Any]) -> set[Any]:
+    return {
+        n.get("id")
+        for n in graph.get("nodes", [])
+        if isinstance(n, dict) and "id" in n
+    }
+
+
+def _check_graph_links(graph: dict[str, Any], *, allow_pseudo: bool) -> list[str]:
+    errs: list[str] = []
+    links = graph.get("links")
+    if not isinstance(links, list):
+        return ["links is not a list"]
+    kind = _links_kind(links)
+    if kind is None:
+        return ["links[0] is neither tuple nor object"]
+    ids = _node_ids(graph)
+    link_ids: set[Any] = set()
+    for idx, link in enumerate(links):
+        lid, src, dst = _link_fields(link, kind)
+        if lid is None:
+            errs.append(f"links[{idx}] malformed")
+            continue
+        if lid in link_ids:
+            errs.append(f"duplicate link id {lid}")
+        link_ids.add(lid)
+        src_ok = src in ids or (allow_pseudo and src in PSEUDO_NODE_IDS)
+        dst_ok = dst in ids or (allow_pseudo and dst in PSEUDO_NODE_IDS)
+        if not src_ok:
+            errs.append(f"links[{idx}] dangling source node {src}")
+        if not dst_ok:
+            errs.append(f"links[{idx}] dangling target node {dst}")
+    return errs
+
+
+def _graph_link_id_set(graph: dict[str, Any]) -> set[Any]:
+    links = graph.get("links")
+    if not isinstance(links, list):
+        return set()
+    kind = _links_kind(links)
+    if kind is None:
+        return set()
+    out: set[Any] = set()
+    for link in links:
+        lid, _, _ = _link_fields(link, kind)
+        if lid is not None:
+            out.add(lid)
+    return out
+
+
+def _check_node_references(graph: dict[str, Any]) -> list[str]:
+    errs: list[str] = []
+    link_ids = _graph_link_id_set(graph)
+    for node in graph.get("nodes", []):
+        if not isinstance(node, dict):
+            continue
+        node_id = node.get("id")
+        for inp in node.get("inputs") or []:
+            if not isinstance(inp, dict):
+                continue
+            lid = inp.get("link")
+            if lid is not None and lid not in link_ids:
+                errs.append(f"node {node_id} input {inp.get('name')!r} missing link {lid}")
+        for out in node.get("outputs") or []:
+            if not isinstance(out, dict):
+                continue
+            lids = out.get("links")
+            if lids is None:
+                continue
+            if not isinstance(lids, list):
+                errs.append(f"node {node_id} output {out.get('name')!r} links is not list")
+                continue
+            for lid in lids:
+                if lid not in link_ids:
+                    errs.append(
+                        f"node {node_id} output {out.get('name')!r} missing link {lid}"
+                    )
+    return errs
+
+
+
+
+def _check_lazy_execution_paths(graph: dict[str, Any], *, allow_pseudo: bool) -> list[str]:
+    """Validate required upstream links by reverse traversal from terminal outputs.
+
+    This mirrors lazy execution: start from graph sinks and walk backward through
+    input links. Any broken link on an actually-required path fails.
+    """
+    errs: list[str] = []
+    links = graph.get("links")
+    nodes = graph.get("nodes")
+    if not isinstance(links, list) or not isinstance(nodes, list):
+        return errs
+    kind = _links_kind(links)
+    if kind is None:
+        return errs
+
+    by_id = {
+        n.get("id"): n
+        for n in nodes
+        if isinstance(n, dict) and "id" in n
+    }
+
+    link_by_id: dict[Any, tuple[Any, Any, Any, Any]] = {}
+    incoming: dict[Any, list[Any]] = {}
+    for link in links:
+        if kind == "tuple":
+            if not isinstance(link, list) or len(link) < 5:
+                continue
+            lid, src, src_slot, dst, dst_slot = link[0], link[1], link[2], link[3], link[4]
+        else:
+            if not isinstance(link, dict):
+                continue
+            lid = link.get("id")
+            src = link.get("origin_id")
+            src_slot = link.get("origin_slot")
+            dst = link.get("target_id")
+            dst_slot = link.get("target_slot")
+        if lid is None:
+            continue
+        link_by_id[lid] = (src, src_slot, dst, dst_slot)
+        incoming.setdefault(dst, []).append(lid)
+
+    # Terminal targets: output pseudo node for subgraphs, otherwise sink nodes.
+    terminals: list[Any] = []
+    if allow_pseudo and -20 in incoming:
+        terminals.append(-20)
+    else:
+        for nid, node in by_id.items():
+            outs = node.get("outputs") or []
+            has_downstream = False
+            for out in outs:
+                if not isinstance(out, dict):
+                    continue
+                lids = out.get("links")
+                if isinstance(lids, list) and lids:
+                    has_downstream = True
+                    break
+            if not has_downstream and (node.get("inputs") or []):
+                terminals.append(nid)
+
+    stack: list[Any] = []
+    seen_nodes: set[Any] = set()
+
+    for t in terminals:
+        stack.append(t)
+
+    while stack:
+        nid = stack.pop()
+        if nid in seen_nodes:
+            continue
+        seen_nodes.add(nid)
+
+        # Follow incoming links to this node and validate them as required path.
+        for lid in incoming.get(nid, []):
+            rec = link_by_id.get(lid)
+            if rec is None:
+                errs.append(f"lazy path missing link record {lid}")
+                continue
+            src, src_slot, dst, dst_slot = rec
+
+            # Validate target side consistency for required link.
+            if dst in by_id:
+                dst_node = by_id[dst]
+                dst_inputs = dst_node.get("inputs") or []
+                if not isinstance(dst_slot, int) or dst_slot < 0 or dst_slot >= len(dst_inputs):
+                    errs.append(f"lazy link {lid} target slot out of range on node {dst}")
+                else:
+                    inp = dst_inputs[dst_slot]
+                    if isinstance(inp, dict) and inp.get("link") != lid:
+                        errs.append(f"lazy link {lid} target node {dst} slot {dst_slot} has input.link={inp.get('link')}")
+
+            # Validate source side consistency for required link.
+            if src in by_id:
+                src_node = by_id[src]
+                src_outputs = src_node.get("outputs") or []
+                if not isinstance(src_slot, int) or src_slot < 0 or src_slot >= len(src_outputs):
+                    errs.append(f"lazy link {lid} source slot out of range on node {src}")
+                else:
+                    out = src_outputs[src_slot]
+                    if isinstance(out, dict):
+                        lids = out.get("links")
+                        if isinstance(lids, list) and lid not in lids:
+                            errs.append(f"lazy link {lid} missing from source node {src} slot {src_slot} output.links")
+
+                stack.append(src)
+            elif not (allow_pseudo and src in PSEUDO_NODE_IDS):
+                errs.append(f"lazy link {lid} has missing source node {src}")
+
+    return errs
+def _check_slot_link_alignment(graph: dict[str, Any], *, allow_pseudo: bool) -> list[str]:
+    errs: list[str] = []
+    links = graph.get("links")
+    nodes = graph.get("nodes")
+    if not isinstance(links, list) or not isinstance(nodes, list):
+        return errs
+    kind = _links_kind(links)
+    if kind is None:
+        return errs
+
+    by_id = {
+        n.get("id"): n
+        for n in nodes
+        if isinstance(n, dict) and "id" in n
+    }
+    pseudo_ok = PSEUDO_NODE_IDS if allow_pseudo else set()
+
+    link_target = {}
+    link_origin = {}
+    for idx, link in enumerate(links):
+        if kind == "tuple":
+            if not isinstance(link, list) or len(link) < 5:
+                continue
+            lid, src, src_slot, dst, dst_slot = link[0], link[1], link[2], link[3], link[4]
+        else:
+            if not isinstance(link, dict):
+                continue
+            lid = link.get("id")
+            src = link.get("origin_id")
+            src_slot = link.get("origin_slot")
+            dst = link.get("target_id")
+            dst_slot = link.get("target_slot")
+        if lid is None:
+            continue
+        link_target[lid] = (dst, dst_slot)
+        link_origin[lid] = (src, src_slot)
+
+    for lid, (dst, dst_slot) in link_target.items():
+        if dst in pseudo_ok:
+            continue
+        node = by_id.get(dst)
+        if not isinstance(node, dict):
+            continue
+        inputs = node.get("inputs") or []
+        if not isinstance(dst_slot, int) or dst_slot < 0 or dst_slot >= len(inputs):
+            errs.append(f"link {lid} targets node {dst} input slot {dst_slot} out of range")
+            continue
+        inp = inputs[dst_slot]
+        if isinstance(inp, dict):
+            if inp.get("link") != lid:
+                errs.append(
+                    f"link {lid} targets node {dst} slot {dst_slot} but input.link is {inp.get('link')}"
+                )
+
+    for lid, (src, src_slot) in link_origin.items():
+        if src in pseudo_ok:
+            continue
+        node = by_id.get(src)
+        if not isinstance(node, dict):
+            continue
+        outputs = node.get("outputs") or []
+        if not isinstance(src_slot, int) or src_slot < 0 or src_slot >= len(outputs):
+            errs.append(f"link {lid} originates node {src} output slot {src_slot} out of range")
+            continue
+        out = outputs[src_slot]
+        if isinstance(out, dict):
+            lids = out.get("links")
+            if isinstance(lids, list) and lid not in lids:
+                errs.append(
+                    f"link {lid} originates node {src} slot {src_slot} but not listed in output.links"
+                )
+    return errs
+
+
+def _check_wrapper_interfaces(doc: dict[str, Any]) -> list[str]:
+    errs: list[str] = []
+    defs = doc.get("definitions", {})
+    subs = defs.get("subgraphs", []) if isinstance(defs, dict) else []
+    by_id = {
+        sg.get("id"): sg
+        for sg in subs
+        if isinstance(sg, dict) and isinstance(sg.get("id"), str)
+    }
+    for node in doc.get("nodes", []):
+        if not isinstance(node, dict):
+            continue
+        node_type = node.get("type")
+        if not isinstance(node_type, str) or not UUID_RE.match(node_type):
+            continue
+        sub = by_id.get(node_type)
+        if sub is None:
+            continue
+        node_inputs = node.get("inputs") or []
+        node_outputs = node.get("outputs") or []
+        sub_inputs = sub.get("inputs") or []
+        sub_outputs = sub.get("outputs") or []
+        if len(node_inputs) != len(sub_inputs):
+            errs.append(
+                f"wrapper {node.get('id')} input count {len(node_inputs)} != subgraph {len(sub_inputs)}"
+            )
+        if len(node_outputs) != len(sub_outputs):
+            errs.append(
+                f"wrapper {node.get('id')} output count {len(node_outputs)} != subgraph {len(sub_outputs)}"
+            )
+        for idx, (ni, si) in enumerate(zip(node_inputs, sub_inputs)):
+            if not isinstance(ni, dict) or not isinstance(si, dict):
+                continue
+            nt = ni.get("type")
+            st = si.get("type")
+            if nt != "*" and st != "*" and nt != st:
+                errs.append(
+                    f"wrapper {node.get('id')} input[{idx}] type {nt!r} != subgraph {st!r}"
+                )
+        for idx, (no, so) in enumerate(zip(node_outputs, sub_outputs)):
+            if not isinstance(no, dict) or not isinstance(so, dict):
+                continue
+            nt = no.get("type")
+            st = so.get("type")
+            if nt != "*" and st != "*" and nt != st:
+                errs.append(
+                    f"wrapper {node.get('id')} output[{idx}] type {nt!r} != subgraph {st!r}"
+                )
+    return errs
+
+
+def _build_input_ports(sub_inputs: list[dict[str, Any]], old_inputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_name = {
+        i.get("name"): i
+        for i in old_inputs
+        if isinstance(i, dict) and isinstance(i.get("name"), str)
+    }
+    out: list[dict[str, Any]] = []
+    for si in sub_inputs:
+        if not isinstance(si, dict):
+            continue
+        name = si.get("name")
+        stype = si.get("type")
+        old = by_name.get(name, {})
+        label = si.get("label") or si.get("localized_name") or old.get("label")
+        entry: dict[str, Any] = {
+            "name": name if isinstance(name, str) else "",
+            "type": stype if isinstance(stype, str) else "*",
+            "link": old.get("link") if isinstance(old, dict) else None,
+        }
+        if isinstance(label, str) and label:
+            entry["label"] = label
+        if "widget" in old:
+            entry["widget"] = old["widget"]
+        out.append(entry)
+    return out
+
+
+def _build_output_ports(sub_outputs: list[dict[str, Any]], old_outputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_name = {
+        o.get("name"): o
+        for o in old_outputs
+        if isinstance(o, dict) and isinstance(o.get("name"), str)
+    }
+    out: list[dict[str, Any]] = []
+    for so in sub_outputs:
+        if not isinstance(so, dict):
+            continue
+        name = so.get("name")
+        stype = so.get("type")
+        old = by_name.get(name, {})
+        label = so.get("label") or so.get("localized_name") or old.get("label")
+        links = old.get("links") if isinstance(old.get("links"), list) else []
+        entry: dict[str, Any] = {
+            "name": name if isinstance(name, str) else "",
+            "type": stype if isinstance(stype, str) else "*",
+            "links": links,
+        }
+        if isinstance(label, str) and label:
+            entry["label"] = label
+        out.append(entry)
+    return out
+
+
+def _sync_wrapper_ports(doc: dict[str, Any]) -> list[str]:
+    defs = doc.get("definitions", {})
+    subs = defs.get("subgraphs", []) if isinstance(defs, dict) else []
+    by_id = {
+        sg.get("id"): sg
+        for sg in subs
+        if isinstance(sg, dict) and isinstance(sg.get("id"), str)
+    }
+    changed: list[str] = []
+    for node in doc.get("nodes", []):
+        if not isinstance(node, dict):
+            continue
+        node_type = node.get("type")
+        if not isinstance(node_type, str) or not UUID_RE.match(node_type):
+            continue
+        sub = by_id.get(node_type)
+        if sub is None:
+            continue
+        old_inputs = node.get("inputs") or []
+        old_outputs = node.get("outputs") or []
+        sub_inputs = sub.get("inputs") or []
+        sub_outputs = sub.get("outputs") or []
+        new_inputs = _build_input_ports(sub_inputs, old_inputs)
+        new_outputs = _build_output_ports(sub_outputs, old_outputs)
+        if new_inputs != old_inputs or new_outputs != old_outputs:
+            node["inputs"] = new_inputs
+            node["outputs"] = new_outputs
+            changed.append(str(node.get("id")))
+    return changed
+
+
+def validate_doc(doc: dict[str, Any], *, check_wrapper: bool = False) -> tuple[bool, list[str]]:
+    if not isinstance(doc, dict):
+        return False, ["top-level JSON must be object"]
+    if not isinstance(doc.get("nodes"), list) or not isinstance(doc.get("links"), list):
+        return False, ["not a UI workflow graph (missing nodes/links arrays)"]
+
+    errs: list[str] = []
+    root_graph = {"nodes": doc.get("nodes", []), "links": doc.get("links", [])}
+    errs.extend(_check_graph_links(root_graph, allow_pseudo=False))
+    errs.extend(_check_node_references(root_graph))
+    errs.extend(_check_slot_link_alignment(root_graph, allow_pseudo=False))
+    errs.extend(_check_lazy_execution_paths(root_graph, allow_pseudo=False))
+
+    defs = doc.get("definitions", {})
+    subgraphs = defs.get("subgraphs", []) if isinstance(defs, dict) else []
+    for sg in subgraphs:
+        if not isinstance(sg, dict):
+            continue
+        name = sg.get("name") or sg.get("id") or "<subgraph>"
+        sub_graph = {"nodes": sg.get("nodes", []), "links": sg.get("links", [])}
+        local_errs = _check_graph_links(sub_graph, allow_pseudo=True)
+        local_errs.extend(_check_node_references(sub_graph))
+        local_errs.extend(_check_slot_link_alignment(sub_graph, allow_pseudo=True))
+        local_errs.extend(_check_lazy_execution_paths(sub_graph, allow_pseudo=True))
+        errs.extend([f"{name}: {msg}" for msg in local_errs])
+
+    if check_wrapper:
+        errs.extend(_check_wrapper_interfaces(doc))
+    return len(errs) == 0, errs
+
+
+def validate_file(path: Path, *, check_wrapper: bool = False) -> tuple[bool, list[str]]:
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        return False, [f"parse error: {exc}"]
+    return validate_doc(doc, check_wrapper=check_wrapper)
+
+
+def expand_paths(raw_paths: list[str]) -> list[Path]:
+    out: list[Path] = []
+    for raw in raw_paths:
+        p = Path(raw)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if p.is_dir():
+            out.extend(sorted(p.rglob("*.json")))
+        else:
+            out.append(p)
+    return out
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Validate topology for workflows and embedded subgraphs."
+    )
+    parser.add_argument("paths", nargs="*", help="Workflow files or directories")
+    parser.add_argument(
+        "--check-wrapper",
+        action="store_true",
+        help="Validate wrapper UUID node interfaces against embedded subgraph ports",
+    )
+    parser.add_argument(
+        "--fix-wrapper",
+        action="store_true",
+        help="Sync wrapper ports from embedded subgraph interfaces before validation",
+    )
+    args = parser.parse_args()
+    targets = expand_paths(args.paths or ["workflows"])
+    if not targets:
+        sys.stdout.write("usage: validate_workflow_topology.py <workflow.json> [...]\n")
+        return 2
+
+    failed = False
+    for p in targets:
+        rel = str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p)
+        if "_templates" in p.parts:
+            continue
+
+        if args.fix_wrapper:
+            try:
+                doc = json.loads(p.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as exc:
+                emit(rel, "topology-fix", False, f"parse error: {exc}")
+                failed = True
+                continue
+            changed = _sync_wrapper_ports(doc)
+            if changed:
+                p.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                emit(rel, "topology-fix", True, f"synced wrapper nodes: {', '.join(changed)}")
+            else:
+                emit(rel, "topology-fix", True, "no wrapper drift")
+
+        ok, errs = validate_file(p, check_wrapper=(args.check_wrapper or args.fix_wrapper))
+        emit(rel, "topology", ok, "; ".join(errs[:4]) if errs else "")
+        if not ok and len(errs) > 4:
+            emit(rel, "topology-detail", False, f"+{len(errs) - 4} more")
+        if not ok:
+            failed = True
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

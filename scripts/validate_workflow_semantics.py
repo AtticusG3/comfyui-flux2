@@ -154,6 +154,7 @@ class PackProfile:
     cfg_full: tuple[float, float] = (1.0, 5.0)
     expect_lora_substr: str | None = None
     expect_turbo_default: bool | None = None
+    require_empty_flux2_latent: bool = False
     skip_defaults: bool = False
 
 
@@ -183,8 +184,16 @@ PACK_PROFILES: dict[str, PackProfile] = {
         full_steps=(4, 8),
         cfg_lightning=(1.0, 2.5),
     ),
-    "flux2": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
-    "klein-distilled": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
+    "flux2": PackProfile(
+        kind="t2i",
+        prompt_mode="portrait_car_scenic",
+        require_empty_flux2_latent=True,
+    ),
+    "klein-distilled": PackProfile(
+        kind="t2i",
+        prompt_mode="portrait_car_scenic",
+        require_empty_flux2_latent=True,
+    ),
     "flux1-krea": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
     "realvisxl": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
     "z-image-turbo": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
@@ -282,6 +291,14 @@ def extract_turbo_defaults(doc: dict[str, Any]) -> list[bool]:
                 if isinstance(values, list) and values and isinstance(values[0], bool):
                     flags.append(values[0])
     return flags
+
+
+def has_node_type(doc: dict[str, Any], node_type: str) -> bool:
+    for graph in iter_workflow_graphs(doc, REPO_ROOT):
+        for node in graph.get("nodes", []):
+            if isinstance(node, dict) and node.get("type") == node_type:
+                return True
+    return False
 
 
 def infer_pack(rel_posix: str) -> str | None:
@@ -386,6 +403,8 @@ def check_defaults(doc: dict[str, Any], profile: PackProfile) -> list[str]:
             issues.append(
                 f"Lightning/turbo toggle should default to {profile.expect_turbo_default}"
             )
+    if profile.require_empty_flux2_latent and not has_node_type(doc, "EmptyFlux2LatentImage"):
+        issues.append("expected EmptyFlux2LatentImage in workflow graph/subgraph")
 
     if profile.lightning:
         if profile.lightning_steps not in steps:
