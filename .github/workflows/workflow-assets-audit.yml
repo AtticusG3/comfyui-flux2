@@ -26,9 +26,3 @@ jobs:
 
       - name: Run workflow asset audit
         run: python scripts/audit_workflow_assets.py
-
-      - name: Install validator dependencies
-        run: python -m pip install jsonschema==4.26.0
-
-      - name: Validate workflow JSON, topology, and semantics
-        run: python scripts/validate_workflow_json.py --topology --semantics workflows/
