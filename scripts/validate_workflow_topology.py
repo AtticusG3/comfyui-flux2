@@ -14,45 +14,20 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 from typing import Any
 
+from lib.workflow_links import link_fields
+from lib.workflow_links import links_kind
+from lib.workflow_subgraph_ports import check_wrapper_interfaces
+from lib.workflow_subgraph_ports import realign_orphan_wrapper_links
+from lib.workflow_subgraph_ports import sync_all_wrappers
+from lib.workflow_validate_cli import emit
+from lib.workflow_validate_cli import expand_paths
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
-UUID_RE = re.compile(
-    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-    re.IGNORECASE,
-)
 PSEUDO_NODE_IDS = {-10, -20}
-
-
-def emit(path: str, gate: str, ok: bool, msg: str = "") -> None:
-    line = f"{path}  {gate}  {'PASS' if ok else 'FAIL'}"
-    if msg:
-        line += f"  {msg}"
-    sys.stdout.write(line + "\n")
-
-
-def _links_kind(links: list[Any]) -> str | None:
-    if not links:
-        return "tuple"
-    first = links[0]
-    if isinstance(first, list):
-        return "tuple"
-    if isinstance(first, dict):
-        return "object"
-    return None
-
-
-def _link_fields(link: Any, kind: str) -> tuple[int | None, Any, Any]:
-    if kind == "tuple":
-        if not isinstance(link, list) or len(link) < 5:
-            return None, None, None
-        return link[0], link[1], link[3]
-    if not isinstance(link, dict):
-        return None, None, None
-    return link.get("id"), link.get("origin_id"), link.get("target_id")
 
 
 def _node_ids(graph: dict[str, Any]) -> set[Any]:
@@ -68,13 +43,13 @@ def _check_graph_links(graph: dict[str, Any], *, allow_pseudo: bool) -> list[str
     links = graph.get("links")
     if not isinstance(links, list):
         return ["links is not a list"]
-    kind = _links_kind(links)
+    kind = links_kind(links)
     if kind is None:
         return ["links[0] is neither tuple nor object"]
     ids = _node_ids(graph)
     link_ids: set[Any] = set()
     for idx, link in enumerate(links):
-        lid, src, dst = _link_fields(link, kind)
+        lid, src, dst = link_fields(link, kind)
         if lid is None:
             errs.append(f"links[{idx}] malformed")
             continue
@@ -94,12 +69,12 @@ def _graph_link_id_set(graph: dict[str, Any]) -> set[Any]:
     links = graph.get("links")
     if not isinstance(links, list):
         return set()
-    kind = _links_kind(links)
+    kind = links_kind(links)
     if kind is None:
         return set()
     out: set[Any] = set()
     for link in links:
-        lid, _, _ = _link_fields(link, kind)
+        lid, _, _ = link_fields(link, kind)
         if lid is not None:
             out.add(lid)
     return out
@@ -148,7 +123,7 @@ def _check_lazy_execution_paths(graph: dict[str, Any], *, allow_pseudo: bool) ->
     nodes = graph.get("nodes")
     if not isinstance(links, list) or not isinstance(nodes, list):
         return errs
-    kind = _links_kind(links)
+    kind = links_kind(links)
     if kind is None:
         return errs
 
@@ -251,7 +226,7 @@ def _check_slot_link_alignment(graph: dict[str, Any], *, allow_pseudo: bool) -> 
     nodes = graph.get("nodes")
     if not isinstance(links, list) or not isinstance(nodes, list):
         return errs
-    kind = _links_kind(links)
+    kind = links_kind(links)
     if kind is None:
         return errs
 
@@ -319,141 +294,6 @@ def _check_slot_link_alignment(graph: dict[str, Any], *, allow_pseudo: bool) -> 
     return errs
 
 
-def _check_wrapper_interfaces(doc: dict[str, Any]) -> list[str]:
-    errs: list[str] = []
-    defs = doc.get("definitions", {})
-    subs = defs.get("subgraphs", []) if isinstance(defs, dict) else []
-    by_id = {
-        sg.get("id"): sg
-        for sg in subs
-        if isinstance(sg, dict) and isinstance(sg.get("id"), str)
-    }
-    for node in doc.get("nodes", []):
-        if not isinstance(node, dict):
-            continue
-        node_type = node.get("type")
-        if not isinstance(node_type, str) or not UUID_RE.match(node_type):
-            continue
-        sub = by_id.get(node_type)
-        if sub is None:
-            continue
-        node_inputs = node.get("inputs") or []
-        node_outputs = node.get("outputs") or []
-        sub_inputs = sub.get("inputs") or []
-        sub_outputs = sub.get("outputs") or []
-        if len(node_inputs) != len(sub_inputs):
-            errs.append(
-                f"wrapper {node.get('id')} input count {len(node_inputs)} != subgraph {len(sub_inputs)}"
-            )
-        if len(node_outputs) != len(sub_outputs):
-            errs.append(
-                f"wrapper {node.get('id')} output count {len(node_outputs)} != subgraph {len(sub_outputs)}"
-            )
-        for idx, (ni, si) in enumerate(zip(node_inputs, sub_inputs)):
-            if not isinstance(ni, dict) or not isinstance(si, dict):
-                continue
-            nt = ni.get("type")
-            st = si.get("type")
-            if nt != "*" and st != "*" and nt != st:
-                errs.append(
-                    f"wrapper {node.get('id')} input[{idx}] type {nt!r} != subgraph {st!r}"
-                )
-        for idx, (no, so) in enumerate(zip(node_outputs, sub_outputs)):
-            if not isinstance(no, dict) or not isinstance(so, dict):
-                continue
-            nt = no.get("type")
-            st = so.get("type")
-            if nt != "*" and st != "*" and nt != st:
-                errs.append(
-                    f"wrapper {node.get('id')} output[{idx}] type {nt!r} != subgraph {st!r}"
-                )
-    return errs
-
-
-def _build_input_ports(sub_inputs: list[dict[str, Any]], old_inputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    by_name = {
-        i.get("name"): i
-        for i in old_inputs
-        if isinstance(i, dict) and isinstance(i.get("name"), str)
-    }
-    out: list[dict[str, Any]] = []
-    for si in sub_inputs:
-        if not isinstance(si, dict):
-            continue
-        name = si.get("name")
-        stype = si.get("type")
-        old = by_name.get(name, {})
-        label = si.get("label") or si.get("localized_name") or old.get("label")
-        entry: dict[str, Any] = {
-            "name": name if isinstance(name, str) else "",
-            "type": stype if isinstance(stype, str) else "*",
-            "link": old.get("link") if isinstance(old, dict) else None,
-        }
-        if isinstance(label, str) and label:
-            entry["label"] = label
-        if "widget" in old:
-            entry["widget"] = old["widget"]
-        out.append(entry)
-    return out
-
-
-def _build_output_ports(sub_outputs: list[dict[str, Any]], old_outputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    by_name = {
-        o.get("name"): o
-        for o in old_outputs
-        if isinstance(o, dict) and isinstance(o.get("name"), str)
-    }
-    out: list[dict[str, Any]] = []
-    for so in sub_outputs:
-        if not isinstance(so, dict):
-            continue
-        name = so.get("name")
-        stype = so.get("type")
-        old = by_name.get(name, {})
-        label = so.get("label") or so.get("localized_name") or old.get("label")
-        links = old.get("links") if isinstance(old.get("links"), list) else []
-        entry: dict[str, Any] = {
-            "name": name if isinstance(name, str) else "",
-            "type": stype if isinstance(stype, str) else "*",
-            "links": links,
-        }
-        if isinstance(label, str) and label:
-            entry["label"] = label
-        out.append(entry)
-    return out
-
-
-def _sync_wrapper_ports(doc: dict[str, Any]) -> list[str]:
-    defs = doc.get("definitions", {})
-    subs = defs.get("subgraphs", []) if isinstance(defs, dict) else []
-    by_id = {
-        sg.get("id"): sg
-        for sg in subs
-        if isinstance(sg, dict) and isinstance(sg.get("id"), str)
-    }
-    changed: list[str] = []
-    for node in doc.get("nodes", []):
-        if not isinstance(node, dict):
-            continue
-        node_type = node.get("type")
-        if not isinstance(node_type, str) or not UUID_RE.match(node_type):
-            continue
-        sub = by_id.get(node_type)
-        if sub is None:
-            continue
-        old_inputs = node.get("inputs") or []
-        old_outputs = node.get("outputs") or []
-        sub_inputs = sub.get("inputs") or []
-        sub_outputs = sub.get("outputs") or []
-        new_inputs = _build_input_ports(sub_inputs, old_inputs)
-        new_outputs = _build_output_ports(sub_outputs, old_outputs)
-        if new_inputs != old_inputs or new_outputs != old_outputs:
-            node["inputs"] = new_inputs
-            node["outputs"] = new_outputs
-            changed.append(str(node.get("id")))
-    return changed
-
-
 def validate_doc(doc: dict[str, Any], *, check_wrapper: bool = False) -> tuple[bool, list[str]]:
     if not isinstance(doc, dict):
         return False, ["top-level JSON must be object"]
@@ -481,7 +321,7 @@ def validate_doc(doc: dict[str, Any], *, check_wrapper: bool = False) -> tuple[b
         errs.extend([f"{name}: {msg}" for msg in local_errs])
 
     if check_wrapper:
-        errs.extend(_check_wrapper_interfaces(doc))
+        errs.extend(check_wrapper_interfaces(doc))
     return len(errs) == 0, errs
 
 
@@ -491,19 +331,6 @@ def validate_file(path: Path, *, check_wrapper: bool = False) -> tuple[bool, lis
     except (json.JSONDecodeError, OSError) as exc:
         return False, [f"parse error: {exc}"]
     return validate_doc(doc, check_wrapper=check_wrapper)
-
-
-def expand_paths(raw_paths: list[str]) -> list[Path]:
-    out: list[Path] = []
-    for raw in raw_paths:
-        p = Path(raw)
-        if not p.is_absolute():
-            p = REPO_ROOT / p
-        if p.is_dir():
-            out.extend(sorted(p.rglob("*.json")))
-        else:
-            out.append(p)
-    return out
 
 
 def main() -> int:
@@ -522,7 +349,7 @@ def main() -> int:
         help="Sync wrapper ports from embedded subgraph interfaces before validation",
     )
     args = parser.parse_args()
-    targets = expand_paths(args.paths or ["workflows"])
+    targets = expand_paths(args.paths or ["workflows"], REPO_ROOT)
     if not targets:
         sys.stdout.write("usage: validate_workflow_topology.py <workflow.json> [...]\n")
         return 2
@@ -530,8 +357,6 @@ def main() -> int:
     failed = False
     for p in targets:
         rel = str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p)
-        if "_templates" in p.parts:
-            continue
 
         if args.fix_wrapper:
             try:
@@ -540,10 +365,21 @@ def main() -> int:
                 emit(rel, "topology-fix", False, f"parse error: {exc}")
                 failed = True
                 continue
-            changed = _sync_wrapper_ports(doc)
-            if changed:
+            changed_nodes, link_fixes = sync_all_wrappers(doc)
+            orphan_link_fixes = realign_orphan_wrapper_links(doc)
+            all_link_fixes = {**link_fixes, **orphan_link_fixes}
+            write_needed = bool(changed_nodes or all_link_fixes)
+            if write_needed:
                 p.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-                emit(rel, "topology-fix", True, f"synced wrapper nodes: {', '.join(changed)}")
+            msg_parts: list[str] = []
+            if changed_nodes:
+                msg_parts.append(f"synced wrapper nodes: {', '.join(changed_nodes)}")
+            if all_link_fixes:
+                total_links = sum(all_link_fixes.values())
+                detail = ", ".join(f"{nid}:{count}" for nid, count in sorted(all_link_fixes.items()))
+                msg_parts.append(f"links realigned: {total_links} ({detail})")
+            if msg_parts:
+                emit(rel, "topology-fix", True, "; ".join(msg_parts))
             else:
                 emit(rel, "topology-fix", True, "no wrapper drift")
 

@@ -3,19 +3,14 @@ from __future__ import annotations
 
 import copy
 import importlib.util
-import re
 import sys
 from pathlib import Path
 from typing import Any, Iterator
 
+from lib.workflow_subgraph_ports import UUID_TYPE_RE
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-
-UUID_TYPE_RE = re.compile(
-    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-    re.IGNORECASE,
-)
-
 
 def _load_embed_module():
     path = SCRIPTS_DIR / "embed_workflow_subgraphs.py"

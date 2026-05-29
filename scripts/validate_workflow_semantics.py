@@ -11,6 +11,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from lib.workflow_validate_cli import emit
+from lib.workflow_validate_cli import expand_paths
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
@@ -192,7 +195,6 @@ PACK_PROFILES: dict[str, PackProfile] = {
     "klein-distilled": PackProfile(
         kind="t2i",
         prompt_mode="portrait_car_scenic",
-        require_empty_flux2_latent=True,
     ),
     "flux1-krea": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
     "realvisxl": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
@@ -481,26 +483,6 @@ def validate_file(path: Path, scenes: dict[str, tuple[str, str]]) -> tuple[bool,
     return len(errors) == 0, warnings, errors
 
 
-def emit(path: str, gate: str, ok: bool, msg: str = "") -> None:
-    line = f"{path}  {gate}  {'PASS' if ok else 'FAIL'}"
-    if msg:
-        line += f"  {msg}"
-    sys.stdout.write(line + "\n")
-
-
-def expand_paths(paths: list[str]) -> list[Path]:
-    out: list[Path] = []
-    for raw in paths:
-        p = Path(raw)
-        if not p.is_absolute():
-            p = REPO_ROOT / p
-        if p.is_dir():
-            out.extend(sorted(p.rglob("*.json")))
-        else:
-            out.append(p)
-    return out
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description="Semantic validation for pack workflows.")
     parser.add_argument("paths", nargs="*", help="Workflow files or directories")
@@ -511,7 +493,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    targets = expand_paths(args.paths or ["workflows"])
+    targets = expand_paths(args.paths or ["workflows"], REPO_ROOT)
     if not targets:
         sys.stdout.write("usage: validate_workflow_semantics.py <workflow.json> [...]\n")
         return 2
@@ -519,8 +501,6 @@ def main() -> int:
     scenes = load_scenes()
     failed = False
     for path in targets:
-        if "_templates" in path.parts:
-            continue
         rel = path.relative_to(REPO_ROOT).as_posix()
         ok, warnings, errors = validate_file(path, scenes)
         emit(rel, "semantics", ok, "; ".join(errors) if errors else "")
