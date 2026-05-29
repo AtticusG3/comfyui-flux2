@@ -36,3 +36,6 @@ obj/
 dump.sql
 *.pid
 *~
+.cursor/**/hooks/state/*
+!.cursor/hooks/state/.gitkeep
+workflows/**/*.safetensors
