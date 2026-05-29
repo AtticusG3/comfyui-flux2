@@ -1,9 +1,16 @@
 ﻿#!/usr/bin/env python3
 """Validate ComfyUI workflow JSON (0.4 / 1.0) and optional pack audit."""
 from __future__ import annotations
-import argparse, json, subprocess, sys
+import argparse
+import json
+import sys
 from pathlib import Path
 from typing import Any
+
+from lib.workflow_validate_cli import emit
+from lib.workflow_validate_cli import expand_paths
+from lib.workflow_validate_cli import run_validator_script
+from lib.workflow_validate_cli import to_rel_paths
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_04 = REPO_ROOT / "schemas/comfy/workflow-definition-v0.4.json"
@@ -13,12 +20,6 @@ SEMANTICS_SCRIPT = REPO_ROOT / "scripts/validate_workflow_semantics.py"
 TOPOLOGY_SCRIPT = REPO_ROOT / "scripts/validate_workflow_topology.py"
 FORMAT_04, FORMAT_10, FORMAT_API = "0.4", "1.0", "API"
 TAG_04, TAG_10 = "schema-ComfyWorkflow0_4", "schema-ComfyWorkflow1_0"
-
-def emit(path, gate, ok, msg=""):
-    line = f"{path}  {gate}  {'PASS' if ok else 'FAIL'}"
-    if msg:
-        line += f"  {msg}"
-    sys.stdout.write(line + "\n")
 
 def load_json(path: Path):
     with path.open("r", encoding="utf-8") as fh:
@@ -152,82 +153,29 @@ def validate_file(path: Path) -> bool:
 
 
 def run_topology(paths):
-    if not TOPOLOGY_SCRIPT.is_file():
-        emit("workflows/", "topology", False, "topology script missing")
-        return False
-    rel_paths = []
-    for p in paths:
-        try:
-            rel_paths.append(str(p.relative_to(REPO_ROOT)))
-        except ValueError:
-            rel_paths.append(str(p))
-    proc = subprocess.run(
-        [sys.executable, str(TOPOLOGY_SCRIPT), *rel_paths],
-        cwd=str(REPO_ROOT),
-        capture_output=True,
-        text=True,
+    return run_validator_script(
+        script_path=TOPOLOGY_SCRIPT,
+        repo_root=REPO_ROOT,
+        rel_paths=to_rel_paths(paths, REPO_ROOT),
+        gate_label="topology",
+        extra_args=["--check-wrapper"],
     )
-    if proc.stdout:
-        for line in proc.stdout.rstrip().splitlines():
-            sys.stdout.write(f"{line}\n")
-    if proc.stderr:
-        for line in proc.stderr.rstrip().splitlines():
-            sys.stdout.write(f"[topology][stderr] {line}\n")
-    ok = proc.returncode == 0
-    if not ok and not proc.stdout:
-        emit("workflows/", "topology", False, f"exit {proc.returncode}")
-    return ok
 
 def run_semantics(paths):
-    if not SEMANTICS_SCRIPT.is_file():
-        emit("workflows/", "semantics", False, "semantics script missing")
-        return False
-    rel_paths = []
-    for p in paths:
-        try:
-            rel_paths.append(str(p.relative_to(REPO_ROOT)))
-        except ValueError:
-            rel_paths.append(str(p))
-    proc = subprocess.run(
-        [sys.executable, str(SEMANTICS_SCRIPT), *rel_paths],
-        cwd=str(REPO_ROOT),
-        capture_output=True,
-        text=True,
+    return run_validator_script(
+        script_path=SEMANTICS_SCRIPT,
+        repo_root=REPO_ROOT,
+        rel_paths=to_rel_paths(paths, REPO_ROOT),
+        gate_label="semantics",
     )
-    if proc.stdout:
-        for line in proc.stdout.rstrip().splitlines():
-            sys.stdout.write(f"{line}\n")
-    if proc.stderr:
-        for line in proc.stderr.rstrip().splitlines():
-            sys.stdout.write(f"[semantics][stderr] {line}\n")
-    ok = proc.returncode == 0
-    if not ok and not proc.stdout:
-        emit("workflows/", "semantics", False, f"exit {proc.returncode}")
-    return ok
 
 def run_pack_audit():
-    if not AUDIT_SCRIPT.is_file():
-        emit("workflows/", "pack-audit", False, "audit script missing")
-        return False
-    proc = subprocess.run([sys.executable, str(AUDIT_SCRIPT)], cwd=str(REPO_ROOT), capture_output=True, text=True)
-    if proc.stdout:
-        for line in proc.stdout.rstrip().splitlines():
-            sys.stdout.write(f"[pack-audit] {line}\n")
-    if proc.stderr:
-        for line in proc.stderr.rstrip().splitlines():
-            sys.stdout.write(f"[pack-audit][stderr] {line}\n")
-    ok = proc.returncode == 0
-    emit("workflows/", "pack-audit", ok, f"exit {proc.returncode}")
-    return ok
-
-def expand_paths(paths):
-    out = []
-    for raw in paths:
-        p = Path(raw)
-        if not p.is_absolute():
-            p = REPO_ROOT / p
-        out.extend(sorted(p.rglob("*.json")) if p.is_dir() else [p])
-    return out
+    return run_validator_script(
+        script_path=AUDIT_SCRIPT,
+        repo_root=REPO_ROOT,
+        rel_paths=[],
+        gate_label="pack-audit",
+    )
 
 def main():
     parser = argparse.ArgumentParser(description="Validate ComfyUI workflow JSON.")
@@ -244,7 +192,7 @@ def main():
         help="Validate root/subgraph topology and wrapper interface consistency",
     )
     args = parser.parse_args()
-    targets = expand_paths(args.paths or ["workflows"])
+    targets = expand_paths(args.paths or ["workflows"], REPO_ROOT)
     if not targets:
         sys.stdout.write("usage: validate_workflow_json.py <workflow.json> [...]\n")
         return 2
