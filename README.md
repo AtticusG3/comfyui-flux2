@@ -271,7 +271,7 @@ python scripts/validate_workflow_json.py --topology --semantics workflows/<pack>
 
 Optional one-shot asset check via the validator: `python scripts/validate_workflow_json.py --pack-audit workflows/`.
 
-**CI:** [Workflow assets audit](.github/workflows/workflow-assets-audit.yml) runs on `scripts/**` and `workflows/**` changes. It runs `audit_workflow_assets.py` and `validate_workflow_json.py --topology --semantics workflows/` (same topology and semantics gates as above; `--pack-audit` is not required in CI because the audit step is separate).
+**CI:** [Workflow assets audit](.github/workflows/workflow-assets-audit.yml) runs on `scripts/**` and `workflows/**` changes. It runs `audit_workflow_assets.py` today. The `--topology --semantics` gate is added to that workflow once bundled workflows pass local validation (same command as above; `--pack-audit` is not required in CI because the audit step is separate).
 
 **Embedded UUID subgraphs:** Nested subgraph bodies must live in the workflow file before release. Embed missing definitions from `workflows/_templates/` or donor workflows:
 
