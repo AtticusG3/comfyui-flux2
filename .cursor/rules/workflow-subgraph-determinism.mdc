@@ -15,7 +15,7 @@ alwaysApply: false
 ## Required gates after mutation
 
 - `python scripts/validate_workflow_json.py <path>`
-- `python scripts/validate_workflow_topology.py <path>`
+- `python scripts/validate_workflow_topology.py --check-wrapper <path>`
 
 Recommended full pass:
 

@@ -46,12 +46,13 @@ python scripts/sync_subgraph_wrapper_ports.py <path> --subgraph-name "Generate I
 4. Re-run full checks:
 
 ```bash
-python scripts/validate_workflow_json.py --semantics --topology <path>
+python scripts/validate_workflow_json.py --semantics --topology <path>  # includes strict wrapper parity
 ```
 
 ## Deterministic rules
 
 - Embedded subgraph `definitions.subgraphs[*]` is source of truth for wrapper port shape.
+- Wrapper sync/parity logic lives in `scripts/lib/workflow_subgraph_ports.py`; keep wrappers and topology CLIs in lockstep with that library.
 - Do not invent node types, slot indices, or link ids.
 - Keep ASCII-only script output (`PASS`/`FAIL`, `[OK]`, `[WARN]`, `[ERROR]`).
 - Do not touch unrelated subgraphs in the same file unless asked.

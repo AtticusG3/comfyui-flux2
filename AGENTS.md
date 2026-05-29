@@ -14,6 +14,14 @@ sync/update logic, and persistent host-mounted data paths.
 
 - `scripts/entrypoint.sh`: startup orchestration, repo sync, model/workflow downloads,
   base install of `vram-utils` nodes/workflows on every start, optional `none` pack selection.
+- `scripts/lib/workflow_subgraph_ports.py`: canonical UUID wrapper/subgraph interface sync and parity checks.
+- `scripts/lib/workflow_validate_cli.py`: shared path expansion and validator subprocess helpers for workflow CLIs.
+- `scripts/lib/workflow_prompts.py`: prompt extraction for semantics checks (registry in `scripts/update_workflow_prompts.py`).
+- `scripts/validate_workflow_json.py`: workflow JSON gate orchestrator (schema, links; flags `--topology`, `--semantics`, `--pack-audit`).
+- `scripts/validate_workflow_topology.py`: root/subgraph link and wrapper parity (`--check-wrapper`, `--fix-wrapper`).
+- `scripts/validate_workflow_semantics.py`: pack sampler defaults and example prompts (via `--semantics`).
+- `scripts/sync_subgraph_wrapper_ports.py`: deterministic wrapper port sync from embedded subgraph interface (`--write` to persist).
+- `scripts/embed_workflow_subgraphs.py`: embed missing UUID subgraph definitions before release (`--check`, `--dry-run`).
 - `scripts/patch_video_types_rotation.py`: PyAV rotation fallback patch for ComfyUI
   `comfy_api/latest/_input_impl/video_types.py` (structural line matching, not sed literals).
 - `scripts/audit_workflow_assets.py`: maintainer audit for bundled workflows vs pack models/nodes
@@ -96,9 +104,11 @@ sync/update logic, and persistent host-mounted data paths.
 ## Test and Release Checklist
 
 - Validate config: `docker-compose config`.
-- After workflow or pack list changes, run `python scripts/audit_workflow_assets.py` (also in CI via
-  `.github/workflows/workflow-assets-audit.yml`). Checks model refs against pack catalogs,
-  custom-node coverage, and `workflows-bundled.txt` source paths.
+- After workflow or pack list changes:
+  - `python scripts/audit_workflow_assets.py` (CI: `.github/workflows/workflow-assets-audit.yml` on `scripts/**` and `workflows/**`).
+  - `python scripts/validate_workflow_json.py --topology --semantics workflows/` (local maintainer gate; added to CI once bundled workflows pass).
+  - For UUID subgraph edits: `embed_workflow_subgraphs.py` before release; repair wrapper drift with `sync_subgraph_wrapper_ports.py --write` or `validate_workflow_topology.py --fix-wrapper`, not hand-edited slots.
+- Maintainer detail: README [Workflow validation (maintainers)](README.md#workflow-validation-maintainers); skills under `.cursor/skills/validate-comfyui-workflow/` and `workflow-subgraph-engineering/`.
 - After meaningful startup/pack changes, run smoke startup checks when feasible.
 - For releases:
   - bump `VERSION` semver
@@ -117,19 +127,19 @@ sync/update logic, and persistent host-mounted data paths.
 - `hidream-o1` is nodes + bundled workflow only; user downloads FP8/BF16 weights via Manager or Hugging Face after startup.
 - Keep `z-image-base`, `z-image-turbo`, and `z-image-anime` as distinct selectable packs; do not collapse them.
 - Bundled workflows use core `SaveImage`, not `LayerUtility: SaveImagePlus` (LayerStyle not required for saves).
-- After editing `workflows/**/*.json`, run `validate-comfyui-workflow` / `scripts/validate_workflow_json.py` before merge.
-- For embedded UUID subgraph workflows, also run `python scripts/validate_workflow_topology.py <path>` and optional strict parity `python scripts/validate_workflow_topology.py --check-wrapper <path>`.
-- To repair wrapper port drift deterministically, use `python scripts/sync_subgraph_wrapper_ports.py <path> --subgraph-id <uuid> --write` instead of hand-editing wrapper slots.
+- After editing `workflows/**/*.json`, run validation per README maintainer section (`--topology` when UUID subgraphs are present); on Windows use `py -3.12` (default `python` may be too old).
+- Prefer thermo-nuclear code quality reviews for substantial refactors before merge.
 - `NVFP4_SUPPORTED=false` means no NVFP4 downloads or workflow filenames anywhere; default packs use FP8 on low VRAM and BF16 on high (e.g. Z-Anime SeeSee21). Enable NVFP4 only when hardware supports it and the flag is explicitly `true`.
-- Z-Anime workflow LLM prompt-enhancement system prompts must target SeeSee21/Z-Anime only; do not reuse or mix Z-Image Base or Z-Image Turbo prompting rules.
+- Pack LLM enhancement prompts (`scripts/packs/<pack>/llm_enhancement_system_prompt.txt`) must be model-specific; do not cross-mix (Z-Anime SeeSee21 only, Z-Image Base vs Turbo, Klein `flux2_klein` not Z-Turbo).
+- When recovering canonical LLM prompts, read sibling `comfy-router` `config/prompt_engine_store.json` only; do not modify the `comfy-router` repo.
 
 ## Learned Workspace Facts
 
 - `scripts/` (entrypoint, install_comfyui, lib) are baked into the Docker image, not bind-mounted; script changes require `docker compose build`.
-- Startup auto-removes unmanaged legacy custom-node dirs: `ComfyUI-Trellis2-GGUF`, `inference-gpu`, `openai-api`, bad `ComfyUI-NewBie` clone.
-- Image pre-bakes ComfyUI, Manager, and vram-utils (including comfyui-openai-api); not Civicomfy.
-- `flash-attn` pre-bake is best-effort and often fails on torch 2.12 + cu130; xformers and sageattention are the reliable attention backends.
-- Runtime image includes gcc/build-essential for SageAttention 2 / Triton JIT; compose and entrypoint set `CC=gcc`. Other source-only pip deps after managed node updates may still need image rebuild or Manager **Try fix**.
+- Image pre-bakes ComfyUI, Manager, and vram-utils (including comfyui-openai-api), not Civicomfy; startup auto-removes legacy unmanaged node dirs (`ComfyUI-Trellis2-GGUF`, `inference-gpu`, `openai-api`, bad `ComfyUI-NewBie`).
+- `.gitignore` excludes `.cursor/hooks/state/` (local hook state) and `workflows/**/*.safetensors`; do not commit hook session files or workflow weight binaries.
+- `flash-attn` pre-bake is best-effort on torch 2.12 + cu130; xformers and sageattention are reliable attention backends. Image includes gcc/build-essential for SageAttention/Triton (`CC=gcc`); other source-only pip deps may need image rebuild or Manager **Try fix**.
+- Canonical pack LLM enhancement prompts live in `scripts/packs/<pack>/llm_enhancement_system_prompt.txt` (extract from bundled workflows or recover from `comfy-router` read-only).
 - ComfyUI `video_types.py` PyAV rotation patch lives in `scripts/patch_video_types_rotation.py`;
   use structural line matching (not sed literal replace) so upstream indentation changes do not break it.
 - Startup always runs the aria2 model download pass; entrypoint dedupes merged pack lists by
@@ -145,5 +155,4 @@ sync/update logic, and persistent host-mounted data paths.
 - `ovis-image` is split-file only: bundled workflow and AnythingLLM API examples use `UNETLoader` +
   `ModelSamplingAuraFlow` + `CLIPLoader` (type `ovis`) + `VAELoader`, not `CheckpointLoaderSimple`; low tier
   FP8 from qpqpqpqpqpqp/Ovis_Image_7B_fp8 with entrypoint sed by VRAM tier.
-- Nested UUID subgraphs in bundled workflows should be embedded via `scripts/embed_workflow_subgraphs.py`
-  before release so `audit_workflow_assets.py` does not warn on missing definitions.
+- Unembedded UUID subgraph references fail `audit_workflow_assets.py`; embed before release (see checklist above).

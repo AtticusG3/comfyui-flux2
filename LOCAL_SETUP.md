@@ -91,12 +91,23 @@ Runtime flag precedence (highest to lowest):
 
 ## Workflow validation (dev)
 
-Validate bundled workflow JSON before editing pack workflows (Python 3.10+):
+When you change files under `workflows/`, run the maintainer gates from the repo root (Python 3.10+). Full detail: [README.md -- Workflow validation (maintainers)](README.md#workflow-validation-maintainers).
 
 ```powershell
 pip install jsonschema==4.26.0
-py -3.12 scripts/validate_workflow_json.py workflows/
-py -3.12 scripts/validate_workflow_json.py --pack-audit workflows/
+py -3.12 scripts/audit_workflow_assets.py
+py -3.12 scripts/validate_workflow_json.py --topology --semantics workflows/
 ```
 
-See `.cursor/skills/validate-comfyui-workflow/SKILL.md` and `schemas/comfy/.provenance.md`.
+| Flag | Use |
+| --- | --- |
+| (default) | Schema and dangling-link checks only |
+| `--topology` | Embedded UUID subgraphs and wrapper/subgraph parity |
+| `--semantics` | Pack sampler defaults and example prompts |
+| `--pack-audit` | Optional; same model/node audit as `audit_workflow_assets.py` |
+
+CI (`.github/workflows/workflow-assets-audit.yml`) runs the asset audit plus `--topology --semantics` on `workflows/` when `scripts/` or `workflows/` change.
+
+Before release, embed missing subgraph bodies: `py -3.12 scripts/embed_workflow_subgraphs.py workflows/<file>.json`. For wrapper port drift, use `scripts/sync_subgraph_wrapper_ports.py` with `--write` instead of editing slots by hand.
+
+See `.cursor/skills/validate-comfyui-workflow/SKILL.md`, `.cursor/skills/workflow-subgraph-engineering/SKILL.md`, and `schemas/comfy/.provenance.md`.
