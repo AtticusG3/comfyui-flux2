@@ -6,6 +6,7 @@ This removes manual guessing when editing nested subgraphs in 0.4 workflow files
 Usage:
   python scripts/sync_subgraph_wrapper_ports.py workflows/flux2/klein-t2i.json --subgraph-id <uuid>
   python scripts/sync_subgraph_wrapper_ports.py <workflow.json> --subgraph-name "Generate Image" --write
+  python scripts/sync_subgraph_wrapper_ports.py <workflow.json> --subgraph-id <uuid> --wrapper-node-id 92 --write
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from typing import Any
 
 from lib.workflow_subgraph_ports import find_subgraph
 from lib.workflow_subgraph_ports import find_wrapper_node
+from lib.workflow_subgraph_ports import find_wrapper_node_by_id
 from lib.workflow_subgraph_ports import sync_one_wrapper
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -27,11 +29,27 @@ def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _resolve_wrapper(
+    doc: dict[str, Any], subgraph: dict[str, Any], wrapper_node_id: int | None
+) -> dict[str, Any]:
+    if wrapper_node_id is not None:
+        return find_wrapper_node_by_id(doc, wrapper_node_id)
+    subgraph_id = subgraph.get("id")
+    if not isinstance(subgraph_id, str):
+        raise ValueError("subgraph id missing")
+    return find_wrapper_node(doc, subgraph_id)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Sync wrapper ports from embedded subgraph interface.")
     parser.add_argument("workflow", help="Workflow JSON path")
     parser.add_argument("--subgraph-id", help="Embedded subgraph UUID id")
     parser.add_argument("--subgraph-name", help="Embedded subgraph name")
+    parser.add_argument(
+        "--wrapper-node-id",
+        type=int,
+        help="Root wrapper node id when multiple instances share the same subgraph type",
+    )
     parser.add_argument("--write", action="store_true", help="Write changes to disk")
     args = parser.parse_args()
 
@@ -50,15 +68,19 @@ def main() -> int:
         return 2
 
     try:
-        in_count_before, out_count_before, links_fixed, _ = sync_one_wrapper(doc, subgraph)
+        wrapper = _resolve_wrapper(doc, subgraph, args.wrapper_node_id)
+        in_count_before, out_count_before, links_fixed, _ = sync_one_wrapper(
+            doc, subgraph, wrapper=wrapper
+        )
     except ValueError as exc:
         sys.stdout.write(f"[FAIL] {exc}\n")
         return 2
 
-    in_after = len((find_wrapper_node(doc, subgraph["id"]).get("inputs") or []))
-    out_after = len((find_wrapper_node(doc, subgraph["id"]).get("outputs") or []))
+    wrapper_after = _resolve_wrapper(doc, subgraph, args.wrapper_node_id)
+    in_after = len((wrapper_after.get("inputs") or []))
+    out_after = len((wrapper_after.get("outputs") or []))
     sys.stdout.write(
-        f"[OK] wrapper {subgraph['id']} ports: inputs {in_count_before}->{in_after}, "
+        f"[OK] wrapper {wrapper_after.get('id')} ports: inputs {in_count_before}->{in_after}, "
         f"outputs {out_count_before}->{out_after}, links realigned {links_fixed}\n"
     )
 

@@ -53,6 +53,16 @@ def find_wrapper_node(doc: dict[str, Any], subgraph_id: str) -> dict[str, Any]:
     raise ValueError(f"wrapper node for subgraph id not found in root graph: {subgraph_id}")
 
 
+def find_wrapper_node_by_id(doc: dict[str, Any], node_id: Any) -> dict[str, Any]:
+    for node in doc.get("nodes", []):
+        if isinstance(node, dict) and node.get("id") == node_id:
+            node_type = node.get("type")
+            if isinstance(node_type, str) and UUID_TYPE_RE.match(node_type):
+                return node
+            raise ValueError(f"node {node_id} is not a UUID subgraph wrapper")
+    raise ValueError(f"wrapper node id not found in root graph: {node_id}")
+
+
 def build_input_ports(
     sub_inputs: list[dict[str, Any]], old_inputs: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
@@ -209,13 +219,15 @@ def realign_orphan_wrapper_links(doc: dict[str, Any]) -> dict[str, int]:
 
 
 def sync_one_wrapper(
-    doc: dict[str, Any], subgraph: dict[str, Any]
+    doc: dict[str, Any],
+    subgraph: dict[str, Any],
+    wrapper: dict[str, Any] | None = None,
 ) -> tuple[int, int, int, bool]:
     """Sync one wrapper from its subgraph. Returns (old_in, old_out, links_fixed, changed)."""
     subgraph_id = subgraph.get("id")
     if not isinstance(subgraph_id, str):
         raise ValueError("subgraph id missing")
-    wrapper = find_wrapper_node(doc, subgraph_id)
+    wrapper = wrapper or find_wrapper_node(doc, subgraph_id)
     old_inputs = wrapper.get("inputs") or []
     old_outputs = wrapper.get("outputs") or []
     sub_inputs = subgraph.get("inputs") or []
@@ -246,7 +258,7 @@ def sync_all_wrappers(doc: dict[str, Any]) -> tuple[list[str], dict[str, int]]:
         subgraph = by_id.get(node_type)
         if subgraph is None:
             continue
-        _, _, links_fixed, node_changed = sync_one_wrapper(doc, subgraph)
+        _, _, links_fixed, node_changed = sync_one_wrapper(doc, subgraph, wrapper=node)
         node_id = str(node.get("id"))
         if links_fixed:
             link_fixes[node_id] = links_fixed
