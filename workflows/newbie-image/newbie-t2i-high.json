@@ -366,39 +366,46 @@
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 942
+          "link": 942,
+          "label": "pixels"
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 950
+          "link": 950,
+          "label": "vae"
         },
         {
-          "label": "seed",
           "name": "noise_seed",
           "type": "INT",
+          "link": 1056,
+          "label": "seed",
           "widget": {
             "name": "noise_seed"
-          },
-          "link": 1056
+          }
         },
         {
-          "label": "model",
           "name": "",
           "type": "*",
-          "link": 945
+          "link": 945,
+          "label": "model"
         },
         {
-          "label": "positive_conditioning",
           "name": "_1",
           "type": "*",
-          "link": 1067
+          "link": 1067,
+          "label": "positive_conditioning"
         },
         {
-          "label": "negative_conditioning",
           "name": "_2",
           "type": "*",
-          "link": 1068
+          "link": 1068,
+          "label": "negative_conditioning"
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "link": null
         }
       ],
       "outputs": [
@@ -407,13 +414,14 @@
           "type": "IMAGE",
           "links": [
             1040
-          ]
+          ],
+          "label": "output"
         },
         {
-          "label": "seed",
           "name": "",
           "type": "*",
-          "links": []
+          "links": [],
+          "label": "seed"
         }
       ],
       "properties": {
@@ -450,18 +458,18 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "image",
           "name": "image",
           "type": "IMAGE",
-          "link": 1040
+          "link": 1040,
+          "label": "image"
         },
         {
           "name": "switch",
           "type": "BOOLEAN",
+          "link": 1063,
           "widget": {
             "name": "switch"
-          },
-          "link": 1063
+          }
         }
       ],
       "outputs": [
@@ -470,7 +478,8 @@
           "type": "IMAGE",
           "links": [
             970
-          ]
+          ],
+          "label": "output"
         }
       ],
       "properties": {
@@ -873,61 +882,61 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "prompt",
           "name": "on_false",
           "type": "STRING",
+          "link": 1061,
+          "label": "prompt",
           "widget": {
             "name": "on_false"
-          },
-          "link": 1061
+          }
         },
         {
-          "label": "llm_enhance",
           "name": "switch",
           "type": "BOOLEAN",
+          "link": 1060,
+          "label": "llm_enhance",
           "widget": {
             "name": "switch"
-          },
-          "link": 1060
+          }
         },
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 1062
+          "link": 1062,
+          "label": "clip"
         },
         {
           "name": "images",
-          "shape": 7,
           "type": "IMAGE",
           "link": null
         },
         {
           "name": "force_regen",
           "type": "BOOLEAN",
+          "link": 1059,
           "widget": {
             "name": "force_regen"
-          },
-          "link": 1059
+          }
         }
       ],
       "outputs": [
         {
-          "label": "positive_conditioning",
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
             1057,
             1067
-          ]
+          ],
+          "label": "positive_conditioning"
         },
         {
-          "label": "negative_conditioning",
           "name": "CONDITIONING_1",
           "type": "CONDITIONING",
           "links": [
             1058,
             1068
-          ]
+          ],
+          "label": "negative_conditioning"
         },
         {
           "name": "output",

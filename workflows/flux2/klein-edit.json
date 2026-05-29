@@ -174,13 +174,28 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "prompt",
+          "name": "unet_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
           "name": "text",
           "type": "STRING",
+          "link": null,
+          "label": "prompt",
           "widget": {
             "name": "text"
-          },
-          "link": null
+          }
         },
         {
           "name": "image",
@@ -194,7 +209,8 @@
           "type": "IMAGE",
           "links": [
             154
-          ]
+          ],
+          "label": "IMAGE"
         }
       ],
       "properties": {
@@ -360,25 +376,40 @@
       "mode": 4,
       "inputs": [
         {
-          "label": "prompt",
-          "name": "text",
-          "type": "STRING",
-          "widget": {
-            "name": "text"
-          },
+          "name": "unet_name",
+          "type": "COMBO",
           "link": null
         },
         {
-          "label": "reference_image1",
-          "name": "image",
-          "type": "IMAGE",
-          "link": 169
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
         },
         {
-          "label": "reference_image2",
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": null,
+          "label": "prompt",
+          "widget": {
+            "name": "text"
+          }
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 169,
+          "label": "reference_image1"
+        },
+        {
           "name": "image_1",
           "type": "IMAGE",
-          "link": 189
+          "link": 189,
+          "label": "reference_image2"
         }
       ],
       "outputs": [
@@ -387,7 +418,8 @@
           "type": "IMAGE",
           "links": [
             191
-          ]
+          ],
+          "label": "IMAGE"
         }
       ],
       "properties": {
@@ -458,7 +490,7 @@
       76,
       0,
       75,
-      1,
+      4,
       "IMAGE"
     ],
     [
@@ -466,7 +498,7 @@
       76,
       0,
       92,
-      1,
+      4,
       "IMAGE"
     ],
     [
@@ -474,7 +506,7 @@
       121,
       0,
       92,
-      2,
+      5,
       "IMAGE"
     ],
     [
