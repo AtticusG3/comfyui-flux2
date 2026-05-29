@@ -126,17 +126,21 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "user_prompt",
           "name": "replace",
           "type": "STRING",
+          "link": 351,
+          "label": "user_prompt",
           "widget": {
             "name": "replace"
-          },
-          "link": 351
+          }
+        },
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
         },
         {
           "name": "image",
-          "shape": 7,
           "type": "IMAGE",
           "link": null
         }
@@ -147,7 +151,8 @@
           "type": "STRING",
           "links": [
             353
-          ]
+          ],
+          "label": "output"
         }
       ],
       "properties": {
