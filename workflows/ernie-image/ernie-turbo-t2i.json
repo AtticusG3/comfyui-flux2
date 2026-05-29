@@ -20,30 +20,57 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "prompt",
           "name": "value",
           "type": "STRING",
+          "link": null,
+          "label": "prompt",
           "widget": {
             "name": "value"
-          },
-          "link": null
+          }
         },
         {
-          "label": "prompt_enhancement",
           "name": "value_1",
           "type": "BOOLEAN",
+          "link": null,
+          "label": "prompt_enhancement",
           "widget": {
             "name": "value_1"
-          },
+          }
+        },
+        {
+          "name": "width",
+          "type": "INT",
           "link": null
         },
         {
-          "label": "upscaler",
-          "name": "value_2",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "value_2"
-          },
+          "name": "height",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "unet_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "clip_name_1",
+          "type": "COMBO",
+          "link": null,
+          "label": "prompt_enhancer"
+        },
+        {
+          "name": "vae_name",
+          "type": "COMBO",
           "link": null
         }
       ],
@@ -53,7 +80,8 @@
           "type": "IMAGE",
           "links": [
             149
-          ]
+          ],
+          "label": "IMAGE"
         }
       ],
       "properties": {

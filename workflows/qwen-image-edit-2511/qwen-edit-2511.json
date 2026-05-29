@@ -175,12 +175,37 @@
           "link": null
         },
         {
-          "label": "enable_turbo_mode",
+          "name": "prompt",
+          "type": "STRING",
+          "link": null
+        },
+        {
           "name": "value",
           "type": "BOOLEAN",
+          "link": null,
+          "label": "enable_turbo_mode",
           "widget": {
             "name": "value"
-          },
+          }
+        },
+        {
+          "name": "unet_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "lora_name",
+          "type": "COMBO",
           "link": null
         }
       ],
@@ -190,7 +215,8 @@
           "type": "IMAGE",
           "links": [
             360
-          ]
+          ],
+          "label": "IMAGE"
         }
       ],
       "title": "Image Edit (Qwen-Image 2511)",

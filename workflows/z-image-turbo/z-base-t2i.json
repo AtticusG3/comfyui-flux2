@@ -53,21 +53,29 @@
       },
       "order": 0,
       "mode": 0,
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "unet_name",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
       "outputs": [
         {
           "name": "UPSCALE_MODEL",
           "type": "UPSCALE_MODEL",
           "links": [
             948
-          ]
+          ],
+          "label": "UPSCALE_MODEL"
         },
         {
           "name": "CLIP",
           "type": "CLIP",
           "links": [
             1077
-          ]
+          ],
+          "label": "CLIP"
         },
         {
           "name": "VAE",
@@ -75,7 +83,8 @@
           "links": [
             943,
             954
-          ]
+          ],
+          "label": "VAE"
         },
         {
           "name": "seed",
@@ -83,14 +92,16 @@
           "links": [
             944,
             958
-          ]
+          ],
+          "label": "seed"
         },
         {
           "name": "LATENT",
           "type": "LATENT",
           "links": [
             957
-          ]
+          ],
+          "label": "LATENT"
         },
         {
           "name": "MODEL",
@@ -98,14 +109,16 @@
           "links": [
             945,
             955
-          ]
+          ],
+          "label": "MODEL"
         },
         {
           "name": "STRING",
           "type": "STRING",
           "links": [
             1078
-          ]
+          ],
+          "label": "STRING"
         }
       ],
       "properties": {
@@ -422,19 +435,19 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "image",
           "name": "image",
           "type": "IMAGE",
-          "link": 940
+          "link": 940,
+          "label": "image"
         },
         {
-          "label": "SeedVR Upscaler",
           "name": "switch",
           "type": "BOOLEAN",
+          "link": 941,
+          "label": "SeedVR Upscaler",
           "widget": {
             "name": "switch"
-          },
-          "link": 941
+          }
         }
       ],
       "outputs": [
@@ -443,7 +456,8 @@
           "type": "IMAGE",
           "links": [
             949
-          ]
+          ],
+          "label": "output"
         }
       ],
       "properties": {
@@ -478,41 +492,44 @@
         {
           "name": "pixels",
           "type": "IMAGE",
-          "link": 942
+          "link": 942,
+          "label": "pixels"
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 943
+          "link": 943,
+          "label": "vae"
         },
         {
           "name": "noise_seed",
           "type": "INT",
+          "link": 944,
+          "label": "noise_seed",
           "widget": {
             "name": "noise_seed"
-          },
-          "link": 944
+          }
         },
         {
-          "label": "model",
           "name": "",
           "type": "*",
-          "link": 945
+          "link": 945,
+          "label": "model"
         },
         {
-          "label": "conditioning",
           "name": "_1",
           "type": "*",
-          "link": 1079
+          "link": 1079,
+          "label": "conditioning"
         },
         {
-          "label": "switch",
           "name": "switch",
           "type": "BOOLEAN",
+          "link": 947,
+          "label": "switch",
           "widget": {
             "name": "switch"
-          },
-          "link": 947
+          }
         }
       ],
       "outputs": [
@@ -521,7 +538,8 @@
           "type": "IMAGE",
           "links": [
             940
-          ]
+          ],
+          "label": "output"
         }
       ],
       "properties": {
@@ -560,21 +578,23 @@
         {
           "name": "upscale_model",
           "type": "UPSCALE_MODEL",
-          "link": 948
+          "link": 948,
+          "label": "upscale_model"
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 949
+          "link": 949,
+          "label": "image"
         },
         {
-          "label": "Quick Upscaler",
           "name": "switch",
           "type": "BOOLEAN",
+          "link": 950,
+          "label": "Quick Upscaler",
           "widget": {
             "name": "switch"
-          },
-          "link": 950
+          }
         }
       ],
       "outputs": [
@@ -583,7 +603,8 @@
           "type": "IMAGE",
           "links": [
             959
-          ]
+          ],
+          "label": "output"
         }
       ],
       "properties": {
@@ -618,30 +639,35 @@
         {
           "name": "vae",
           "type": "VAE",
-          "link": 954
+          "link": 954,
+          "label": "vae"
         },
         {
           "name": "model",
           "type": "MODEL",
-          "link": 955
+          "link": 955,
+          "label": "model"
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 1084
+          "link": 1084,
+          "label": "positive"
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 957
+          "link": 957,
+          "label": "latent_image"
         },
         {
           "name": "seed",
           "type": "INT",
+          "link": 958,
+          "label": "seed",
           "widget": {
             "name": "seed"
-          },
-          "link": 958
+          }
         },
         {
           "name": "negative",
@@ -655,7 +681,8 @@
           "type": "IMAGE",
           "links": [
             942
-          ]
+          ],
+          "label": "IMAGE"
         }
       ],
       "properties": {
@@ -706,52 +733,57 @@
       "mode": 0,
       "inputs": [
         {
-          "label": "prompt",
           "name": "on_false",
           "type": "STRING",
+          "link": 1078,
+          "label": "prompt",
           "widget": {
             "name": "on_false"
-          },
-          "link": 1078
+          }
         },
         {
-          "label": "llm_enhance",
           "name": "switch",
           "type": "BOOLEAN",
+          "link": 1080,
+          "label": "llm_enhance",
           "widget": {
             "name": "switch"
-          },
-          "link": 1080
+          }
         },
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 1077
+          "link": 1077,
+          "label": "clip"
         },
         {
           "name": "images",
-          "shape": 7,
           "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "force_regen",
+          "type": "BOOLEAN",
           "link": null
         }
       ],
       "outputs": [
         {
-          "label": "positive_conditioning",
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
             1079,
             1084
-          ]
+          ],
+          "label": "positive_conditioning"
         },
         {
-          "label": "negative_conditioning",
           "name": "CONDITIONING_1",
           "type": "CONDITIONING",
           "links": [
             1086
-          ]
+          ],
+          "label": "negative_conditioning"
         },
         {
           "name": "output",
