@@ -106,7 +106,7 @@ sync/update logic, and persistent host-mounted data paths.
 - Validate config: `docker-compose config`.
 - After workflow or pack list changes:
   - `python scripts/audit_workflow_assets.py` (CI: `.github/workflows/workflow-assets-audit.yml` on `scripts/**` and `workflows/**`).
-  - `python scripts/validate_workflow_json.py --topology --semantics workflows/` (same CI job after audit).
+  - `python scripts/validate_workflow_json.py --topology --semantics workflows/` (local maintainer gate; added to CI once bundled workflows pass).
   - For UUID subgraph edits: `embed_workflow_subgraphs.py` before release; repair wrapper drift with `sync_subgraph_wrapper_ports.py --write` or `validate_workflow_topology.py --fix-wrapper`, not hand-edited slots.
 - Maintainer detail: README [Workflow validation (maintainers)](README.md#workflow-validation-maintainers); skills under `.cursor/skills/validate-comfyui-workflow/` and `workflow-subgraph-engineering/`.
 - After meaningful startup/pack changes, run smoke startup checks when feasible.
