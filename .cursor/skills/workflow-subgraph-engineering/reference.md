@@ -17,6 +17,14 @@ python scripts/validate_workflow_topology.py <path>
 python scripts/validate_workflow_topology.py --check-wrapper <path>
 ```
 
+- Combined gate (recommended for PR checks):
+
+```bash
+python scripts/validate_workflow_json.py --semantics --topology <path>
+```
+
+`--topology` invokes strict wrapper parity via `--check-wrapper`.
+
 - Wrapper auto-fix and strict validation in one command:
 
 ```bash

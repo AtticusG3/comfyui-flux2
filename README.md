@@ -16,6 +16,7 @@ Dockerized [ComfyUI](https://github.com/comfyanonymous/ComfyUI) with **selectabl
 - [Runtime VRAM precedence](#runtime-vram-arg-precedence)
 - [Connectivity routing](#connectivity-routing-examples)
 - [Storage](#storage)
+- [Workflow validation (maintainers)](#workflow-validation-maintainers)
 - [Development](#development)
 - [Releases](#releases)
 - [Notes](#notes)
@@ -245,15 +246,52 @@ ComfyUI code may live in a named volume depending on compose; see your `docker-c
 
 Staged ComfyUI git sync skips `/models/`, `/input/`, `/output/`, `/custom_nodes/`, and `/user/default/workflows/` during rsync (root-anchored excludes) so bind mounts are not deleted (`Device or resource busy`). Unanchored `models/` would also match `comfy/ldm/models/` and break imports; startup re-syncs `comfy/ldm/models` from staging after apply, repairs from git when needed, and verifies `comfy/ldm/models/autoencoder.py` before ComfyUI starts (exits with recovery hints if missing). Pack bundled workflows copy into `./data/workflows` on first start (empty folder). With `RESEED_PACK_WORKFLOWS=true`, changing `MODELS_DOWNLOAD` and restarting adds or overwrites pack workflow files without clearing your folder.
 
-**Maintainers:** validate workflow JSON and pack coverage before PRs:
+See [Workflow validation (maintainers)](#workflow-validation-maintainers) before changing bundled JSON under `workflows/`.
+
+## Workflow validation (maintainers)
+
+Prerequisite: Python **3.10+** and `pip install jsonschema==4.26.0`. On Windows, use `py -3.12` if the default `python` is older.
+
+| Gate | Flag or command | Run when |
+| --- | --- | --- |
+| Structure | `python scripts/validate_workflow_json.py <path>` | After any workflow JSON edit (ComfyWorkflow 0.4/1.0 schema, dangling `links[]`) |
+| Topology | add `--topology` | Graphs with embedded UUID subgraphs or wrapper nodes (strict wrapper/subgraph parity) |
+| Semantics | add `--semantics` | Pack sampler defaults, Lightning LoRA toggles, and example prompts |
+| Pack assets | `python scripts/audit_workflow_assets.py` or `--pack-audit` | Model filenames and custom-node coverage vs pack catalogs |
+
+Schemas are vendored under `schemas/comfy/` from [ComfyWorkflow 0.4/1.0](https://docs.comfy.org/specs/workflow_json).
+
+Recommended local pass before a pack-workflow PR:
 
 ```bash
-pip install jsonschema==4.26.0   # Python 3.10+
-python scripts/validate_workflow_json.py workflows/
-python scripts/validate_workflow_json.py --pack-audit workflows/
+pip install jsonschema==4.26.0
+python scripts/audit_workflow_assets.py
+python scripts/validate_workflow_json.py --topology --semantics workflows/<pack>/
 ```
 
-Structural checks use vendored [ComfyWorkflow 0.4/1.0](https://docs.comfy.org/specs/workflow_json) schemas under `schemas/comfy/`. Model/node lists: `python scripts/audit_workflow_assets.py` (CI on `scripts/` or `workflows/` changes). Agent skill: `.cursor/skills/validate-comfyui-workflow/`.
+Optional one-shot asset check via the validator: `python scripts/validate_workflow_json.py --pack-audit workflows/`.
+
+**CI:** [Workflow assets audit](.github/workflows/workflow-assets-audit.yml) runs on `scripts/**` and `workflows/**` changes. It runs `audit_workflow_assets.py` and `validate_workflow_json.py --topology --semantics workflows/` (same topology and semantics gates as above; `--pack-audit` is not required in CI because the audit step is separate).
+
+**Embedded UUID subgraphs:** Nested subgraph bodies must live in the workflow file before release. Embed missing definitions from `workflows/_templates/` or donor workflows:
+
+```bash
+python scripts/embed_workflow_subgraphs.py workflows/<pack>/<workflow>.json
+python scripts/embed_workflow_subgraphs.py --check workflows/   # report unresolved refs only
+```
+
+Use `--dry-run` to preview without writing. Unresolved subgraph IDs fail `audit_workflow_assets.py`.
+
+**Wrapper port drift:** Do not hand-edit wrapper input/output slot indices. Sync from the embedded subgraph interface (dry-run by default):
+
+```bash
+python scripts/sync_subgraph_wrapper_ports.py <workflow.json> --subgraph-id <uuid>
+python scripts/sync_subgraph_wrapper_ports.py <workflow.json> --subgraph-name "Generate Image" --write
+```
+
+Port sync also realigns root `links[]` target/origin slots. To fix all wrappers in one file: `python scripts/validate_workflow_topology.py --fix-wrapper <path>`.
+
+Cursor skills: [validate-comfyui-workflow](.cursor/skills/validate-comfyui-workflow/SKILL.md), [workflow-subgraph-engineering](.cursor/skills/workflow-subgraph-engineering/SKILL.md).
 
 ## Development
 

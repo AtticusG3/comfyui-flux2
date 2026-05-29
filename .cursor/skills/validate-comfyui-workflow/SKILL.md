@@ -43,6 +43,7 @@ Official specs: [workflow_json (1.0)](https://docs.comfy.org/specs/workflow_json
 | Format | same | Cannot tell 0.4 vs 1.0 vs API |
 | Schema | same (`jsonschema`) | Missing required fields vs official schema |
 | Links | same | Dangling node id in `links[]` |
+| Topology | `--topology` -> `validate_workflow_topology.py --check-wrapper` | Root/subgraph link drift or wrapper/subgraph interface mismatch |
 | Semantics | `--semantics` -> `validate_workflow_semantics.py` | Wrong Lightning steps/LoRA defaults; empty or placeholder prompt |
 | Semantics warn | same (`semantics-warn` lines) | Prompt missing portrait/car/scenic anchors or registry drift |
 | Pack audit (optional) | `--pack-audit` -> `audit_workflow_assets.py` | Model/node not in pack catalogs |
@@ -60,6 +61,12 @@ python scripts/validate_workflow_json.py <path> [<path> ...]
 
 ```bash
 python scripts/validate_workflow_json.py --semantics <path> [<path> ...]
+```
+
+Include topology parity when workflows have embedded UUID subgraphs:
+
+```bash
+python scripts/validate_workflow_json.py --semantics --topology <path> [<path> ...]
 ```
 
 Full maintainer pass before a pack workflow PR:
