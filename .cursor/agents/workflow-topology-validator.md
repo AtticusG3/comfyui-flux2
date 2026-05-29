@@ -8,8 +8,12 @@ Run these gates for each workflow path:
 
 1. `python scripts/validate_workflow_json.py <path>`
 2. `python scripts/validate_workflow_topology.py <path>`
-3. Optional strict wrapper parity: `python scripts/validate_workflow_topology.py --check-wrapper <path>`
+3. Strict wrapper parity: `python scripts/validate_workflow_topology.py --check-wrapper <path>`
 4. Optional defaults/prompt gate: `python scripts/validate_workflow_json.py --semantics <path>`
+
+Combined gate:
+
+`python scripts/validate_workflow_json.py --semantics --topology <path>` (`--topology` runs strict wrapper parity)
 
 If wrapper/subgraph mismatch appears, run:
 
