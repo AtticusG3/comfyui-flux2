@@ -1,0 +1,53 @@
+version: 1
+
+graph:
+  name: comfyui-flux2-architecture
+  description: Focused knowledge graph for comfyui-flux2 (docs-corpus)
+
+entities:
+  - type: Category
+    id_prefix: category
+    properties:
+      - name: name
+        required: false
+  - type: Config
+    id_prefix: config
+    properties:
+      - name: name
+        required: false
+  - type: Document
+    id_prefix: document
+    properties:
+      - name: name
+        required: false
+  - type: Repository
+    id_prefix: repository
+    properties:
+      - name: name
+        required: false
+  - type: Script
+    id_prefix: script
+    properties:
+      - name: name
+        required: false
+  - type: Service
+    id_prefix: service
+    properties:
+      - name: name
+        required: false
+
+relations:
+  - type: CONTAINS
+    cardinality: many_to_many
+  - type: DEFINES
+    cardinality: many_to_many
+  - type: HAS_CONFIG
+    cardinality: many_to_many
+
+provenance:
+  required_fields: [source, extracted_at]
+
+constraints:
+  - rule: unique_node_id
+  - rule: edge_endpoints_exist
+  - rule: predicate_in_schema

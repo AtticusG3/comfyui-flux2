@@ -1,0 +1,5 @@
+# Z-Image Base workflow (low / LOW_VRAM=true)
+
+https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/image_z_image.json
+  dir=ComfyUI/user/default/workflows
+  out=Z Image Base - Text to Image.json

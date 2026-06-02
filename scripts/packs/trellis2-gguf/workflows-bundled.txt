@@ -1,0 +1,7 @@
+# source_path|destination_filename|tier
+trellis2-gguf/simple.json|Trellis2 GGUF - Simple.json|low
+trellis2-gguf/only-mesh-simple.json|Trellis2 GGUF - Low VRAM Mesh Only.json|low
+trellis2-gguf/lowpoly.json|Trellis2 GGUF - Low Poly Asset.json|low
+trellis2-gguf/high-quality.json|Trellis2 GGUF - High Quality.json|high
+trellis2-gguf/better-texture.json|Trellis2 GGUF - Better Texture.json|high
+trellis2-gguf/multiviews-texturemesh.json|Trellis2 GGUF - Multiview Texture Mesh.json|high
