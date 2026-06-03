@@ -1823,11 +1823,11 @@ if [ -s "$MANAGED_WORKFLOWS_MANIFEST" ]; then
     fi
 fi
 
-# Multiple packs can list the same dir=/out=; aria2 races on one file and may ERR while another OK.
-if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
-    python3 /scripts/dedupe_model_download_list.py "$TEMP_MODELS" \
-        || echo "[WARN] Model download list dedupe reported issues."
-fi
+# [PATCHED] # Multiple packs can list the same dir=/out=; aria2 races on one file and may ERR while another OK.
+# [PATCHED] if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
+# [PATCHED]     python3 /scripts/dedupe_model_download_list.py "$TEMP_MODELS" \
+# [PATCHED]         || echo "[WARN] Model download list dedupe reported issues."
+# [PATCHED] fi
 
 # Filter model list if HF_TOKEN not set (remove lines marked # Requires HF_TOKEN)
 if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
@@ -1840,6 +1840,13 @@ if [ -s "$TEMP_MODELS" ] && grep -q '^https' "$TEMP_MODELS" 2>/dev/null; then
     fi
 
     apply_nvfp4_overrides "$DOWNLOAD_LIST"
+
+    # [PATCHED] Dedup moved here (after NVFP4 override) so that both pack and
+    # workflow entries with matching (dir, out) are caught after filename renormalization.
+    if [ -s "$DOWNLOAD_LIST" ] && grep -q '^https' "$DOWNLOAD_LIST" 2>/dev/null; then
+        python3 /scripts/dedupe_model_download_list.py "$DOWNLOAD_LIST" \
+            || echo "[WARN] Model download list dedupe reported issues."
+    fi
 
     if [ -s "$DOWNLOAD_LIST" ] && grep -q '^https' "$DOWNLOAD_LIST" 2>/dev/null; then
         echo "########################################"
