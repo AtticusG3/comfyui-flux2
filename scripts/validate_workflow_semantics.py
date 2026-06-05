@@ -302,11 +302,23 @@ def has_node_type(doc: dict[str, Any], node_type: str) -> bool:
     return False
 
 
+PACK_DIR_ALIASES: dict[str, str] = {
+    "z-anime": "z-image-anime",
+}
+
+
 def infer_pack(rel_posix: str) -> str | None:
     parts = Path(rel_posix).parts
     if len(parts) >= 2 and parts[0] == "workflows":
         return parts[1]
     return None
+
+
+def resolve_pack_name(rel_posix: str) -> str | None:
+    pack = infer_pack(rel_posix)
+    if not pack:
+        return None
+    return PACK_DIR_ALIASES.get(pack, pack)
 
 
 def profile_for_workflow(rel_posix: str) -> PackProfile | None:
@@ -315,7 +327,7 @@ def profile_for_workflow(rel_posix: str) -> PackProfile | None:
         key = key[len("workflows/") :]
     if key in WORKFLOW_PROFILE_OVERRIDES:
         return WORKFLOW_PROFILE_OVERRIDES[key]
-    pack = infer_pack(rel_posix)
+    pack = resolve_pack_name(rel_posix)
     return PACK_PROFILES.get(pack) if pack else None
 
 
@@ -456,6 +468,7 @@ def validate_file(path: Path, scenes: dict[str, tuple[str, str]]) -> tuple[bool,
     warnings: list[str] = []
 
     if profile is None:
+        pack = resolve_pack_name(rel)
         warnings.append(f"no PackProfile for pack {pack!r}; prompt/defaults checks are best-effort")
         profile = PackProfile(kind="unknown", prompt_mode="portrait_car_scenic")
 
