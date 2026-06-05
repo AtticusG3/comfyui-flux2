@@ -11,6 +11,13 @@ set -e
 # - smart-dns: no proxy, but prefer provider-specific DNS resolvers for aria2
 # - vpn: no proxy override; assumes host/container networking already routes via VPN
 
+trim_shell_args() {
+    local s="$1"
+    s="${s#"${s%%[![:space:]]*}"}"
+    s="${s%"${s##*[![:space:]]}"}"
+    printf '%s' "$s"
+}
+
 normalize_mode() {
     local mode
     mode=$(echo "${1:-direct}" | tr '[:upper:]' '[:lower:]')
@@ -605,6 +612,12 @@ ensure_impact_pack_python_deps() {
         uv pip install piexif || echo "[WARN] piexif install failed"
     fi
 
+    if [ -d "$impact" ] && ! python3 -c "import segment_anything" 2>/dev/null; then
+        missing=1
+        echo "[WARN] segment_anything missing for ComfyUI-Impact-Pack; installing..."
+        uv pip install segment-anything || echo "[WARN] segment-anything install failed"
+    fi
+
     if [ -d "$subpack" ] && ! python3 -c "import ultralytics" 2>/dev/null; then
         missing=1
         echo "[WARN] ultralytics missing for ComfyUI-Impact-Subpack; installing..."
@@ -618,6 +631,39 @@ ensure_impact_pack_python_deps() {
     fi
 }
 
+# ComfyUI-nunchaku is optional (Manager/manual installs). The plugin requirements.txt
+# does not include the nunchaku-ai backend wheel, which is torch/CUDA/Python specific.
+ensure_nunchaku_python_deps() {
+    local node_dir=""
+    local candidate
+    for candidate in ComfyUI-nunchaku ComfyUI-Nunchaku nunchaku_nodes; do
+        if [ -d "${CUSTOM_NODES_DIR}/${candidate}" ]; then
+            node_dir="${CUSTOM_NODES_DIR}/${candidate}"
+            break
+        fi
+    done
+    if [ -z "$node_dir" ]; then
+        return 0
+    fi
+
+    local req="${node_dir}/requirements.txt"
+    if [ -f "$req" ] && [ -z "${SYNCED_NODE_DIRS[$node_dir]:-}" ]; then
+        install_reqs "$req" "$(basename "$node_dir")"
+    fi
+
+    if python3 -c "import nunchaku" 2>/dev/null; then
+        echo "[INFO] nunchaku backend import: OK"
+        return 0
+    fi
+
+    echo "[INFO] Ensuring nunchaku backend wheel for $(basename "$node_dir")..."
+    if python3 /scripts/ensure_nunchaku_wheel.py; then
+        return 0
+    fi
+    echo "[WARN] ComfyUI-nunchaku nodes may fail until a matching nunchaku wheel is installed."
+    return 0
+}
+
 collate_managed_requirements() {
     local out="$1"
     : > "$out"
@@ -628,6 +674,7 @@ collate_managed_requirements() {
         while IFS= read -r line || [ -n "$line" ]; do
             [[ "$line" =~ ^[[:space:]]*# ]] && continue
             [[ -z "${line//[[:space:]]/}" ]] && continue
+            [[ "$line" =~ ^[[:space:]]*git\+ ]] && continue
             [[ "$line" =~ ^[[:space:]]*(torch|torchvision|torchaudio|xformers)([=<>~! ]|$) ]] && continue
             echo "$line"
         done < "$req" >> "$out"
@@ -1771,6 +1818,7 @@ cleanup_legacy_custom_nodes "$CUSTOM_NODES_DIR"
 install_reqs "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
 install_managed_node_reqs
 ensure_impact_pack_python_deps
+ensure_nunchaku_python_deps
 log_or_install_orphan_node_reqs "$CUSTOM_NODES_DIR"
 reconcile_managed_deps
 
@@ -1898,11 +1946,11 @@ export CC="${CC:-gcc}"
 cd /app
 
 AUTO_VRAM_ARGS_LC=$(echo "${AUTO_VRAM_ARGS:-true}" | tr '[:upper:]' '[:lower:]')
-CLI_ARGS="${CLI_ARGS:-}"
+CLI_ARGS=$(trim_shell_args "${CLI_ARGS:-}")
 VRAM_RUNTIME_ARGS=""
 
 if [ -n "${COMFYUI_VRAM_ARGS:-}" ]; then
-    VRAM_RUNTIME_ARGS="$COMFYUI_VRAM_ARGS"
+    VRAM_RUNTIME_ARGS=$(trim_shell_args "$COMFYUI_VRAM_ARGS")
     echo "[INFO] Using COMFYUI_VRAM_ARGS: $VRAM_RUNTIME_ARGS"
 elif [ "$AUTO_VRAM_ARGS_LC" != "true" ]; then
     echo "[INFO] AUTO_VRAM_ARGS is disabled."

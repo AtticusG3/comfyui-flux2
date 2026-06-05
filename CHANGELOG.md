@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+- Startup reconciles ComfyUI-Impact-Pack `segment_anything` after managed-node pip installs; collated requirements skip `git+` VCS lines so sam2 cannot block PyPI deps.
+- Optional ComfyUI-nunchaku installs matching nunchaku-ai backend wheels from GitHub releases (not the unrelated PyPI `nunchaku` package).
+- `CLI_ARGS` and `COMFYUI_VRAM_ARGS` are trimmed before ComfyUI launch so trailing whitespace cannot break argparse.
+
 ## [1.7.2] -- Dedupe aria2 model downloads by output path
 
 ### Fixed
