@@ -15,6 +15,8 @@ services:
       - CC=gcc
       - TZ=${TZ:-UTC}
       - CLI_ARGS=${CLI_ARGS:-}
+      - COMFYUI_FAST=${COMFYUI_FAST:-true}
+      - COMFYUI_FAST_ARGS=${COMFYUI_FAST_ARGS:-}
       - AUTO_VRAM_ARGS=${AUTO_VRAM_ARGS:-true}
       - COMFYUI_VRAM_ARGS=${COMFYUI_VRAM_ARGS:-}
       - RESERVE_VRAM_GB=${RESERVE_VRAM_GB:-1.2}

@@ -7,10 +7,11 @@
   "upstream_urls": [
     "https://github.com/kijai/ComfyUI-KJNodes",
     "https://github.com/rgthree/rgthree-comfy",
-    "https://github.com/cubiq/ComfyUI_essentials"
+    "https://github.com/cubiq/ComfyUI_essentials",
+    "https://github.com/Jasonzzt/ComfyUI-CacheDiT"
   ],
   "requires_hf_token": false,
-  "notes_low": "Installs helper nodes for unload/free-memory, cache cleanup, tiled decode, and offload-friendly API workflows.",
-  "notes_high": "Installs helper nodes for cleanup between heavyweight API jobs and multi-pack sessions.",
-  "description": "Reusable VRAM cleanup and offload support nodes/workflows."
+  "notes_low": "Always-on helper nodes: VRAM cleanup, API workflows, and ComfyUI-CacheDiT DiT caching (pair with COMFYUI_FAST=true).",
+  "notes_high": "Always-on helper nodes: VRAM cleanup between API jobs, CacheDiT acceleration, and bundled subgraphs.",
+  "description": "Base VRAM/API helpers plus ComfyUI-CacheDiT DiT inference caching (Z-Image, Klein, Qwen-Image, LTX-2, Wan 2.2)."
 }

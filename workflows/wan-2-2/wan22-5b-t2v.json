@@ -1,8 +1,8 @@
 {
   "id": "91f6bbe2-ed41-4fd6-bac7-71d5b5864ecb",
   "revision": 0,
-  "last_node_id": 57,
-  "last_link_id": 106,
+  "last_node_id": 58,
+  "last_link_id": 108,
   "nodes": [
     {
       "id": 8,
@@ -236,7 +236,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 94
+          "link": 108
         }
       ],
       "outputs": [
@@ -277,7 +277,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            94
+            107
           ]
         }
       ],
@@ -487,6 +487,49 @@
       "widgets_values": [
         "Wan 2.2 5B T2V: community defaults from Comfy-Org Wan examples. Use 81 frames, cfg ~6, euler/simple. Optional SeedVR2 post (toggle off by default; heavy VRAM)."
       ]
+    },
+    {
+      "id": 58,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        320,
+        60
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 107
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            108
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
     }
   ],
   "links": [
@@ -555,10 +598,10 @@
       "IMAGE"
     ],
     [
-      94,
+      107,
       37,
       0,
-      48,
+      58,
       0,
       "MODEL"
     ],
@@ -585,6 +628,14 @@
       55,
       0,
       "VAE"
+    ],
+    [
+      108,
+      58,
+      0,
+      48,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [],

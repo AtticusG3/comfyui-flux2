@@ -3,8 +3,8 @@
   "version": 1,
   "state": {
     "lastGroupId": 7,
-    "lastNodeId": 582,
-    "lastLinkId": 1088,
+    "lastNodeId": 583,
+    "lastLinkId": 1090,
     "lastRerouteId": 2
   },
   "revision": 0,
@@ -438,7 +438,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            907
+            1089
           ]
         }
       ],
@@ -521,6 +521,50 @@
       ],
       "color": "#af3535",
       "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 583,
+      "type": "CacheDiT_Model_Optimizer",
+      "pos": [
+        -1800,
+        130
+      ],
+      "size": [
+        340,
+        186
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1089
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            1090
+          ]
+        }
+      ],
+      "title": "CacheDiT Accelerator",
+      "properties": {
+        "Node name for S&R": "CacheDiT_Model_Optimizer"
+      },
+      "widgets_values": [
+        true,
+        "Auto",
+        0,
+        0,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
     }
   ],
   "groups": [],
@@ -566,11 +610,11 @@
       "type": "LATENT"
     },
     {
-      "id": 907,
+      "id": 1089,
       "origin_id": 429,
       "origin_slot": 0,
-      "target_id": -20,
-      "target_slot": 5,
+      "target_id": 583,
+      "target_slot": 0,
       "type": "MODEL"
     },
     {
@@ -588,6 +632,14 @@
       "target_id": 429,
       "target_slot": 0,
       "type": "COMBO"
+    },
+    {
+      "id": 1090,
+      "origin_id": 583,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 5,
+      "type": "MODEL"
     }
   ],
   "extra": {}

@@ -1,8 +1,8 @@
 {
   "id": "ec7da562-7e21-4dac-a0d2-f4441e1efd3b",
   "revision": 0,
-  "last_node_id": 160,
-  "last_link_id": 259,
+  "last_node_id": 164,
+  "last_link_id": 267,
   "nodes": [
     {
       "id": 90,
@@ -131,7 +131,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            205
+            260
           ]
         }
       ],
@@ -233,7 +233,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 205
+          "link": 261
         }
       ],
       "outputs": [
@@ -340,7 +340,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 207
+          "link": 267
         }
       ],
       "outputs": [
@@ -755,7 +755,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            258
+            262
           ]
         }
       ],
@@ -807,7 +807,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            257
+            264
           ]
         }
       ],
@@ -1285,7 +1285,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 258
+          "link": 263
         }
       ],
       "outputs": [
@@ -1335,7 +1335,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 257
+          "link": 265
         }
       ],
       "outputs": [
@@ -1514,7 +1514,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            207
+            266
           ]
         }
       ],
@@ -1956,7 +1956,7 @@
         }
       },
       "widgets_values": [
-        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-inp\n) \n\n**Diffusion Model**\n- [wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\nFile save location\n\n```\nComfyUI/\n├───📂 models/\n│   ├───📂 diffusion_models/\n│   │   ├─── wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors\n│   │   └─── wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors\n│   ├───📂 loras/\n│   │   ├─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   │   └─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   ├───📂 text_encoders/\n│   │   └─── umt5_xxl_fp8_e4m3fn_scaled.safetensors \n│   └───📂 vae/\n│       └── wan_2.1_vae.safetensors\n```\n"
+        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-inp\n) \n\n**Diffusion Model**\n- [wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\nFile save location\n\n```\nComfyUI/\n\u251c\u2500\u2500\u2500\ud83d\udcc2 models/\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 diffusion_models/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_fun_inpaint_high_noise_14B_fp8_scaled.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_fun_inpaint_low_noise_14B_fp8_scaled.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 loras/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 text_encoders/\n\u2502   \u2502   \u2514\u2500\u2500\u2500 umt5_xxl_fp8_e4m3fn_scaled.safetensors \n\u2502   \u2514\u2500\u2500\u2500\ud83d\udcc2 vae/\n\u2502       \u2514\u2500\u2500 wan_2.1_vae.safetensors\n```\n"
       ],
       "color": "#432",
       "bgcolor": "#000"
@@ -2088,6 +2088,178 @@
       "widgets_values": [
         "Fun Inpaint: denoise 0.5-0.65 typical; mask feather 8-16px. See Comfy Wan 2.2 Fun Inpaint docs."
       ]
+    },
+    {
+      "id": 161,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        -80,
+        520
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 260
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            261
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 162,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        -90,
+        1800
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 262
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            263
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 163,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        -90,
+        1930
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 264
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            265
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 164,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        -80,
+        650
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 266
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            267
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
     }
   ],
   "links": [
@@ -2236,10 +2408,10 @@
       "MODEL"
     ],
     [
-      205,
+      260,
       101,
       0,
-      116,
+      161,
       0,
       "MODEL"
     ],
@@ -2252,10 +2424,10 @@
       "MODEL"
     ],
     [
-      207,
+      266,
       102,
       0,
-      117,
+      164,
       0,
       "MODEL"
     ],
@@ -2420,18 +2592,18 @@
       "VIDEO"
     ],
     [
-      257,
+      264,
       139,
       0,
-      144,
+      163,
       0,
       "MODEL"
     ],
     [
-      258,
+      262,
       138,
       0,
-      146,
+      162,
       0,
       "MODEL"
     ],
@@ -2442,6 +2614,38 @@
       158,
       0,
       "VIDEO"
+    ],
+    [
+      261,
+      161,
+      0,
+      116,
+      0,
+      "MODEL"
+    ],
+    [
+      263,
+      162,
+      0,
+      146,
+      0,
+      "MODEL"
+    ],
+    [
+      265,
+      163,
+      0,
+      144,
+      0,
+      "MODEL"
+    ],
+    [
+      267,
+      164,
+      0,
+      117,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [

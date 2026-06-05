@@ -819,6 +819,25 @@ patch_comfyui_video_types_py() {
 }
 
 # HiDream O1 requires transformers with Qwen3-VL model code.
+ensure_cache_dit_package() {
+    local node_dir="${CUSTOM_NODES_DIR}/ComfyUI-CacheDiT"
+    if [ -z "${SYNCED_NODE_DIRS[$node_dir]:-}" ]; then
+        return 0
+    fi
+
+    echo "[INFO] Ensuring cache-dit>=1.2.0 for ComfyUI-CacheDiT..."
+    if ! python3 -c "import cache_dit" 2>/dev/null; then
+        if ! uv pip install "cache-dit>=1.2.0"; then
+            echo "[WARN] cache-dit install reported errors."
+        fi
+    fi
+    if python3 -c "import cache_dit" 2>/dev/null; then
+        echo "[INFO] cache-dit import: OK"
+    else
+        echo "[WARN] cache-dit import failed; CacheDiT nodes may not load."
+    fi
+}
+
 ensure_hidream_transformers() {
     local node_dir="${CUSTOM_NODES_DIR}/HiDream_O1-ComfyUI"
     if [ -z "${SYNCED_NODE_DIRS[$node_dir]:-}" ]; then
@@ -858,6 +877,7 @@ reconcile_managed_deps() {
     ensure_comfyui_frontend_package "${COMFYUI_DIR}/requirements.txt"
     ensure_comfy_aimdo_package "${COMFYUI_DIR}/requirements.txt"
     install_reqs_force "${COMFYUI_DIR}/requirements.txt" "ComfyUI"
+    ensure_cache_dit_package
     ensure_hidream_transformers
     ensure_layerstyle_opencv
 }
@@ -1922,8 +1942,22 @@ export CC="${CC:-gcc}"
 cd /app
 
 AUTO_VRAM_ARGS_LC=$(echo "${AUTO_VRAM_ARGS:-true}" | tr '[:upper:]' '[:lower:]')
+COMFYUI_FAST_LC=$(echo "${COMFYUI_FAST:-true}" | tr '[:upper:]' '[:lower:]')
 CLI_ARGS=$(trim_shell_args "${CLI_ARGS:-}")
+FAST_RUNTIME_ARGS=""
 VRAM_RUNTIME_ARGS=""
+
+if [ -n "${COMFYUI_FAST_ARGS:-}" ]; then
+    FAST_RUNTIME_ARGS=$(trim_shell_args "$COMFYUI_FAST_ARGS")
+    echo "[INFO] Using COMFYUI_FAST_ARGS: $FAST_RUNTIME_ARGS"
+elif [ "$COMFYUI_FAST_LC" = "true" ] || [ "$COMFYUI_FAST_LC" = "1" ] || [ "$COMFYUI_FAST_LC" = "yes" ]; then
+    FAST_RUNTIME_ARGS="--fast"
+    echo "[INFO] ComfyUI --fast optimizations enabled (set COMFYUI_FAST=false to disable)."
+elif [ "$COMFYUI_FAST_LC" = "false" ] || [ "$COMFYUI_FAST_LC" = "0" ] || [ "$COMFYUI_FAST_LC" = "no" ]; then
+    echo "[INFO] COMFYUI_FAST disabled."
+else
+    echo "[WARN] Unrecognized COMFYUI_FAST='$COMFYUI_FAST'; skipping --fast."
+fi
 
 if [ -n "${COMFYUI_VRAM_ARGS:-}" ]; then
     VRAM_RUNTIME_ARGS=$(trim_shell_args "$COMFYUI_VRAM_ARGS")
@@ -1939,4 +1973,4 @@ else
     echo "[INFO] LOW_VRAM=false; no automatic VRAM args added."
 fi
 
-python3 ./ComfyUI/main.py --listen --port 8188 ${VRAM_RUNTIME_ARGS} ${CLI_ARGS}
+python3 ./ComfyUI/main.py --listen --port 8188 ${FAST_RUNTIME_ARGS} ${VRAM_RUNTIME_ARGS} ${CLI_ARGS}

@@ -23,6 +23,7 @@
 | `sync_subgraph_wrapper_ports.py` | Sync wrapper ports from embedded subgraph interface. |
 | `sync_workflow_models.py` | Extract workflow model refs for maintainer checks. |
 | `merge_enhancement_templates.py` | Graft `_templates/` subgraphs onto pack workflows. |
+| `inject_cachedit_workflows.py` | Insert CacheDiT / Wan Cache Optimizer nodes into DiT bundled workflows (`--write`, `--templates`). |
 | `update_workflow_prompts.py` | Refresh workflow example prompts registry. |
 
 ## Release and registry

@@ -251,12 +251,13 @@ VRAM_UTILS_NODE_HINTS = (
     "Unload",
     "Tile",
     "Tiled",
+    "CacheDiT",
+    "WanCache",
 )
 
 PACK_NODE_PATTERNS: dict[str, tuple[str, ...]] = {
     "hidream-o1": ("HiDreamO1",),
     "wan-2-2": ("VHS_", "VideoHelperSuite", "Wan22", "SaveAnimatedWEBP"),
-    "trellis2-gguf": ("Trellis", "trellis", "LoadTrellis", "GGUF"),
     "hunyuan-3d": ("Hy3D", "Hunyuan3D"),
     "ace-step": ("AceStep", "EmptyAceStep", "TextEncodeAceStep"),
     "newbie-image": ("Newbie", "newbie"),

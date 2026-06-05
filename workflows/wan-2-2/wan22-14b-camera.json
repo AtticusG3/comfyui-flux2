@@ -1,8 +1,8 @@
 {
   "id": "ec7da562-7e21-4dac-a0d2-f4441e1efd3b",
   "revision": 0,
-  "last_node_id": 116,
-  "last_link_id": 209,
+  "last_node_id": 120,
+  "last_link_id": 217,
   "nodes": [
     {
       "id": 75,
@@ -25,7 +25,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            173
+            210
           ]
         }
       ],
@@ -74,7 +74,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 177
+          "link": 213
         }
       ],
       "outputs": [
@@ -134,7 +134,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 173
+          "link": 211
         }
       ],
       "outputs": [
@@ -197,7 +197,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            177
+            212
           ]
         }
       ],
@@ -983,7 +983,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            204
+            214
           ]
         }
       ],
@@ -1035,7 +1035,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            205
+            216
           ]
         }
       ],
@@ -1621,7 +1621,7 @@
       "title": "VRAM Usage",
       "properties": {},
       "widgets_values": [
-        "## GPU:RTX4090D 24GB\n\n| Model            | Size |VRAM Usage | 1st Generation | 2nd Generation |\n|---------------------|-------|-----------|---------------|-----------------|\n| fp8_scaled               |640*640| 84%               | ≈  536s              | ≈ 513s                   |\n| fp8_scaled +  4steps LoRA  | 640*640  | 89%                | ≈ 108s               | ≈ 71s                   |"
+        "## GPU:RTX4090D 24GB\n\n| Model            | Size |VRAM Usage | 1st Generation | 2nd Generation |\n|---------------------|-------|-----------|---------------|-----------------|\n| fp8_scaled               |640*640| 84%               | \u2248  536s              | \u2248 513s                   |\n| fp8_scaled +  4steps LoRA  | 640*640  | 89%                | \u2248 108s               | \u2248 71s                   |"
       ],
       "color": "#432",
       "bgcolor": "#000"
@@ -1644,7 +1644,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-camera\n) \n\n**Diffusion Model**\n- [wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\n```\nComfyUI/\n├───📂 models/\n│   ├───📂 diffusion_models/\n│   │   ├─── wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors\n│   │   └─── wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors\n│   ├───📂 loras/\n│   │   ├─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   │   └─── wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n│   ├───📂 text_encoders/\n│   │   └─── umt5_xxl_fp8_e4m3fn_scaled.safetensors \n│   └───📂 vae/\n│       └── wan_2.1_vae.safetensors\n```\n"
+        "[Tutorial](https://docs.comfy.org/tutorials/video/wan/wan2-2-fun-camera\n) \n\n**Diffusion Model**\n- [wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors)\n- [wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors)\n\n**LoRA**\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors)\n- [wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors)\n\n**VAE**\n- [wan_2.1_vae.safetensors](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors)\n\n**Text Encoder**   \n- [umt5_xxl_fp8_e4m3fn_scaled.safetensors](https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors)\n\n\n```\nComfyUI/\n\u251c\u2500\u2500\u2500\ud83d\udcc2 models/\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 diffusion_models/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 loras/\n\u2502   \u2502   \u251c\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u2502   \u2514\u2500\u2500\u2500 wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors\n\u2502   \u251c\u2500\u2500\u2500\ud83d\udcc2 text_encoders/\n\u2502   \u2502   \u2514\u2500\u2500\u2500 umt5_xxl_fp8_e4m3fn_scaled.safetensors \n\u2502   \u2514\u2500\u2500\u2500\ud83d\udcc2 vae/\n\u2502       \u2514\u2500\u2500 wan_2.1_vae.safetensors\n```\n"
       ],
       "color": "#432",
       "bgcolor": "#000"
@@ -1974,7 +1974,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 205
+          "link": 217
         }
       ],
       "outputs": [
@@ -2024,7 +2024,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 204
+          "link": 215
         }
       ],
       "outputs": [
@@ -2150,6 +2150,178 @@
       "widgets_values": [
         "Fun Camera: control trajectory strength 0.6-0.85; fewer steps if VRAM limited."
       ]
+    },
+    {
+      "id": 117,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        3130,
+        1810
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 210
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            211
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 118,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        3130,
+        2130
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 212
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            213
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 119,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        80,
+        1840
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 214
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            215
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 120,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        80,
+        2040
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 216
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            217
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
     }
   ],
   "links": [
@@ -2330,10 +2502,10 @@
       "IMAGE"
     ],
     [
-      173,
+      210,
       75,
       0,
-      88,
+      117,
       0,
       "MODEL"
     ],
@@ -2354,10 +2526,10 @@
       "MODEL"
     ],
     [
-      177,
+      212,
       72,
       0,
-      90,
+      118,
       0,
       "MODEL"
     ],
@@ -2538,16 +2710,48 @@
       "CLIP"
     ],
     [
-      204,
+      214,
       92,
+      0,
+      119,
+      0,
+      "MODEL"
+    ],
+    [
+      216,
+      95,
+      0,
+      120,
+      0,
+      "MODEL"
+    ],
+    [
+      211,
+      117,
+      0,
+      88,
+      0,
+      "MODEL"
+    ],
+    [
+      213,
+      118,
+      0,
+      90,
+      0,
+      "MODEL"
+    ],
+    [
+      215,
+      119,
       0,
       100,
       0,
       "MODEL"
     ],
     [
-      205,
-      95,
+      217,
+      120,
       0,
       101,
       0,
@@ -2635,7 +2839,7 @@
     },
     {
       "id": 8,
-      "title": "High noise（first steps）",
+      "title": "High noise\uff08first steps\uff09",
       "bounding": [
         -230,
         1770,
@@ -2713,7 +2917,7 @@
     },
     {
       "id": 14,
-      "title": "LightX2V 4 Steps LoRA （Can Speed up the workflow but will sacrifice some quality）",
+      "title": "LightX2V 4 Steps LoRA \uff08Can Speed up the workflow but will sacrifice some quality\uff09",
       "bounding": [
         2800,
         1660,

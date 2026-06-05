@@ -3,8 +3,8 @@
   "version": 1,
   "state": {
     "lastGroupId": 7,
-    "lastNodeId": 130,
-    "lastLinkId": 214,
+    "lastNodeId": 131,
+    "lastLinkId": 216,
     "lastRerouteId": 0
   },
   "revision": 0,
@@ -385,7 +385,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            139
+            215
           ]
         }
       ],
@@ -935,7 +935,7 @@
           "localized_name": "model",
           "name": "model",
           "type": "MODEL",
-          "link": 139
+          "link": 216
         },
         {
           "localized_name": "positive",
@@ -1407,6 +1407,50 @@
         }
       },
       "widgets_values": []
+    },
+    {
+      "id": 131,
+      "type": "CacheDiT_Model_Optimizer",
+      "pos": [
+        -160,
+        270
+      ],
+      "size": [
+        340,
+        186
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 215
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            216
+          ]
+        }
+      ],
+      "title": "CacheDiT Accelerator",
+      "properties": {
+        "Node name for S&R": "CacheDiT_Model_Optimizer"
+      },
+      "widgets_values": [
+        true,
+        "Auto",
+        0,
+        0,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
     }
   ],
   "groups": [
@@ -1478,10 +1522,10 @@
   ],
   "links": [
     {
-      "id": 139,
+      "id": 215,
       "origin_id": 106,
       "origin_slot": 0,
-      "target_id": 114,
+      "target_id": 131,
       "target_slot": 0,
       "type": "MODEL"
     },
@@ -1764,6 +1808,14 @@
       "target_id": 114,
       "target_slot": 2,
       "type": "CONDITIONING"
+    },
+    {
+      "id": 216,
+      "origin_id": 131,
+      "origin_slot": 0,
+      "target_id": 114,
+      "target_slot": 0,
+      "type": "MODEL"
     }
   ],
   "extra": {

@@ -1,4 +1,4 @@
-# Utility nodes for VRAM cleanup, tiled decode/upscale, workflow switches, and API-safe graph helpers.
+# Base utility nodes: VRAM cleanup, API helpers, and ComfyUI-CacheDiT (DiT inference caching).
 https://github.com/kijai/ComfyUI-KJNodes.git main
 https://github.com/rgthree/rgthree-comfy.git main
 https://github.com/cubiq/ComfyUI_essentials.git main
@@ -8,3 +8,4 @@ https://github.com/chflame163/ComfyUI_LayerStyle.git main
 https://github.com/Jonseed/ComfyUI-Detail-Daemon.git main
 https://github.com/ltdrdata/was-node-suite-comfyui.git main
 https://github.com/hekmon/comfyui-openai-api.git main
+https://github.com/Jasonzzt/ComfyUI-CacheDiT.git main

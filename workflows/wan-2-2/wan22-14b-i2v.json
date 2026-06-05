@@ -1,8 +1,8 @@
 {
   "id": "ec7da562-7e21-4dac-a0d2-f4441e1efd3b",
   "revision": 0,
-  "last_node_id": 61,
-  "last_link_id": 126,
+  "last_node_id": 63,
+  "last_link_id": 130,
   "nodes": [
     {
       "id": 7,
@@ -63,7 +63,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 110
+          "link": 128
         }
       ],
       "outputs": [
@@ -101,7 +101,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 112
+          "link": 130
         }
       ],
       "outputs": [
@@ -240,7 +240,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            110
+            127
           ]
         }
       ],
@@ -275,7 +275,7 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            112
+            129
           ]
         }
       ],
@@ -720,6 +720,92 @@
       "widgets_values": [
         "Wan 2.2 14B I2V: higher motion fidelity; increase steps before enabling SeedVR2."
       ]
+    },
+    {
+      "id": 62,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        330,
+        -70
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 127
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            128
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
+    },
+    {
+      "id": 63,
+      "type": "WanCacheOptimizer",
+      "pos": [
+        330,
+        60
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 129
+        }
+      ],
+      "outputs": [
+        {
+          "name": "optimized_model",
+          "type": "MODEL",
+          "links": [
+            130
+          ]
+        }
+      ],
+      "title": "CacheDiT Wan Accelerator",
+      "properties": {
+        "Node name for S&R": "WanCacheOptimizer"
+      },
+      "widgets_values": [
+        true,
+        4,
+        2,
+        true
+      ],
+      "color": "#2a4a3a",
+      "bgcolor": "rgba(24,24,27,.9)"
     }
   ],
   "links": [
@@ -788,18 +874,18 @@
       "VAE"
     ],
     [
-      110,
+      127,
       37,
       0,
-      54,
+      62,
       0,
       "MODEL"
     ],
     [
-      112,
+      129,
       56,
       0,
-      55,
+      63,
       0,
       "MODEL"
     ],
@@ -882,6 +968,22 @@
       50,
       4,
       "IMAGE"
+    ],
+    [
+      128,
+      62,
+      0,
+      54,
+      0,
+      "MODEL"
+    ],
+    [
+      130,
+      63,
+      0,
+      55,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [],

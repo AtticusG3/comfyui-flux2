@@ -12,6 +12,20 @@
 - Repo hygiene: removed legacy `z-anime` pack (selectors merged into `z-image-anime`), stale `sdxl-editing/workflows-bundled/` JSON copies, and scratch scripts (`extract_workflow_templates.py`, `gen_klein_4b_workflows.py`).
 - One-off migration scripts moved to `scripts/maint/`; operational script index in `scripts/README.md`.
 
+## [1.7.3] -- CacheDiT acceleration and ComfyUI --fast
+
+### Added
+- Base **vram-utils** installs [ComfyUI-CacheDiT](https://github.com/Jasonzzt/ComfyUI-CacheDiT); Docker image pre-bakes `cache-dit>=1.2.0` and startup verifies import.
+- ComfyUI launches with `--fast` by default (`COMFYUI_FAST=true`); override via `COMFYUI_FAST_ARGS` or disable with `COMFYUI_FAST=false`.
+- Maintainer script `scripts/inject_cachedit_workflows.py` to wire CacheDiT optimizers into DiT bundled workflows.
+- Bundled Klein, Z-Image, Z-Anime, Qwen Edit, and Wan 2.2 workflows ship with CacheDiT / Wan Cache Optimizer nodes between UNET load and sampler.
+
+### Fixed
+- Removed ghost `trellis2-gguf/workflows-bundled.txt` left after pack removal (CI `audit_workflow_assets.py` broken-manifest failure).
+
+### Changed
+- `vram-utils` pack metadata and README document CacheDiT + `--fast` behavior.
+
 ## [1.7.2] -- Dedupe aria2 model downloads by output path
 
 ### Fixed

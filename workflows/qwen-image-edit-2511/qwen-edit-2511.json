@@ -23,7 +23,7 @@
       "title": "Model Links",
       "properties": {},
       "widgets_values": [
-        "## Model Links\n\n**text_encoders**\n\n- [qwen_2.5_vl_7b_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors)\n\n**loras**\n\n- [Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors](https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors)\n\n**diffusion_models**\n\n- [Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors](https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8/resolve/main/Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors)\n\n**vae**\n\n- [qwen_image_vae.safetensors](https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors)\n\n\nModel Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 text_encoders/\n│   │      └── qwen_2.5_vl_7b_fp8_scaled.safetensors\n│   ├── 📂 loras/\n│   │      └── Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors\n│   ├── 📂 diffusion_models/\n│   │      └── qwen_image_edit_2511_nvfp4.safetensors\n│   └── 📂 vae/\n│          └── qwen_image_vae.safetensors\n```\n\n\n## Report Issue\n\nNote: please [update ComfyUI](https://docs.comfy.org/installation/update_comfyui) first and prepare required models. Desktop/Cloud will be updated after the stable release; nightly-supported models may not be included yet, please wait for the next stable release.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/Comfy-Org/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)"
+        "## Model Links\n\n**text_encoders**\n\n- [qwen_2.5_vl_7b_fp8_scaled.safetensors](https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors)\n\n**loras**\n\n- [Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors](https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors)\n\n**diffusion_models**\n\n- [Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors](https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8/resolve/main/Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors)\n\n**vae**\n\n- [qwen_image_vae.safetensors](https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors)\n\n\nModel Storage Location\n\n```\n\ud83d\udcc2 ComfyUI/\n\u251c\u2500\u2500 \ud83d\udcc2 models/\n\u2502   \u251c\u2500\u2500 \ud83d\udcc2 text_encoders/\n\u2502   \u2502      \u2514\u2500\u2500 qwen_2.5_vl_7b_fp8_scaled.safetensors\n\u2502   \u251c\u2500\u2500 \ud83d\udcc2 loras/\n\u2502   \u2502      \u2514\u2500\u2500 Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors\n\u2502   \u251c\u2500\u2500 \ud83d\udcc2 diffusion_models/\n\u2502   \u2502      \u2514\u2500\u2500 qwen_image_edit_2511_nvfp4.safetensors\n\u2502   \u2514\u2500\u2500 \ud83d\udcc2 vae/\n\u2502          \u2514\u2500\u2500 qwen_image_vae.safetensors\n```\n\n\n## Report Issue\n\nNote: please [update ComfyUI](https://docs.comfy.org/installation/update_comfyui) first and prepare required models. Desktop/Cloud will be updated after the stable release; nightly-supported models may not be included yet, please wait for the next stable release.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/Comfy-Org/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)"
       ],
       "color": "#222",
       "bgcolor": "#000"
@@ -366,8 +366,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 4,
-          "lastNodeId": 194,
-          "lastLinkId": 377,
+          "lastNodeId": 195,
+          "lastLinkId": 379,
           "lastRerouteId": 0
         },
         "revision": 0,
@@ -540,7 +540,7 @@
                 "localized_name": "model",
                 "name": "model",
                 "type": "MODEL",
-                "link": 317
+                "link": 379
               }
             ],
             "outputs": [
@@ -1206,7 +1206,7 @@
                 "type": "MODEL",
                 "slot_index": 0,
                 "links": [
-                  317
+                  378
                 ]
               }
             ],
@@ -1805,6 +1805,50 @@
               "secondTabWidth": 65
             },
             "widgets_values": []
+          },
+          {
+            "id": 195,
+            "type": "CacheDiT_Model_Optimizer",
+            "pos": [
+              -780,
+              2700
+            ],
+            "size": [
+              340,
+              186
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "model",
+                "type": "MODEL",
+                "link": 378
+              }
+            ],
+            "outputs": [
+              {
+                "name": "optimized_model",
+                "type": "MODEL",
+                "links": [
+                  379
+                ]
+              }
+            ],
+            "title": "CacheDiT Accelerator",
+            "properties": {
+              "Node name for S&R": "CacheDiT_Model_Optimizer"
+            },
+            "widgets_values": [
+              true,
+              "Auto",
+              0,
+              0,
+              true
+            ],
+            "color": "#2a4a3a",
+            "bgcolor": "rgba(24,24,27,.9)"
           }
         ],
         "groups": [
@@ -1863,10 +1907,10 @@
         ],
         "links": [
           {
-            "id": 317,
+            "id": 378,
             "origin_id": 161,
             "origin_slot": 0,
-            "target_id": 145,
+            "target_id": 195,
             "target_slot": 0,
             "type": "MODEL"
           },
@@ -2197,6 +2241,14 @@
             "target_id": 153,
             "target_slot": 1,
             "type": "COMBO"
+          },
+          {
+            "id": 379,
+            "origin_id": 195,
+            "origin_slot": 0,
+            "target_id": 145,
+            "target_slot": 0,
+            "type": "MODEL"
           }
         ],
         "extra": {

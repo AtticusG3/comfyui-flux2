@@ -153,6 +153,8 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `RESERVE_VRAM_GB` | Used with `LOW_VRAM=true` and auto VRAM args. Default `1.2`. |
 | `NVFP4_SUPPORTED` | `true` enables configured NVFP4 URL and workflow filename overrides. |
 | `NVFP4_MODE` | `official-only` or `allow-community` (community NVFP4 for Wan, FireRed, etc.). |
+| `COMFYUI_FAST` | `true` (default) appends `--fast` to ComfyUI launch for experimental speed opts. Set `false` to disable. |
+| `COMFYUI_FAST_ARGS` | Override fast flags, e.g. `--fast dynamic_vram`. When set, replaces the default `--fast` toggle. |
 | `CLI_ARGS` | Extra ComfyUI args; disables auto VRAM derivation when set. |
 | `HF_TOKEN` | Required when a selected pack marks gated Hugging Face models. |
 | `CONNECTIVITY_ROUTE_*` | `direct`, `proxy`, `smart-dns`, `vpn` for downloads/git. |
@@ -186,7 +188,7 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `qwen-image-edit-2511` | Image | FP8 diffusion + Qwen TE/VAE + Lightning 4-step LoRA | FP8 diffusion + Qwen TE/VAE + Lightning 4-step LoRA | Bundled `qwen-edit-2511.json`. `NVFP4_SUPPORTED=true` swaps diffusion to Bedovyy NVFP4. |
 | `hidream-o1` | Image | nodes + workflow only | nodes + workflow only | HiDream O1 custom nodes + example workflow. Download FP8/BF16 weights via Manager or HF after startup. Startup upgrades `transformers>=4.57.1` when this pack is selected. |
 
-**`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, [comfyui-openai-api](https://github.com/hekmon/comfyui-openai-api) (Ollama/OpenRouter/OpenAI-compatible LLM nodes for bundled prompt workflows), plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed. Startup also downloads shared SeedVR2 weights to `models/SEEDVR2/` (`seedvr2_ema_3b_fp8_e4m3fn.safetensors` and `ema_vae_fp16.safetensors`, about 3.9 GB total) for bundled enhancement subgraphs.
+**`vram-utils` (always on):** Syncs KJNodes, rgthree-comfy, ComfyUI_essentials, ComfyUI-Easy-Use, ComfyUI-SeedVR2_VideoUpscaler, ComfyUI_LayerStyle, ComfyUI-Detail-Daemon, was-node-suite-comfyui, [comfyui-openai-api](https://github.com/hekmon/comfyui-openai-api) (Ollama/OpenRouter/OpenAI-compatible LLM nodes for bundled prompt workflows), and [ComfyUI-CacheDiT](https://github.com/Jasonzzt/ComfyUI-CacheDiT) (`cache-dit>=1.2.0` pre-baked; startup verifies import). ComfyUI launches with `--fast` by default (`COMFYUI_FAST=true`); wire **CacheDiT Accelerator** between model load and KSampler in DiT workflows. Wan 2.2 uses **CacheDiT Wan Accelerator** per expert model. Plus `workflows/vram-utils` when the workflows directory is empty on first start. The pack selector `vram-utils` is **deprecated** and skipped if listed. Startup also downloads shared SeedVR2 weights to `models/SEEDVR2/` (`seedvr2_ema_3b_fp8_e4m3fn.safetensors` and `ema_vae_fp16.safetensors`, about 3.9 GB total) for bundled enhancement subgraphs.
 
 Startup installs requirements for managed nodes only by default (collated into one pip pass). Custom nodes left on the persisted volume from old packs or manual installs are still importable by ComfyUI, but their requirements are skipped unless `INSTALL_ORPHAN_NODE_REQS=true`; use ComfyUI Manager **Try fix** after startup for manual nodes, or remove stale folders. Known legacy orphans (Trellis2-GGUF, inference-gpu, openai-api, bad ComfyUI-NewBie clone without `__init__.py`) are removed automatically when not managed.
 
@@ -200,6 +202,14 @@ NVFP4_MODE=official-only
 ```
 
 With `NVFP4_MODE=allow-community`, community NVFP4 URLs (Wan I2V, FireRed Starnodes, Z-Image Base quality quant) may apply where configured in `entrypoint.sh`.
+
+## Runtime `--fast` precedence
+
+1. If `COMFYUI_FAST_ARGS` is set, use it as-is (e.g. `--fast dynamic_vram`).
+2. Else if `COMFYUI_FAST=true`, append `--fast`.
+3. Else add no fast flags.
+
+Disable with `COMFYUI_FAST=false` if experimental opts cause instability or quality drift.
 
 ## Runtime VRAM arg precedence
 

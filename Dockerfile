@@ -43,7 +43,8 @@ RUN uv pip install --no-cache \
 
 # av (PyAV), sageattention (SeedVR2), optional flash-attn wheel only (no nvcc in this image).
 RUN uv pip install --no-cache packaging wheel setuptools && \
-    uv pip install --no-cache av sageattention && \
+    uv pip install --no-cache av sageattention "cache-dit>=1.2.0" && \
+    python -c "import cache_dit; print('[OK] cache-dit available')" && \
     (uv pip install --no-cache --only-binary flash-attn flash-attn && \
         python -c "import flash_attn; print('[OK] flash-attn available')" || \
         echo "[WARN] flash-attn skipped (no prebuilt wheel for torch+cu130); xformers and sageattention are used.")
