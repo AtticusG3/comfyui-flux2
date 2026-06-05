@@ -201,7 +201,6 @@ PACK_PROFILES: dict[str, PackProfile] = {
     "z-image-turbo": PackProfile(kind="t2i", prompt_mode="portrait_car_scenic"),
     "z-image-base": PackProfile(kind="t2i", prompt_mode="product_or_studio"),
     "z-image-anime": PackProfile(kind="t2i", prompt_mode="anime_portrait"),
-    "z-anime": PackProfile(kind="t2i", prompt_mode="anime_portrait"),
     "newbie-image": PackProfile(kind="t2i", prompt_mode="anime_scene"),
     "ovis-image": PackProfile(kind="t2i", prompt_mode="poster_or_graphic"),
     "ernie-image": PackProfile(kind="t2i", prompt_mode="stylized"),

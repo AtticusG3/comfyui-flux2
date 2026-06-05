@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 WORKFLOW = REPO / "workflows/qwen-image-edit-2511/qwen-edit-2511.json"
 
 UNET_NVFP4 = "qwen_image_edit_2511_nvfp4.safetensors"

@@ -1,6 +1,0 @@
-# Z-Anime workflow (low / LOW_VRAM=true)
-# Uses the Z-Image Turbo core graph with startup filename rewrites.
-
-https://raw.githubusercontent.com/Comfy-Org/workflow_templates/main/templates/image_z_image_turbo.json
-  dir=ComfyUI/user/default/workflows
-  out=Z Anime - Distill 4 Step NVFP4.json

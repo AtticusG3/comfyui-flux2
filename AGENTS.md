@@ -12,8 +12,10 @@ sync/update logic, and persistent host-mounted data paths.
 
 ## Key Paths
 
+- `scripts/README.md`: index of runtime, validation, and maintainer scripts.
 - `scripts/entrypoint.sh`: startup orchestration, repo sync, model/workflow downloads,
   base install of `vram-utils` nodes/workflows on every start, optional `none` pack selection.
+- `scripts/ensure_nunchaku_wheel.py`: optional ComfyUI-nunchaku backend wheel install (torch/CUDA matched).
 - `scripts/lib/workflow_subgraph_ports.py`: canonical UUID wrapper/subgraph interface sync and parity checks.
 - `scripts/lib/workflow_validate_cli.py`: shared path expansion and validator subprocess helpers for workflow CLIs.
 - `scripts/lib/workflow_prompts.py`: prompt extraction for semantics checks (registry in `scripts/update_workflow_prompts.py`).

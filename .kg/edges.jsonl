@@ -7,9 +7,8 @@
 {"from": "repo:comfyui-flux2", "to": "script:dedupe-model-download-list", "type": "CONTAINS", "source": "scripts/dedupe_model_download_list.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:embed-workflow-subgraphs", "type": "CONTAINS", "source": "scripts/embed_workflow_subgraphs.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:entrypoint", "type": "CONTAINS", "source": "scripts/entrypoint.sh", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
-{"from": "repo:comfyui-flux2", "to": "script:extract-workflow-templates", "type": "CONTAINS", "source": "scripts/extract_workflow_templates.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
-{"from": "repo:comfyui-flux2", "to": "script:fix-qwen-edit-workflow", "type": "CONTAINS", "source": "scripts/fix_qwen_edit_workflow.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
-{"from": "repo:comfyui-flux2", "to": "script:gen-klein-4b-workflows", "type": "CONTAINS", "source": "scripts/gen_klein_4b_workflows.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
+{"from": "repo:comfyui-flux2", "to": "script:ensure-nunchaku-wheel", "type": "CONTAINS", "source": "scripts/ensure_nunchaku_wheel.py", "confidence": 1.0, "extracted_at": "2026-06-05T00:00:00Z"}
+{"from": "repo:comfyui-flux2", "to": "script:fix-qwen-edit-workflow", "type": "CONTAINS", "source": "scripts/maint/fix_qwen_edit_workflow.py", "confidence": 1.0, "extracted_at": "2026-06-05T00:00:00Z"}
 {"from": "repo:comfyui-flux2", "to": "script:gitea-push", "type": "CONTAINS", "source": "scripts/gitea-push.ps1", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:gitea-push", "type": "CONTAINS", "source": "scripts/gitea-push.sh", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:install-comfyui", "type": "CONTAINS", "source": "scripts/install_comfyui.sh", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
@@ -21,8 +20,8 @@
 {"from": "repo:comfyui-flux2", "to": "script:merge-enhancement-templates", "type": "CONTAINS", "source": "scripts/merge_enhancement_templates.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:patch-video-types-rotation", "type": "CONTAINS", "source": "scripts/patch_video_types_rotation.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:registry-cleanup", "type": "CONTAINS", "source": "scripts/registry_cleanup.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
-{"from": "repo:comfyui-flux2", "to": "script:rename-workflows-short", "type": "CONTAINS", "source": "scripts/rename_workflows_short.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
-{"from": "repo:comfyui-flux2", "to": "script:replace-saveimageplus", "type": "CONTAINS", "source": "scripts/replace_saveimageplus.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
+{"from": "repo:comfyui-flux2", "to": "script:rename-workflows-short", "type": "CONTAINS", "source": "scripts/maint/rename_workflows_short.py", "confidence": 1.0, "extracted_at": "2026-06-05T00:00:00Z"}
+{"from": "repo:comfyui-flux2", "to": "script:replace-saveimageplus", "type": "CONTAINS", "source": "scripts/maint/replace_saveimageplus.py", "confidence": 1.0, "extracted_at": "2026-06-05T00:00:00Z"}
 {"from": "repo:comfyui-flux2", "to": "script:sync-subgraph-wrapper-ports", "type": "CONTAINS", "source": "scripts/sync_subgraph_wrapper_ports.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:sync-workflow-models", "type": "CONTAINS", "source": "scripts/sync_workflow_models.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}
 {"from": "repo:comfyui-flux2", "to": "script:update-workflow-prompts", "type": "CONTAINS", "source": "scripts/update_workflow_prompts.py", "confidence": 1.0, "extracted_at": "2026-05-30T13:18:54Z"}

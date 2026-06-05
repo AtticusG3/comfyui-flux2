@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Rename bundled workflows to short kebab-case names and sync manifests."""
+"""One-off migration: rename bundled workflows to short kebab-case names (v1.7.0)."""
 from __future__ import annotations
 
 import json
 import re
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parents[2]
 WORKFLOWS = REPO / "workflows"
 PACKS = REPO / "scripts" / "packs"
 ENTRYPOINT = REPO / "scripts" / "entrypoint.sh"
@@ -223,12 +223,7 @@ def patch_repo_refs() -> None:
 
     targets = [
         REPO / "README.md",
-        REPO / "scripts" / "fix_qwen_edit_workflow.py",
-        REPO / "scripts" / "gen_klein_4b_workflows.py",
-        REPO / "scripts" / "extract_workflow_templates.py",
-        REPO / "scripts" / "replace_plain_with_donor.py",
-        REPO / "scripts" / "_mk_sdxl_hires.py",
-        REPO / "scripts" / "_av3d_notes.py",
+        REPO / "scripts" / "maint" / "fix_qwen_edit_workflow.py",
         REPO / "scripts" / "packs" / "wan-2-2" / "workflows-high.txt",
         REPO / "scripts" / "packs" / "wan-2-2" / "workflows-low.txt",
     ]

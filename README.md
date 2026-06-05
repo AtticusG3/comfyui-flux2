@@ -293,6 +293,8 @@ Port sync also realigns root `links[]` target/origin slots. To fix all wrappers 
 
 Cursor skills: [validate-comfyui-workflow](.cursor/skills/validate-comfyui-workflow/SKILL.md), [workflow-subgraph-engineering](.cursor/skills/workflow-subgraph-engineering/SKILL.md).
 
+Script index: [scripts/README.md](scripts/README.md). One-off migration utilities: [scripts/maint/](scripts/maint/).
+
 ## Development
 
 `scripts/` (entrypoint, packs, `scripts/lib/git_sync.sh`, patches) are **baked into the image**, not bind-mounted. After changing startup scripts, rebuild before testing:

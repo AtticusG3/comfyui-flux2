@@ -6,9 +6,8 @@ audit_workflow_assets: script:audit-workflow-assets
 dedupe_model_download_list: script:dedupe-model-download-list
 docker-compose.yml: config:docker-compose-yml
 embed_workflow_subgraphs: script:embed-workflow-subgraphs
-extract_workflow_templates: script:extract-workflow-templates
+ensure_nunchaku_wheel: script:ensure-nunchaku-wheel
 fix_qwen_edit_workflow: script:fix-qwen-edit-workflow
-gen_klein_4b_workflows: script:gen-klein-4b-workflows
 git_sync: script:git-sync
 install_comfyui: script:install-comfyui
 merge_enhancement_templates: script:merge-enhancement-templates

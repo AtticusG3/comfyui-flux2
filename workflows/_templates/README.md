@@ -15,6 +15,6 @@ Nested subgraph definitions from golden workflows. Path: ``definitions.subgraphs
 | Flux_Krea_T2I.json | FLUX.1 Krea dev T2I subgraph |
 | HiDream_Prompt_Enhancement.json | HiDream O1 prompt enhancement (alias for custom id) |
 
-Use ``python scripts/merge_enhancement_templates.py --workflow <path>`` to graft templates onto plain pack workflows by name.
+Use ``python scripts/merge_enhancement_templates.py --workflow <path>`` to graft templates onto plain pack workflows by name. One-off migration scripts live under ``scripts/maint/``.
 
 Use ``python scripts/embed_workflow_subgraphs.py`` to embed any referenced template subgraph ids (and known id aliases) into all workflows under ``workflows/``.

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Replace LayerUtility SaveImagePlus nodes with ComfyUI core SaveImage."""
+"""One-off migration: replace LayerUtility SaveImagePlus with core SaveImage (v1.7.0)."""
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS_ROOT = REPO_ROOT / "workflows"
 SAVEIMAGEPLUS_TYPE = "LayerUtility: SaveImagePlus"
 

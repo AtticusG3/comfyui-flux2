@@ -38,4 +38,5 @@ dump.sql
 *~
 .cursor/**/hooks/state/*
 !.cursor/hooks/state/.gitkeep
+.kg/violations.jsonl
 workflows/**/*.safetensors

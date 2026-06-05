@@ -9,6 +9,8 @@
 
 ### Changed
 - `z-image-anime` drops NVFP4: low/high tiers use SeeSee21 FP8/BF16 only; entrypoint no longer swaps to r0b0tlab Z-Anime-NVFP4 when `NVFP4_SUPPORTED=true`.
+- Repo hygiene: removed legacy `z-anime` pack (selectors merged into `z-image-anime`), stale `sdxl-editing/workflows-bundled/` JSON copies, and scratch scripts (`extract_workflow_templates.py`, `gen_klein_4b_workflows.py`).
+- One-off migration scripts moved to `scripts/maint/`; operational script index in `scripts/README.md`.
 
 ## [1.7.2] -- Dedupe aria2 model downloads by output path
 
