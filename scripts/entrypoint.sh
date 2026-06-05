@@ -1303,18 +1303,6 @@ apply_nvfp4_overrides() {
         changed=1
     fi
 
-    # Z-Anime (SeeSee21 FP8 -> r0b0tlab community NVFP4).
-    if grep -Fq "z-anime-base-fp8.safetensors" "$list_file"; then
-        sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-base-fp8\.safetensors#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-base-nvfp4.safetensors#g' "$list_file"
-        sed -i 's#out=z-anime-base-fp8\.safetensors#out=z-anime-base-nvfp4.safetensors#g' "$list_file"
-        changed=1
-    fi
-    if grep -Fq "z-anime-distill-4step-fp8.safetensors" "$list_file"; then
-        sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8\.safetensors#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4.safetensors#g' "$list_file"
-        sed -i 's#out=z-anime-distill-4step-fp8\.safetensors#out=z-anime-distill-4step-nvfp4.safetensors#g' "$list_file"
-        changed=1
-    fi
-
     # Qwen Image Edit 2511 FP8 -> Bedovyy NVFP4.
     if grep -Fq "Qwen-Image-Edit-2511-FP8_e4m3fn.safetensors" "$list_file"; then
         sed -i 's#https://huggingface.co/1038lab/Qwen-Image-Edit-2511-FP8/resolve/main/Qwen-Image-Edit-2511-FP8_e4m3fn\.safetensors#https://huggingface.co/Bedovyy/Qwen-Image-Edit-2511-NVFP4/resolve/main/qwen_image_edit_2511_nvfp4.safetensors#g' "$list_file"
@@ -1385,7 +1373,7 @@ apply_nvfp4_workflow_overrides() {
         return 0
     fi
 
-    # Z-Anime: default SeeSee21 FP8 (low) / BF16 (high). NVFP4 only when NVFP4_SUPPORTED=true.
+    # Z-Anime: SeeSee21 FP8 (low) / BF16 (high) only; no NVFP4 swap.
     local zaanime_origin="$workflows_dir/z-anime-t2i.json"
     if [ -f "$zaanime_origin" ]; then
         sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/vae/ae.safetensors#g' "$zaanime_origin"
@@ -1394,35 +1382,23 @@ apply_nvfp4_workflow_overrides() {
             sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
         fi
         if [ "$VRAM_TARGET" == "low" ]; then
-            if [ "$NVFP4_SUPPORTED_LC" == "true" ]; then
-                sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-4step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-4step-fp8\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-nvfp4.safetensors/g' "$zaanime_origin"
-                sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8\.safetensors#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4.safetensors#g' "$zaanime_origin"
-                sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step NVFP4)/g' "$zaanime_origin"
-                sed -i 's/Text to Image (Z-Anime Distill 4 Step FP8)/Text to Image (Z-Anime Distill 4 Step NVFP4)/g' "$zaanime_origin"
-                echo "[INFO] Workflow override: Z-Anime T2I low -> NVFP4 distill + FP8 TE filenames."
+            sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-4step-bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-4step-nvfp4\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8.safetensors#g' "$zaanime_origin"
+            sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b-fp8\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors#g' "$zaanime_origin"
+            sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-bf16\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors#g' "$zaanime_origin"
+            sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step FP8)/g' "$zaanime_origin"
+            sed -i 's/Text to Image (Z-Anime Distill 4 Step NVFP4)/Text to Image (Z-Anime Distill 4 Step FP8)/g' "$zaanime_origin"
+            sed -i 's/qwen_3_4b-bf16\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
+            sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
+            if grep -Fq "z-anime-distill-4step-fp8.safetensors" "$zaanime_origin" \
+                && grep -Fq "qwen_3_4b-fp8.safetensors" "$zaanime_origin"; then
+                echo "[INFO] Workflow override: Z-Anime T2I low -> FP8 distill + FP8 TE filenames."
             else
-                sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-4step-bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-4step-nvfp4\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-8step-bf16\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
-                sed -i 's/z-anime-distill-8step-fp8\.safetensors/z-anime-distill-4step-fp8.safetensors/g' "$zaanime_origin"
-                sed -i 's#https://huggingface.co/r0b0tlab/Z-Anime-NVFP4/resolve/main/diffusion_models/z-anime-distill-4step-nvfp4\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/diffusion_models/z-anime-distill-4step-fp8.safetensors#g' "$zaanime_origin"
-                sed -i 's#https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b-fp8\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors#g' "$zaanime_origin"
-                sed -i 's#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-bf16\.safetensors#https://huggingface.co/SeeSee21/Z-Anime/resolve/main/text_encoder/qwen_3_4b-fp8.safetensors#g' "$zaanime_origin"
-                sed -i 's/Text to Image (Z-Image-Turbo)/Text to Image (Z-Anime Distill 4 Step FP8)/g' "$zaanime_origin"
-                sed -i 's/Text to Image (Z-Anime Distill 4 Step NVFP4)/Text to Image (Z-Anime Distill 4 Step FP8)/g' "$zaanime_origin"
-                sed -i 's/qwen_3_4b-bf16\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
-                sed -i 's/qwen_3_4b\.safetensors/qwen_3_4b-fp8.safetensors/g' "$zaanime_origin"
-                if grep -Fq "z-anime-distill-4step-fp8.safetensors" "$zaanime_origin" \
-                    && grep -Fq "qwen_3_4b-fp8.safetensors" "$zaanime_origin"; then
-                    echo "[INFO] Workflow override: Z-Anime T2I low -> FP8 distill + FP8 TE filenames."
-                else
-                    echo "[WARN] Workflow override: Z-Anime T2I low filenames not verified after sed."
-                fi
+                echo "[WARN] Workflow override: Z-Anime T2I low filenames not verified after sed."
             fi
         else
             sed -i 's/z_image_turbo_bf16\.safetensors/z-anime-distill-4step-bf16.safetensors/g' "$zaanime_origin"

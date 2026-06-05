@@ -1,15 +1,14 @@
 {
   "name": "z-image-anime",
-  "selectors": ["z-image-anime", "z-anime", "zimage-anime", "zanime"],
+  "selectors": ["z-image-anime", "z-anime", "zimage-anime", "zanime", "zanime-image", "z-anime-image"],
   "tutorial_urls": [
     "https://huggingface.co/SeeSee21/Z-Anime"
   ],
   "upstream_urls": [
-    "https://huggingface.co/SeeSee21/Z-Anime",
-    "https://huggingface.co/r0b0tlab/Z-Anime-NVFP4"
+    "https://huggingface.co/SeeSee21/Z-Anime"
   ],
   "requires_hf_token": false,
-  "notes_low": "Z-Anime FP8 base + 4-step distill (SeeSee21) + FP8 TE + VAE. Set NVFP4_SUPPORTED=true for r0b0tlab NVFP4 on Blackwell.",
+  "notes_low": "Z-Anime FP8 base + 4-step distill (SeeSee21) + FP8 TE + VAE.",
   "notes_high": "Z-Anime BF16 base + 4-step distill; SeeSee21 BF16 TE + VAE. Large HF downloads.",
   "description": "Z-Anime S3-DiT anime workflows and Hugging Face model sources."
 }

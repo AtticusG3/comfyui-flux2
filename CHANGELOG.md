@@ -7,6 +7,9 @@
 - Optional ComfyUI-nunchaku installs matching nunchaku-ai backend wheels from GitHub releases (not the unrelated PyPI `nunchaku` package).
 - `CLI_ARGS` and `COMFYUI_VRAM_ARGS` are trimmed before ComfyUI launch so trailing whitespace cannot break argparse.
 
+### Changed
+- `z-image-anime` drops NVFP4: low/high tiers use SeeSee21 FP8/BF16 only; entrypoint no longer swaps to r0b0tlab Z-Anime-NVFP4 when `NVFP4_SUPPORTED=true`.
+
 ## [1.7.2] -- Dedupe aria2 model downloads by output path
 
 ### Fixed

@@ -81,7 +81,7 @@ sync/update logic, and persistent host-mounted data paths.
 ## NVFP4 Policy
 
 - Default `NVFP4_SUPPORTED=false`: pack catalogs and bundled workflows use FP8/BF16 only (no NVFP4 downloads). Z-Anime low tier uses [SeeSee21 FP8](https://huggingface.co/SeeSee21/Z-Anime/tree/main/diffusion_models); high tier uses SeeSee21 BF16.
-- `NVFP4_SUPPORTED=true` enables URL override logic (Klein, Z-Turbo, Z-Anime FP8 to r0b0tlab NVFP4, Qwen Edit FP8 to Bedovyy NVFP4, etc.).
+- `NVFP4_SUPPORTED=true` enables URL override logic (Klein, Z-Turbo, Qwen Edit FP8 to Bedovyy NVFP4, etc.). Z-Anime (`z-image-anime`) stays SeeSee21 FP8/BF16 only.
 - `NVFP4_MODE`:
   - `official-only` (default): official NVFP4 sources only.
   - `allow-community`: allows configured community NVFP4 overrides (experimental),

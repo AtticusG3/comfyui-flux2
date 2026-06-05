@@ -59,7 +59,7 @@ docker compose exec comfyui python -c "import torch; print('torch', torch.__vers
 
 | Variable | Values | Role |
 | --- | --- | --- |
-| `NVFP4_SUPPORTED` | `true` / `false` | Default `false`: packs download FP8/BF16 only (no NVFP4 filenames). When `true`, enables URL/filename swaps for **official** NVFP4 where configured (e.g. Klein FP8 to official NVFP4, Z-Anime FP8 to r0b0tlab NVFP4). |
+| `NVFP4_SUPPORTED` | `true` / `false` | Default `false`: packs download FP8/BF16 only (no NVFP4 filenames). When `true`, enables URL/filename swaps for **official** NVFP4 where configured (e.g. Klein FP8 to official NVFP4, Z-Turbo BF16 to Comfy-Org NVFP4). Z-Anime stays FP8/BF16 only. |
 | `NVFP4_MODE` | `official-only` (default) or `allow-community` | `allow-community` additionally enables **experimental** community NVFP4 URLs (Wan I2V, **FireRed Image Edit** Starnodes quant, etc.). |
 
 There is no `NVFP4_MODE=true`; use `NVFP4_SUPPORTED=true` together with `NVFP4_MODE` as above.
@@ -182,7 +182,7 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `flux2` | Image | (workflows only) | (workflows only) | Optional Flux.2 Klein JSON bundle; pair with `klein-distilled` for weights. |
 | `z-image-turbo` | Image | Z-Image Turbo + Qwen FP8 text encoder | Z-Image Turbo + Qwen BF16 text encoder | Focused fast distilled Z-Image workflow. `NVFP4_SUPPORTED=true` swaps diffusion to official `z_image_turbo_nvfp4.safetensors`. |
 | `z-image-base` | Image | Z-Image Base + Qwen FP8 text encoder | Z-Image Base + Qwen BF16 text encoder | Focused non-distilled Base workflow. `NVFP4_SUPPORTED=true` + `NVFP4_MODE=allow-community` can swap diffusion to marcorez8 quality NVFP4. |
-| `z-image-anime` | Image | Z-Anime FP8 base + 4-step distill ([SeeSee21](https://huggingface.co/SeeSee21/Z-Anime/tree/main/diffusion_models)) + FP8 TE/VAE | Z-Anime BF16 base + 4-step distill + BF16 TE/VAE | `NVFP4_SUPPORTED=true` swaps diffusion to r0b0tlab NVFP4 (Blackwell). Bundled `z-anime-t2i.json` only. |
+| `z-image-anime` | Image | Z-Anime FP8 base + 4-step distill ([SeeSee21](https://huggingface.co/SeeSee21/Z-Anime/tree/main/diffusion_models)) + FP8 TE/VAE | Z-Anime BF16 base + 4-step distill + BF16 TE/VAE | SeeSee21 FP8/BF16 only (no NVFP4). Bundled `z-anime-t2i.json`. |
 | `qwen-image-edit-2511` | Image | FP8 diffusion + Qwen TE/VAE + Lightning 4-step LoRA | FP8 diffusion + Qwen TE/VAE + Lightning 4-step LoRA | Bundled `qwen-edit-2511.json`. `NVFP4_SUPPORTED=true` swaps diffusion to Bedovyy NVFP4. |
 | `hidream-o1` | Image | nodes + workflow only | nodes + workflow only | HiDream O1 custom nodes + example workflow. Download FP8/BF16 weights via Manager or HF after startup. Startup upgrades `transformers>=4.57.1` when this pack is selected. |
 
