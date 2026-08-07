@@ -93,6 +93,18 @@ def _prompts_from_graph(graph: dict[str, Any]) -> list[str]:
                 prompts.append(text.strip())
             continue
 
+        if node_type in ("MiniMaxH3ImageToVideo", "MiniMaxH3ReferenceToVideo"):
+            text = get_node_prompt_text(node)
+            if text:
+                prompts.append(text)
+            continue
+
+        if isinstance(node_type, str) and UUID_TYPE_RE.match(node_type):
+            text = get_node_prompt_text(node)
+            if text:
+                prompts.append(text)
+            continue
+
         if node_type == "TextEncodeQwenImageEditPlus":
             title = str(node.get("title", "")).lower()
             if "neg" in title:
@@ -213,6 +225,142 @@ def set_widget_text(node: dict[str, Any], text: str) -> bool:
     return False
 
 
+# Socket types that never occupy widgets_values slots on subgraph wrappers.
+_NON_WIDGET_SOCKET_TYPES = frozenset(
+    {
+        "IMAGE",
+        "MASK",
+        "LATENT",
+        "MODEL",
+        "CLIP",
+        "VAE",
+        "CONDITIONING",
+        "AUDIO",
+        "VIDEO",
+        "CONTROL_NET",
+        "STYLE_MODEL",
+        "GLIGEN",
+        "NOISE",
+        "GUIDER",
+        "SAMPLER",
+        "SIGMAS",
+    }
+)
+
+
+def _widget_index_for_input(inputs: list[Any], target_idx: int) -> int | None:
+    """Map an input list index to widgets_values index (skip non-widget socket types)."""
+    w_i = 0
+    for i, inp in enumerate(inputs):
+        if not isinstance(inp, dict):
+            continue
+        inp_type = str(inp.get("type") or "")
+        if inp_type in _NON_WIDGET_SOCKET_TYPES:
+            continue
+        if i == target_idx:
+            return w_i
+        w_i += 1
+    return None
+
+
+def _prompt_input_indices(inputs: list[Any]) -> list[int]:
+    """Input indices whose name/label indicate a user-facing generation prompt."""
+    found: list[int] = []
+    for i, inp in enumerate(inputs):
+        if not isinstance(inp, dict):
+            continue
+        if str(inp.get("type") or "") != "STRING":
+            continue
+        name = str(inp.get("name") or "").lower()
+        label = str(inp.get("label") or "").lower()
+        blob = f"{name} {label}"
+        if "enhance" in blob:
+            continue
+        if "prompt" in name or "prompt" in label or name in ("text", "value"):
+            found.append(i)
+    return found
+
+
+def set_node_prompt_text(node: dict[str, Any], text: str) -> bool:
+    """Write prompt text onto STRING prompt widgets for native or UUID-wrapper nodes."""
+    node_type = node.get("type", "")
+    inputs = node.get("inputs") if isinstance(node.get("inputs"), list) else []
+    wv = list(node.get("widgets_values") or [])
+
+    # MiniMax H3 (and similar) native nodes: first STRING prompt widget is the prompt.
+    if node_type in ("MiniMaxH3ImageToVideo", "MiniMaxH3ReferenceToVideo"):
+        indices = _prompt_input_indices(inputs)
+        if indices:
+            w_idx = _widget_index_for_input(inputs, indices[0])
+            if w_idx is not None:
+                while len(wv) <= w_idx:
+                    wv.append("")
+                wv[w_idx] = text
+                node["widgets_values"] = wv
+                return True
+        if wv:
+            wv[0] = text
+            node["widgets_values"] = wv
+            return True
+        return set_widget_text(node, text)
+
+    if isinstance(node_type, str) and UUID_TYPE_RE.match(node_type):
+        proxy = node.get("properties", {}).get("proxyWidgets")
+        wrote = False
+        if isinstance(proxy, list) and proxy:
+            if len(wv) < len(proxy):
+                wv.extend([""] * (len(proxy) - len(wv)))
+            for pi, entry in enumerate(proxy):
+                if not isinstance(entry, list) or len(entry) < 2:
+                    continue
+                slot = str(entry[1]).lower()
+                if slot in ("text", "prompt", "value"):
+                    wv[pi] = text
+                    wrote = True
+                    break
+        for idx in _prompt_input_indices(inputs):
+            w_idx = _widget_index_for_input(inputs, idx)
+            if w_idx is None:
+                continue
+            while len(wv) <= w_idx:
+                wv.append("")
+            wv[w_idx] = text
+            wrote = True
+            break
+        if wrote:
+            node["widgets_values"] = wv
+            return True
+        # Fallback: first string widget
+        for i, val in enumerate(wv):
+            if isinstance(val, str):
+                wv[i] = text
+                node["widgets_values"] = wv
+                return True
+        return False
+
+    return set_widget_text(node, text)
+
+
+def get_node_prompt_text(node: dict[str, Any]) -> str | None:
+    """Read prompt text from native MiniMax or UUID-wrapper nodes when present."""
+    node_type = node.get("type", "")
+    inputs = node.get("inputs") if isinstance(node.get("inputs"), list) else []
+    wv = node.get("widgets_values") if isinstance(node.get("widgets_values"), list) else []
+
+    if node_type in ("MiniMaxH3ImageToVideo", "MiniMaxH3ReferenceToVideo") or (
+        isinstance(node_type, str) and UUID_TYPE_RE.match(node_type)
+    ):
+        indices = _prompt_input_indices(inputs)
+        if indices:
+            w_idx = _widget_index_for_input(inputs, indices[0])
+            if w_idx is not None and w_idx < len(wv) and isinstance(wv[w_idx], str):
+                text = wv[w_idx].strip()
+                return text or None
+        if wv and isinstance(wv[0], str) and wv[0].strip():
+            return wv[0].strip()
+    return node_text(node)
+
+
 def apply_prompts(
     doc: dict[str, Any],
     positive: str,
@@ -268,6 +416,12 @@ def apply_prompts(
                     pos_count += 1
                 continue
 
+            if node_type in ("MiniMaxH3ImageToVideo", "MiniMaxH3ReferenceToVideo"):
+                if set_node_prompt_text(node, positive):
+                    changed = True
+                    pos_count += 1
+                continue
+
             if node_type == "TextEncodeQwenImageEditPlus":
                 title = str(node.get("title", "")).lower()
                 if "neg" not in title and set_widget_text(node, positive):
@@ -294,33 +448,7 @@ def apply_prompts(
                     continue
 
             if isinstance(node_type, str) and UUID_TYPE_RE.match(node_type):
-                proxy = node.get("properties", {}).get("proxyWidgets")
-                inputs = node.get("inputs", [])
-                wv = list(node.get("widgets_values") or [])
-                wrote = False
-                if isinstance(proxy, list) and proxy:
-                    if len(wv) < len(proxy):
-                        wv.extend([""] * (len(proxy) - len(wv)))
-                    for pi, entry in enumerate(proxy):
-                        if not isinstance(entry, list) or len(entry) < 2:
-                            continue
-                        slot = entry[1]
-                        if slot in ("text", "prompt"):
-                            wv[pi] = positive
-                            wrote = True
-                            break
-                for idx, inp in enumerate(inputs):
-                    if not isinstance(inp, dict):
-                        continue
-                    label = str(inp.get("label", "")).lower()
-                    inp_type = inp.get("type")
-                    while len(wv) <= idx:
-                        wv.append(False if inp_type == "BOOLEAN" else "")
-                    if inp_type == "STRING" and "prompt" in label and "enhance" not in label:
-                        wv[idx] = positive
-                        wrote = True
-                if wrote:
-                    node["widgets_values"] = wv
+                if set_node_prompt_text(node, positive):
                     changed = True
                     pos_count += 1
 

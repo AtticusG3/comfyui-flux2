@@ -157,7 +157,7 @@
           ],
           [
             "306",
-            "\ud83c\udfb2 Manual Random Seed"
+            "🎲 Manual Random Seed"
           ],
           [
             "348",
@@ -183,7 +183,22 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Saber from Fate in armor beside a Mazda RX-7 FD at Chureito Pagoda with Mount Fuji behind, sunset sky, detailed anime illustration, cinematic composition"
+      ],
       "color": "#346434",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -470,7 +485,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Saber from Fate in armor beside a Mazda RX-7 FD at Chureito Pagoda with Mount Fuji behind, sunset sky, detailed anime illustration, cinematic composition"
+      ],
       "color": "#006691",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -556,7 +573,10 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Saber from Fate in armor beside a Mazda RX-7 FD at Chureito Pagoda with Mount Fuji behind, sunset sky, detailed anime illustration, cinematic composition",
+        ""
+      ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -617,7 +637,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Saber from Fate in armor beside a Mazda RX-7 FD at Chureito Pagoda with Mount Fuji behind, sunset sky, detailed anime illustration, cinematic composition"
+      ],
       "color": "#1f1f48",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -711,7 +733,13 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Saber from Fate in armor beside a Mazda RX-7 FD at Chureito Pagoda with Mount Fuji behind, sunset sky, detailed anime illustration, cinematic composition",
+        "",
+        "",
+        "",
+        ""
+      ],
       "color": "#422342",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -5147,7 +5175,7 @@
         ],
         [
           "306",
-          "\ud83c\udfb2 Manual Random Seed"
+          "🎲 Manual Random Seed"
         ]
       ],
       "outputs": [

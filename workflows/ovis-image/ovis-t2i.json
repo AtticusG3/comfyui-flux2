@@ -411,7 +411,10 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Event poster: Saber in armor beside a Mazda RX-7 FD at Ebisu Circuit drift stadium, bold title DRIFT MATSURI 2025, Japanese subtitle, high contrast print design",
+        ""
+      ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -465,7 +468,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Event poster: Saber in armor beside a Mazda RX-7 FD at Ebisu Circuit drift stadium, bold title DRIFT MATSURI 2025, Japanese subtitle, high contrast print design"
+      ],
       "color": "#006691",
       "bgcolor": "rgba(24,24,27,.9)"
     },

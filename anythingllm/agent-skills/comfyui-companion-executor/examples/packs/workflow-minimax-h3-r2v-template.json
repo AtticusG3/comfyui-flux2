@@ -1,0 +1,13 @@
+{
+  "_pack": "minimax-h3",
+  "_task": "r2v",
+  "_template": true,
+  "_note": "Starter template. Export API JSON from bundled minimax-h3-r2v.json. Uses ref2va diffusion weights. Tag references as <Picture N>, <Video N>, <Audio N> in connection order.",
+  "_placeholders": [
+    "__PROMPT__",
+    "__NEGATIVE__",
+    "__REF_IMAGE_URLS__",
+    "__DURATION_SECONDS__",
+    "__SEED__"
+  ]
+}

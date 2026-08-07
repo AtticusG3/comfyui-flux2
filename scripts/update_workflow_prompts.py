@@ -117,6 +117,39 @@ SCENES: dict[str, tuple[str, str]] = {
         "roof POV to roadside tracking to aerial reveal, vending machine glow, coherent motion",
         VIDEO_NEG,
     ),
+    "workflows/minimax-h3/minimax-h3-t2v.json": (
+        "integrated_multimodal_description: [Shot 1] Live-action, cinematic, a medium-wide shot frames a "
+        "young woman with teal twin-tails in a white racing jacket beside a white Toyota AE86 Trueno on a "
+        "Gunma mountain touge at dawn. Cedar forest and mist fill the background. The camera pushes in with "
+        "small amplitude at slow speed as she rests a gloved hand on the roof and the calm, clear young woman "
+        "(S1) says: <d>[English] First light. We take the hairpin clean.</d> [Shot 2] At 00:04.500, the camera "
+        "cuts to a low tracking shot following the AE86 entering the first corner, tyre smoke catching sunrise.\n\n"
+        "overall_soundscape: Distant birds and soft wind through cedar. Tyres roll on damp asphalt, a hand taps "
+        "the roof panel, then engine note rises on the cut.\n\n"
+        "non_diegetic_music: Sparse electric piano at a moderate tempo with low synth pads that swell on the cut.",
+        VIDEO_NEG,
+    ),
+    "workflows/minimax-h3/minimax-h3-i2v.json": (
+        "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\n"
+        "integrated_multimodal_description: [Shot 1] Live-action, cinematic, preserve the subject, clothing, car, "
+        "and composition from <Picture 1> as the first frame. The camera trucks right with small amplitude at slow "
+        "speed as the driver settles into the seat, hands on the AE86 wheel, tach needle climbing while the Gunma "
+        "hairpin appears through the windscreen. Subtle cabin shake, consistent interior detail, sunrise light "
+        "on the dashboard.\n\n"
+        "overall_soundscape: Cabin ambience with soft fabric movement and a rising engine rpm under distant forest wind.\n\n"
+        "non_diegetic_music: N/A",
+        VIDEO_NEG,
+    ),
+    "workflows/minimax-h3/minimax-h3-r2v.json": (
+        "Use <Picture 1> for the driver's identity and outfit and <Picture 2> for the mecha-kaiju style reference. "
+        "integrated_multimodal_description: [Shot 1] Bold comic-book ink style, heavy linework, red and blue-black "
+        "palette, night city. Top-down view of the character from <Picture 1> on a rooftop, cape fluttering, then "
+        "a whip pan to the colossal mecha from <Picture 2> roaring over the skyline. Camera descends then settles "
+        "on a low hero angle.\n\n"
+        "overall_soundscape: Wind across rooftops, fabric snap, then a deep mechanical roar with glass rattle.\n\n"
+        "non_diegetic_music: Punchy taiko hits and low brass stabs building into the roar.",
+        VIDEO_NEG,
+    ),
     "workflows/ace-step/ace-step-t2m.json": (
         "Japanese city pop, 1980s Shibuya-kei, driving synth bass, Rhodes piano, brushed drums, female vocal "
         "hooks, coastal night drive mood, 108 BPM, F major",
@@ -222,6 +255,8 @@ def pack_name(rel_path: str) -> str:
         return "ovis-image"
     if "wan-2-2/" in rel_path:
         return "wan-2-2"
+    if "minimax-h3/" in rel_path:
+        return "minimax-h3"
     if "ace-step/" in rel_path:
         return "ace-step"
     if "hunyuan-3d/" in rel_path:

@@ -1,0 +1,17 @@
+{
+  "name": "minimax-h3",
+  "selectors": ["minimax-h3", "minimax_h3", "minimaxh3", "hailuo-3", "hailuo3", "h3"],
+  "tutorial_urls": [
+    "https://docs.comfy.org/tutorials/video/minimax/minimax-h3",
+    "https://blog.comfy.org/p/minimax-h3-day-0-support-in-comfyui"
+  ],
+  "upstream_urls": [
+    "https://huggingface.co/Comfy-Org/MiniMax-H3",
+    "https://huggingface.co/MiniMaxAI/MiniMax-H3",
+    "https://github.com/Comfy-Org/workflow_templates/blob/main/templates/video_minimax_h3_t2v.json"
+  ],
+  "requires_hf_token": false,
+  "notes_low": "MiniMax H3 omni-modal video+audio: fl2va + ref2va pruned int8 diffusion (~21 GB each), Qwen3-VL 32B int8 TE (~27 GB), video+audio VAEs. Requires ComfyUI 0.30+. NVFP4_SUPPORTED=true swaps TE to official nvfp4_awq. Large download (~75 GB). Native stereo audio T2V/I2V/R2V.",
+  "notes_high": "Same stack with pruned BF16 diffusion (~40 GB each fl2va/ref2va) for higher quality on high-VRAM hosts. TE remains int8 unless NVFP4_SUPPORTED=true (official Qwen3-VL nvfp4_awq). Requires ComfyUI 0.30+.",
+  "description": "MiniMax H3 (Hailuo 3) open-weights video pack: text/image/reference-to-video with native stereo audio via Comfy-Org repackaged weights."
+}

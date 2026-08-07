@@ -27,6 +27,11 @@
   "wan-2-2": {
     "t2v-template": "workflow-wan-2-2-t2v-template.json"
   },
+  "minimax-h3": {
+    "t2v": "workflow-minimax-h3-t2v-template.json",
+    "i2v": "workflow-minimax-h3-i2v-template.json",
+    "r2v": "workflow-minimax-h3-r2v-template.json"
+  },
   "hunyuan-3d": {
     "i2-3d-template": "workflow-hunyuan-3d-i23d-template.json"
   },

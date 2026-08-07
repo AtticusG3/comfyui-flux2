@@ -6,7 +6,19 @@ This guide is for Windows with Docker Desktop and an NVIDIA GPU.
 
 - Windows 10 21H2+ or Windows 11
 - Docker Desktop with WSL 2 backend enabled
-- NVIDIA driver with WSL GPU support
+- NVIDIA driver with WSL GPU support (for RTX 50 / Blackwell, prefer driver **570+** and a host CUDA capability of **12.8+**; published images target **CUDA 13.0** wheels)
+- Enough free disk under `./data/models` for selected packs (MiniMax H3 alone is on the order of **~75 GB** low tier)
+- Optional: Hugging Face token (`HF_TOKEN`) when selecting gated packs such as `klein-distilled`
+
+### Image stack (installed versions)
+
+| Piece | Notes |
+| --- | --- |
+| Python | 3.12 (container) |
+| PyTorch stack | Stable `torch` / `torchvision` / `torchaudio` / `xformers` from `cu130` index |
+| ComfyUI | Git-synced on startup (`COMFYUI_GIT_UPDATE=true`); MiniMax H3 needs **0.30.0+** |
+| Attention extras | `sageattention` baked; `flash-attn` best-effort; `cache-dit>=1.2.0` for CacheDiT |
+| Host validation tools | Python **3.10+** with `jsonschema==4.26.0` (use `py -3.12` or `py -3.13` if default `python` is older) |
 
 Verify GPU passthrough:
 
@@ -51,6 +63,7 @@ Optional startup tuning (see `.env.example` and README):
 - `COMFYUI_GIT_UPDATE=false` skips fetch/reset of managed git repos for faster restarts when refs are already current.
 - `INSTALL_ORPHAN_NODE_REQS=false` (default) installs Python requirements for managed nodes only; set `true` to also install manual/orphan custom-node requirements from the persisted volume.
 - For `hidream-o1`, startup syncs nodes and the bundled workflow only; download FP8/BF16 weights via ComfyUI Manager or Hugging Face after startup.
+- For `minimax-h3`, ensure ComfyUI has reached **0.30+** (default git update), plan large model downloads, and keep `NVFP4_SUPPORTED=false` unless your GPU stack supports the official Qwen3-VL NVFP4 TE.
 
 ## Build And Run
 

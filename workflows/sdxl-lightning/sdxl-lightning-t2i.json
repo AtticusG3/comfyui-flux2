@@ -310,7 +310,10 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Portrait of a woman styled as Zero Two in white and red racing suit beside a Honda NSX-R at the Nurburgring Nordschleife carousel, overcast sky, telephoto motorsport photography, motion blur on background crowd",
+        ""
+      ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -364,7 +367,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Portrait of a woman styled as Zero Two in white and red racing suit beside a Honda NSX-R at the Nurburgring Nordschleife carousel, overcast sky, telephoto motorsport photography, motion blur on background crowd"
+      ],
       "color": "#006691",
       "bgcolor": "rgba(24,24,27,.9)"
     },

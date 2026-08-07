@@ -438,7 +438,10 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "<character_1><n>Hatsune Miku</n><gender>1girl</gender><appearance>teal_twintails, long_hair, aqua_eyes</appearance><clothing>black_and_gold_racing_queen_outfit, thighhighs</clothing><expression>confident_smile</expression><action>leaning_on, standing</action><position>center_right</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Fuji_Speedway_paddock, Mount_Fuji_distance, Super_GT_atmosphere</background><atmosphere>energetic</atmosphere><quality>high_resolution, detailed</quality><objects>Nissan_Silvia_S15_Spec-R</objects><other>motorsport</other></general_tags>",
+        ""
+      ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -492,7 +495,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "<character_1><n>Hatsune Miku</n><gender>1girl</gender><appearance>teal_twintails, long_hair, aqua_eyes</appearance><clothing>black_and_gold_racing_queen_outfit, thighhighs</clothing><expression>confident_smile</expression><action>leaning_on, standing</action><position>center_right</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Fuji_Speedway_paddock, Mount_Fuji_distance, Super_GT_atmosphere</background><atmosphere>energetic</atmosphere><quality>high_resolution, detailed</quality><objects>Nissan_Silvia_S15_Spec-R</objects><other>motorsport</other></general_tags>"
+      ],
       "color": "#006691",
       "bgcolor": "rgba(24,24,27,.9)"
     },

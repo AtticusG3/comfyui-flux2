@@ -1,0 +1,4 @@
+# source_path (under /workflows/)|destination_filename|tier
+minimax-h3/minimax-h3-t2v.json|minimax-h3-t2v.json|both
+minimax-h3/minimax-h3-i2v.json|minimax-h3-i2v.json|both
+minimax-h3/minimax-h3-r2v.json|minimax-h3-r2v.json|both

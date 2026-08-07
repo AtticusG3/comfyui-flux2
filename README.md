@@ -30,13 +30,24 @@ Dockerized [ComfyUI](https://github.com/comfyanonymous/ComfyUI) with **selectabl
 
 ## Docker images and PyTorch
 
+**Installed stack (image defaults):**
+
+| Component | Version / channel |
+| --- | --- |
+| Base image | `python:3.12-slim-trixie` |
+| PyTorch / torchvision / torchaudio / xformers | Stable wheels from `https://download.pytorch.org/whl/cu130` (build-time latest on that index) |
+| Optional attention | `sageattention` (pre-baked), `flash-attn` (best-effort wheel), `xformers` |
+| DiT cache | `cache-dit>=1.2.0` (pre-baked; startup verifies import) |
+| ComfyUI / Manager | Git `master` / `main` on image build and each startup when `COMFYUI_GIT_UPDATE=true` |
+| MiniMax H3 native nodes | Require **ComfyUI 0.30.0+** (startup git sync keeps core current) |
+
 Published images install **stable** `torch`, `torchvision`, `torchaudio`, and `xformers` from `https://download.pytorch.org/whl/<cu*>` (see [Dockerfile](Dockerfile)). That matches the tag suffix.
 
 | Image tag | PyTorch wheel index | Channel | Typical use |
 | --- | --- | --- | --- |
 | `ghcr.io/atticusg3/comfyui-flux2:latest` | `cu130` | Stable wheels from PyTorch index | Default; CUDA 13.0 driver stack |
 | `ghcr.io/atticusg3/comfyui-flux2:main` | `cu130` | Same as `latest` on `main` builds | Branch-style pin |
-| `ghcr.io/atticusg3/comfyui-flux2:v1.6.3` | `cu130` | Same stack, semver pin | Reproducible release |
+| `ghcr.io/atticusg3/comfyui-flux2:v1.8.0` | `cu130` | Same stack, semver pin | Reproducible release |
 
 CI publishes **cu130 only** (no `-cu126` / `-cu128` matrix tags). For other CUDA indexes, build locally with `docker build --build-arg CUDA_VERSION=cu128`.
 
@@ -59,7 +70,7 @@ docker compose exec comfyui python -c "import torch; print('torch', torch.__vers
 
 | Variable | Values | Role |
 | --- | --- | --- |
-| `NVFP4_SUPPORTED` | `true` / `false` | Default `false`: packs download FP8/BF16 only (no NVFP4 filenames). When `true`, enables URL/filename swaps for **official** NVFP4 where configured (e.g. Klein FP8 to official NVFP4, Z-Turbo BF16 to Comfy-Org NVFP4). Z-Anime stays FP8/BF16 only. |
+| `NVFP4_SUPPORTED` | `true` / `false` | Default `false`: packs download FP8/BF16/int8 only (no NVFP4 filenames). When `true`, enables URL/filename swaps for **official** NVFP4 where configured (e.g. Klein FP8 to official NVFP4, Z-Turbo BF16 to Comfy-Org NVFP4, **MiniMax H3** Qwen3-VL TE int8 to `nvfp4_awq`). Z-Anime stays FP8/BF16 only. |
 | `NVFP4_MODE` | `official-only` (default) or `allow-community` | `allow-community` additionally enables **experimental** community NVFP4 URLs (Wan I2V, **FireRed Image Edit** Starnodes quant, etc.). |
 
 There is no `NVFP4_MODE=true`; use `NVFP4_SUPPORTED=true` together with `NVFP4_MODE` as above.
@@ -178,6 +189,7 @@ Executor examples include `anythingllm/agent-skills/comfyui-companion-executor/e
 | `ovis-image` | Image | Ovis pack | Ovis pack | |
 | `newbie-image` | Image | NewBie pack | NewBie pack | Requires NewBie nodes. |
 | `wan-2-2` | Video | 5B stack | 14B stack | |
+| `minimax-h3` | Video | fl2va+ref2va pruned **int8**, Qwen3-VL 32B int8 TE, video+audio VAEs | pruned **BF16** diffusion, same TE/VAEs | Omni-modal video with **native stereo audio** (T2V/I2V/R2V). Needs ComfyUI **0.30+**. Large download (~75 GB low). `NVFP4_SUPPORTED=true` swaps TE to official `qwen3vl_32b_minimax_h3_nvfp4_awq`. [Docs](https://docs.comfy.org/tutorials/video/minimax/minimax-h3). |
 | `sdxl-lightning` | Image | 4-step | 8-step | |
 | `sdxl-editing` | Image | Inpaint base | + refiner / upscale | |
 | `ernie-image` | Image | Turbo FP8 path | SFT BF16 | See pack `pack.json`. |

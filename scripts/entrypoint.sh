@@ -1330,6 +1330,13 @@ apply_nvfp4_overrides() {
         changed=1
     fi
 
+    # MiniMax H3: official Comfy-Org Qwen3-VL 32B TE int8 -> nvfp4_awq (template default on Blackwell).
+    if grep -Fq "qwen3vl_32b_minimax_h3_int8_convrot.safetensors" "$list_file"; then
+        sed -i 's#https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_int8_convrot\.safetensors#https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors#g' "$list_file"
+        sed -i 's#out=qwen3vl_32b_minimax_h3_int8_convrot\.safetensors#out=qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors#g' "$list_file"
+        changed=1
+    fi
+
     # Official Comfy-Org flux2-dev/klein fp4 endpoints were probed and currently
     # return 404. Keep flux1-krea on FP8 unless a validated official NVFP4 URL is available.
     if grep -q "flux1-krea-dev_fp8_scaled" "$list_file"; then
@@ -1541,6 +1548,28 @@ apply_nvfp4_workflow_overrides() {
         fi
     fi
 
+    # MiniMax H3: low = pruned int8 diffusion; high = pruned BF16 diffusion (bundled JSON defaults to int8).
+    local mm_wf
+    for mm_wf in "$workflows_dir/minimax-h3-t2v.json" "$workflows_dir/minimax-h3-i2v.json" "$workflows_dir/minimax-h3-r2v.json"; do
+        if [ ! -f "$mm_wf" ]; then
+            continue
+        fi
+        if [ "$VRAM_TARGET" == "low" ]; then
+            sed -i 's/minimax_h3_fl2va_pruned_bf16\.safetensors/minimax_h3_fl2va_pruned_int8_convrot.safetensors/g' "$mm_wf"
+            sed -i 's/minimax_h3_ref2va_pruned_bf16\.safetensors/minimax_h3_ref2va_pruned_int8_convrot.safetensors/g' "$mm_wf"
+        else
+            sed -i 's/minimax_h3_fl2va_pruned_int8_convrot\.safetensors/minimax_h3_fl2va_pruned_bf16.safetensors/g' "$mm_wf"
+            sed -i 's/minimax_h3_ref2va_pruned_int8_convrot\.safetensors/minimax_h3_ref2va_pruned_bf16.safetensors/g' "$mm_wf"
+        fi
+    done
+    if [ -f "$workflows_dir/minimax-h3-t2v.json" ] || [ -f "$workflows_dir/minimax-h3-i2v.json" ] || [ -f "$workflows_dir/minimax-h3-r2v.json" ]; then
+        if [ "$VRAM_TARGET" == "low" ]; then
+            echo "[INFO] Workflow override: MiniMax H3 low -> pruned int8 diffusion."
+        else
+            echo "[INFO] Workflow override: MiniMax H3 high -> pruned BF16 diffusion."
+        fi
+    fi
+
     if [ "$NVFP4_SUPPORTED_LC" != "true" ]; then
         local wf
         for wf in "$workflows_dir/klein-t2i.json" "$workflows_dir/klein-edit.json"; do
@@ -1580,6 +1609,12 @@ apply_nvfp4_workflow_overrides() {
             sed -i 's/z-image-base-nvfp4_quality\.safetensors/z_image_bf16.safetensors/g' "$zbase_nf"
         fi
 
+        for mm_wf in "$workflows_dir/minimax-h3-t2v.json" "$workflows_dir/minimax-h3-i2v.json" "$workflows_dir/minimax-h3-r2v.json"; do
+            if [ -f "$mm_wf" ]; then
+                sed -i 's/qwen3vl_32b_minimax_h3_nvfp4_awq\.safetensors/qwen3vl_32b_minimax_h3_int8_convrot.safetensors/g' "$mm_wf"
+            fi
+        done
+
         echo "[INFO] Workflow override: reverted NVFP4 model filenames (NVFP4_SUPPORTED=false)."
         return 0
     fi
@@ -1601,6 +1636,18 @@ apply_nvfp4_workflow_overrides() {
     if [ -f "$zturbo" ]; then
         sed -i 's/z_image_turbo_bf16\.safetensors/z_image_turbo_nvfp4.safetensors/g' "$zturbo"
         echo "[INFO] NVFP4 workflow override enabled: Z-Image Turbo -> official NVFP4 filename."
+    fi
+
+    # MiniMax H3 official TE quant: int8 -> nvfp4_awq when NVFP4_SUPPORTED=true.
+    local mm_nv_changed=0
+    for mm_wf in "$workflows_dir/minimax-h3-t2v.json" "$workflows_dir/minimax-h3-i2v.json" "$workflows_dir/minimax-h3-r2v.json"; do
+        if [ -f "$mm_wf" ] && grep -Fq "qwen3vl_32b_minimax_h3_int8_convrot.safetensors" "$mm_wf"; then
+            sed -i 's/qwen3vl_32b_minimax_h3_int8_convrot\.safetensors/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors/g' "$mm_wf"
+            mm_nv_changed=1
+        fi
+    done
+    if [ "$mm_nv_changed" -eq 1 ]; then
+        echo "[INFO] NVFP4 workflow override enabled: MiniMax H3 TE -> official nvfp4_awq filename."
     fi
 
     local ewf_er="$workflows_dir/ernie-turbo-t2i.json"

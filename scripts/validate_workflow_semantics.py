@@ -205,6 +205,7 @@ PACK_PROFILES: dict[str, PackProfile] = {
     "ovis-image": PackProfile(kind="t2i", prompt_mode="poster_or_graphic"),
     "ernie-image": PackProfile(kind="t2i", prompt_mode="stylized"),
     "wan-2-2": PackProfile(kind="video", prompt_mode="video_motion"),
+    "minimax-h3": PackProfile(kind="video", prompt_mode="video_motion"),
     "hunyuan-video": PackProfile(
         kind="guide", prompt_mode="skip", skip_defaults=True
     ),

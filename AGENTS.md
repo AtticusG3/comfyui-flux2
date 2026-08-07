@@ -154,6 +154,7 @@ sync/update logic, and persistent host-mounted data paths.
 - ComfyUI 0.22+ needs `comfy-aimdo` aligned with ComfyUI `requirements.txt` (HostBuffer API);
   entrypoint `ensure_comfy_aimdo_package()` reconciles the pin on startup (rebuild image after script changes).
 - Pack selector `flux2` is deprecated; Klein workflows ship via `klein-distilled` (`workflows/flux2/` sources).
+- `minimax-h3` is video+native-audio: Comfy-Org repackaged weights, bundled T2V/I2V/R2V workflows, ComfyUI **0.30+** native nodes. Default TE is int8; `NVFP4_SUPPORTED=true` swaps to official `qwen3vl_32b_minimax_h3_nvfp4_awq`. Low = pruned int8 diffusion; high = pruned BF16.
 - `ovis-image` is split-file only: bundled workflow and AnythingLLM API examples use `UNETLoader` +
   `ModelSamplingAuraFlow` + `CLIPLoader` (type `ovis`) + `VAELoader`, not `CheckpointLoaderSimple`; low tier
   FP8 from qpqpqpqpqpqp/Ovis_Image_7B_fp8 with entrypoint sed by VRAM tier.

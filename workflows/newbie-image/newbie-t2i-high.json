@@ -438,7 +438,10 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "<character_1><n>Rem</n><gender>1girl</gender><appearance>short_hair, blue_hair, hair_over_one_eye, blue_eyes</appearance><clothing>maid_outfit, white_apron, hair_ribbon</clothing><expression>gentle_smile</expression><action>leaning_on, standing</action><position>center_left</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Akihabara_night_street, neon_signs, light_rain, crowded_sidewalk</background><atmosphere>urban_night</atmosphere><quality>high_resolution, detailed</quality><objects>Subaru_WRX_STI_WRB</objects><other>jdm</other></general_tags>",
+        ""
+      ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -492,7 +495,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "<character_1><n>Rem</n><gender>1girl</gender><appearance>short_hair, blue_hair, hair_over_one_eye, blue_eyes</appearance><clothing>maid_outfit, white_apron, hair_ribbon</clothing><expression>gentle_smile</expression><action>leaning_on, standing</action><position>center_left</position></character_1><general_tags><count>1girl, solo</count><style>anime_style, digital_art</style><background>Akihabara_night_street, neon_signs, light_rain, crowded_sidewalk</background><atmosphere>urban_night</atmosphere><quality>high_resolution, detailed</quality><objects>Subaru_WRX_STI_WRB</objects><other>jdm</other></general_tags>"
+      ],
       "color": "#006691",
       "bgcolor": "rgba(24,24,27,.9)"
     },

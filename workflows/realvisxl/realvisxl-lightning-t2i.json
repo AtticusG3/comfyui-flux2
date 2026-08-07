@@ -310,7 +310,10 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Portrait of Misato Katsuragi-inspired woman in red coat beside a Nissan Skyline GT-R R32 at Tokyo Rainbow Bridge at night, gritty urban photoreal",
+        ""
+      ],
       "color": "#008181",
       "bgcolor": "rgba(24,24,27,.9)"
     },
@@ -364,7 +367,9 @@
         "cnr_id": "comfy-core",
         "ver": "0.20.1"
       },
-      "widgets_values": [],
+      "widgets_values": [
+        "Portrait of Misato Katsuragi-inspired woman in red coat beside a Nissan Skyline GT-R R32 at Tokyo Rainbow Bridge at night, gritty urban photoreal"
+      ],
       "color": "#006691",
       "bgcolor": "rgba(24,24,27,.9)"
     },

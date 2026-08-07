@@ -1,0 +1,4 @@
+# MiniMax H3 uses native ComfyUI nodes (0.30+): MiniMaxH3ImageToVideo, MiniMaxH3ReferenceToVideo.
+# KJNodes (Sage Attention patch) is provided by always-on vram-utils.
+# Optional video helpers for extended graphs:
+https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git main

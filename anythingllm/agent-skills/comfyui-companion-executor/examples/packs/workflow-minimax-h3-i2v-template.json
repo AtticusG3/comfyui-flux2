@@ -1,0 +1,13 @@
+{
+  "_pack": "minimax-h3",
+  "_task": "i2v",
+  "_template": true,
+  "_note": "Starter template. Export API JSON from bundled minimax-h3-i2v.json. First frame via LoadImage; optional last frame. Include I2VA instruction line in prompt when using first-frame lock.",
+  "_placeholders": [
+    "__PROMPT__",
+    "__NEGATIVE__",
+    "__SOURCE_IMAGE_URL__",
+    "__DURATION_SECONDS__",
+    "__SEED__"
+  ]
+}

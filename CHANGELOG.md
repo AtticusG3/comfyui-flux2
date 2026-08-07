@@ -2,12 +2,22 @@
 
 ## Unreleased
 
+## [1.8.0] -- MiniMax H3 video pack
+
+### Added
+- **`minimax-h3` pack**: MiniMax H3 (Hailuo 3) open-weights video with native stereo audio via [Comfy-Org/MiniMax-H3](https://huggingface.co/Comfy-Org/MiniMax-H3). Bundled T2V/I2V/R2V workflows (`workflows/minimax-h3/`), pack model lists (low: pruned int8; high: pruned BF16), VideoHelperSuite node sync, and pack-specific `llm_enhancement_system_prompt.txt` following MiniMax's shot/audio prompt structure.
+- Official NVFP4 path for MiniMax H3 text encoder: `NVFP4_SUPPORTED=true` swaps `qwen3vl_32b_minimax_h3_int8_convrot` to `qwen3vl_32b_minimax_h3_nvfp4_awq` in model lists and deployed workflows.
+- Example prompts for MiniMax H3 workflows in `update_workflow_prompts.py`.
+- Prompt apply/extract support for MiniMax native nodes and UUID subgraph wrappers in `scripts/lib/workflow_prompts.py`.
+
 ### Fixed
 - Startup reconciles ComfyUI-Impact-Pack `segment_anything` after managed-node pip installs; collated requirements skip `git+` VCS lines so sam2 cannot block PyPI deps.
 - Optional ComfyUI-nunchaku installs matching nunchaku-ai backend wheels from GitHub releases (not the unrelated PyPI `nunchaku` package).
 - `CLI_ARGS` and `COMFYUI_VRAM_ARGS` are trimmed before ComfyUI launch so trailing whitespace cannot break argparse.
+- MiniMax H3 bundled workflows: wrapper/subgraph port parity via topology sync; core-node allowlist for native MiniMax / ResolutionSelector types.
 
 ### Changed
+- Docs: prerequisites and installed-version tables updated (Python 3.12 image, cu130 torch stack, ComfyUI 0.30+ for MiniMax H3, disk guidance); README image tag example pin `v1.8.0`.
 - `z-image-anime` drops NVFP4: low/high tiers use SeeSee21 FP8/BF16 only; entrypoint no longer swaps to r0b0tlab Z-Anime-NVFP4 when `NVFP4_SUPPORTED=true`.
 - Repo hygiene: removed legacy `z-anime` pack (selectors merged into `z-image-anime`), stale `sdxl-editing/workflows-bundled/` JSON copies, and scratch scripts (`extract_workflow_templates.py`, `gen_klein_4b_workflows.py`).
 - One-off migration scripts moved to `scripts/maint/`; operational script index in `scripts/README.md`.
