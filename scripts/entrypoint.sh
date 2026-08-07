@@ -266,12 +266,22 @@ download_with_connectivity() {
     proxy=$(resolve_proxy_url "$provider")
     local dns
     dns=$(resolve_dns_servers "$provider")
+    # Hugging Face Xet CDN signs fixed ByteRange policies per connection; multi-split
+    # downloads often hit intermittent 403 (errorCode=22). Use a single connection
+    # for HF; keep multi-conn for other providers.
+    local max_conn=5
+    local split=5
+    if [ "$provider" = "huggingface" ]; then
+        max_conn=1
+        split=1
+    fi
     local aria_args=(
         --input-file="$list_file"
         --allow-overwrite=true
         --auto-file-renaming=false
         --continue=true
-        --max-connection-per-server=5
+        --max-connection-per-server="$max_conn"
+        --split="$split"
         --conditional-get=true
     )
     local a
@@ -299,7 +309,11 @@ download_with_connectivity() {
             ;;
     esac
 
-    echo "[INFO] Downloading $label for provider '$provider' with route '$mode'..."
+    if [ "$provider" = "huggingface" ]; then
+        echo "[INFO] Downloading $label for provider '$provider' with route '$mode' (single-connection; avoids HF CDN range 403s)..."
+    else
+        echo "[INFO] Downloading $label for provider '$provider' with route '$mode'..."
+    fi
     aria2c "${aria_args[@]}"
 }
 
